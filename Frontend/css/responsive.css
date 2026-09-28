@@ -1,0 +1,353 @@
+/* =========================================================
+   MSONGOLA RESULT SYSTEM
+   ADMIN DASHBOARD RESPONSIVE
+   ========================================================= */
+
+
+/* =========================================================
+   LARGE TABLETS / SMALL DESKTOP
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    :root {
+        --sidebar-width: 245px;
+    }
+
+    .page-content {
+        padding: 25px;
+    }
+
+    .topbar {
+        padding: 0 25px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+
+        transition: transform 0.25s ease;
+    }
+
+    .sidebar.sidebar-open {
+        transform: translateX(0);
+    }
+
+    .sidebar-close {
+        width: 32px;
+        height: 32px;
+
+        display: grid;
+        place-items: center;
+
+        position: absolute;
+
+        top: 25px;
+        right: 12px;
+
+        border: 0;
+        border-radius: 8px;
+
+        background: rgba(255, 255, 255, 0.07);
+
+        color: white;
+
+        cursor: pointer;
+    }
+
+    .sidebar-overlay {
+        display: block;
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .menu-toggle {
+        display: grid;
+        place-items: center;
+    }
+
+    .quick-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 650px) {
+
+    .topbar {
+        height: 68px;
+
+        padding: 0 15px;
+    }
+
+    .page-heading span {
+        font-size: 8px;
+    }
+
+    .page-heading h1 {
+        font-size: 15px;
+    }
+
+    .topbar-user-info,
+    .topbar-user > i {
+        display: none;
+    }
+
+    .topbar-right {
+        gap: 8px;
+    }
+
+    .page-content {
+        padding: 18px 15px 15px;
+    }
+
+    .welcome-section {
+        min-height: auto;
+
+        padding: 25px 22px;
+
+        border-radius: 18px;
+    }
+
+    .welcome-content {
+        max-width: 100%;
+    }
+
+    .welcome-content h2 {
+        font-size: 24px;
+    }
+
+    .welcome-content p {
+        font-size: 11px;
+    }
+
+    .welcome-illustration {
+        display: none;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .system-live {
+        padding: 6px 8px;
+
+        font-size: 8px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+
+        font-size: 13px;
+    }
+
+    .stat-label {
+        max-width: 80px;
+
+        font-size: 7px;
+
+        text-align: right;
+    }
+
+    .stat-value {
+        margin-top: 15px;
+
+        font-size: 24px;
+    }
+
+    .status-value {
+        font-size: 16px;
+    }
+
+    .stat-footer {
+        font-size: 8px;
+    }
+
+    .stat-footer i {
+        display: none;
+    }
+
+    .panel-header {
+        padding: 17px;
+    }
+
+    .school-identity {
+        padding: 18px;
+    }
+
+    .school-logo {
+        width: 52px;
+        height: 52px;
+
+        border-radius: 14px;
+
+        font-size: 20px;
+    }
+
+    .school-details h2 {
+        font-size: 13px;
+    }
+
+    .school-details p,
+    .school-motto {
+        font-size: 9px;
+    }
+
+    .headmaster-box {
+        margin: 0 17px 17px;
+    }
+
+    .security-list {
+        padding: 5px 17px 12px;
+    }
+
+    .quick-card {
+        padding: 16px;
+    }
+
+    .dashboard-footer {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .footer-right {
+        flex-wrap: wrap;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        padding: 17px;
+    }
+
+    .stat-top {
+        justify-content: flex-start;
+
+        gap: 12px;
+    }
+
+    .stat-label {
+        max-width: none;
+
+        text-align: left;
+    }
+
+    .stat-footer i {
+        display: block;
+    }
+
+    .section-heading h3,
+    .panel-header h3 {
+        font-size: 15px;
+    }
+
+    .welcome-content h2 {
+        font-size: 22px;
+    }
+
+    .welcome-content p {
+        font-size: 10px;
+    }
+
+    .school-identity {
+        align-items: flex-start;
+    }
+
+}
+
+
+/* =========================================================
+   LANDSCAPE MOBILE
+   ========================================================= */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .sidebar {
+        overflow-y: auto;
+    }
+
+    .welcome-section {
+        padding: 20px;
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+
+}

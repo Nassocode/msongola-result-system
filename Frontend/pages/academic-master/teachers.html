@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Walimu | Academic Master</title>
+    <link rel="stylesheet" href="../../css/admin-catalog.css?v=20260928-7">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="catalog-page" data-catalog="teachers" data-role="ACADEMIC_MASTER">
+    <main class="catalog-shell">
+        <header class="catalog-header">
+            <div>
+                <h1><i class="fa-solid fa-chalkboard-user"></i> Walimu</h1>
+                <p>Orodha ya walimu waliosajiliwa kwenye mfumo.</p>
+            </div>
+            <a class="catalog-button secondary" href="dashboard.html">Dashboard</a>
+        </header>
+        <section class="catalog-panel">
+            <div class="catalog-toolbar">
+                <input id="catalogSearch" type="search" placeholder="Tafuta mwalimu, username au namba...">
+                <strong>Orodha ya Walimu</strong>
+            </div>
+            <div id="catalogError" class="catalog-error" hidden></div>
+            <div class="catalog-table-wrap">
+                <table class="catalog-table" id="catalogTable">
+                    <thead><tr><th>#</th><th>Mwalimu</th><th>Username</th><th>Simu</th><th>Status</th></tr></thead>
+                    <tbody id="catalogList"></tbody>
+                </table>
+                <div id="catalogEmpty" class="catalog-empty" hidden>Hakuna walimu waliopatikana.</div>
+            </div>
+        </section>
+    </main>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin/catalog.js?v=20260928-7"></script>
+</body>
+</html>

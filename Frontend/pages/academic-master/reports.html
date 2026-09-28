@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ripoti za Matokeo | Academic Master</title>
+    <link rel="stylesheet" href="../../css/academic-operations.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .report-controls { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:18px 20px; }
+        .report-controls label { display:grid; gap:6px; color:#627d98; font-size:12px; font-weight:700; }
+        .report-controls select,.report-note { width:100%; min-height:42px; padding:9px 11px; border:1px solid #d2dde6; border-radius:8px; background:#fff; color:#102a43; font:inherit; }
+        .report-preview { margin-top:18px; }
+        .report-brand { padding:24px; text-align:center; border-bottom:2px solid #c89b3c; }
+        .report-brand h2 { margin:0; color:#102a43; font-size:21px; }
+        .report-brand p { margin:4px 0 0; color:#627d98; }
+        .report-title { margin-top:13px!important; color:#a47c28!important; font-size:16px!important; text-transform:uppercase; }
+        .report-meta { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 18px; padding:18px 22px; border-bottom:1px solid #e6eaf0; }
+        .report-meta div { display:grid; gap:3px; }
+        .report-meta span { color:#829ab1; font-size:10px; text-transform:uppercase; }
+        .report-meta strong { color:#102a43; font-size:13px; }
+        .report-note-wrap { padding:18px 22px; border-bottom:1px solid #e6eaf0; }
+        .report-note-wrap label { display:block; margin-bottom:7px; color:#627d98; font-size:11px; font-weight:700; }
+        .report-note { min-height:76px; resize:vertical; }
+        .report-remarks { width:170px; min-height:34px; padding:6px 8px; border:1px solid #d2dde6; border-radius:6px; font:inherit; font-size:11px; }
+        .report-remark-text { display:none; }
+        .signatures { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; padding:35px 22px 24px; }
+        .signature { padding-top:8px; border-top:1px solid #829ab1; text-align:center; }
+        .signature span { display:block; color:#627d98; font-size:11px; }
+        .report-empty { padding:40px 20px; text-align:center; color:#627d98; }
+        .export-actions { display:flex; justify-content:flex-end; gap:8px; padding:14px 20px; border-top:1px solid #e6eaf0; }
+        .report-section-title { padding:16px 22px 8px; color:#102a43; font-size:14px; font-weight:800; }
+        .official-value { user-select:text; }
+        @media(max-width:700px) { .report-controls,.report-meta { grid-template-columns:1fr; }.signatures { grid-template-columns:1fr; gap:20px; }.report-remarks { width:140px; } }
+        @media print {
+            .report-controls,.report-note-wrap,.export-actions,.ops-header .ops-actions,.ops-toolbar,.ops-error { display:none!important; }
+            .report-preview { margin:0; border:0; box-shadow:none; }
+            .report-brand { padding:12px; }
+            .report-meta { padding:10px 12px; }
+            .report-remarks { display:none; }
+            .report-remark-text { display:inline!important; }
+            .ops-shell { padding:0!important; }
+        }
+    </style>
+</head>
+<body class="academic-ops" data-operation="reportBuilder">
+    <main class="ops-shell">
+        <header class="ops-header">
+            <div><h1><i class="fa-solid fa-file-lines"></i> Ripoti za Matokeo</h1><p>Tengeneza, hariri na export ripoti za darasa kwa PDF au Excel.</p></div>
+            <div class="ops-actions">
+                <button class="ops-button secondary" id="exportExcel" type="button" disabled><i class="fa-solid fa-file-excel"></i> Excel</button>
+                <button class="ops-button" id="exportPdf" type="button" disabled><i class="fa-solid fa-file-pdf"></i> PDF</button>
+            </div>
+        </header>
+
+        <section class="ops-panel">
+            <div class="ops-section-title">Chagua ripoti</div>
+            <div class="report-controls">
+                <label for="reportExam">Mtihani<select id="reportExam"><option value="">Inapakia mitihani...</option></select></label>
+                <label for="reportClass">Darasa<select id="reportClass" disabled><option value="">Chagua mtihani kwanza</option></select></label>
+            </div>
+            <div id="reportError" class="ops-error" hidden></div>
+        </section>
+
+        <section class="ops-panel report-preview" id="reportPreview" hidden>
+            <div class="report-brand">
+                <h2 id="reportSchoolName">MSONGOLA SECONDARY SCHOOL</h2>
+                <p id="reportSchoolAddress"></p>
+                <p id="reportMotto"></p>
+                <h2 class="report-title" id="reportHeading">TAARIFA YA MATOKEO</h2>
+            </div>
+            <div class="report-meta">
+                <div><span>Mtihani</span><strong id="reportExamName">-</strong></div>
+                <div><span>Darasa</span><strong id="reportClassName">-</strong></div>
+                <div><span>Mwaka wa masomo</span><strong id="reportYear">-</strong></div>
+                <div><span>Head of School</span><strong id="reportHead" class="official-value">-</strong></div>
+                <div><span>Academic Master</span><strong id="reportAcademicMaster" class="official-value">-</strong></div>
+                <div><span>Class Teacher</span><strong id="reportClassTeacher" class="official-value">-</strong></div>
+            </div>
+            <div class="report-note-wrap">
+                <label for="reportNarrative">Maoni ya jumla ya ripoti (unaweza kuhariri)</label>
+                <textarea class="report-note" id="reportNarrative" placeholder="Andika maelezo ya jumla kuhusu matokeo ya darasa..."></textarea>
+            </div>
+            <div class="report-section-title">Muhtasari wa Wanafunzi</div>
+            <div class="ops-table-wrap">
+                <table class="ops-table" id="reportTable">
+                    <thead><tr><th>#</th><th>Admission No.</th><th>Mwanafunzi</th><th>Masomo / Alama</th><th>Jumla</th><th>Wastani</th><th>Points</th><th>Division</th><th>Nafasi</th><th>Maoni</th></tr></thead>
+                    <tbody id="reportRows"></tbody>
+                </table>
+                <div class="report-empty" id="reportEmpty" hidden>Hakuna wanafunzi active kwenye darasa hili.</div>
+            </div>
+            <div class="signatures">
+                <div class="signature"><strong id="signatureHead">-</strong><span>Head of School</span></div>
+                <div class="signature"><strong id="signatureAcademic">-</strong><span>Academic Master</span></div>
+                <div class="signature"><strong id="signatureClassTeacher">-</strong><span>Class Teacher</span></div>
+            </div>
+            <div class="export-actions">
+                <button class="ops-button secondary" id="exportExcelBottom" type="button"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                <button class="ops-button" id="exportPdfBottom" type="button"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+            </div>
+        </section>
+    </main>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/academic-master/report-builder.js?v=1"></script>
+</body>
+</html>

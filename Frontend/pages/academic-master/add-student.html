@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Ongeza Mwanafunzi | Msongola Result System</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Page CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/academic-master-add-student.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+
+            <div class="brand-text">
+
+                <h2>MSONGOLA</h2>
+
+                <span>
+                    RESULT SYSTEM
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Profile -->
+
+        <div class="profile-mini">
+
+            <div class="profile-avatar">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+
+            <div class="profile-info">
+
+                <strong>
+                    Mwalimu KIIZA
+                </strong>
+
+                <span>
+                    Academic Master
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Navigation -->
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-section-title">
+                MENYU KUU
+            </div>
+
+
+            <a
+                href="dashboard.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </span>
+
+                <span class="nav-label">
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a
+                href="students.html"
+                class="nav-link active"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </span>
+
+                <span class="nav-label">
+                    Wanafunzi
+                </span>
+
+            </a>
+
+
+            <a
+                href="teachers.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </span>
+
+                <span class="nav-label">
+                    Walimu
+                </span>
+
+            </a>
+
+
+            <a
+                href="classes.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-school"></i>
+                </span>
+
+                <span class="nav-label">
+                    Madarasa
+                </span>
+
+            </a>
+
+
+            <a
+                href="subjects.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </span>
+
+                <span class="nav-label">
+                    Masomo
+                </span>
+
+            </a>
+
+
+            <div class="nav-section-title">
+                TAARIFA ZA MITIHANI
+            </div>
+
+
+            <a
+                href="examinations.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </span>
+
+                <span class="nav-label">
+                    Mitihani
+                </span>
+
+            </a>
+
+
+            <a
+                href="assignments.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </span>
+
+                <span class="nav-label">
+                    Teacher Assignments
+                </span>
+
+            </a>
+
+
+            <a
+                href="class-teachers.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-person-chalkboard"></i>
+                </span>
+
+                <span class="nav-label">
+                    Class Teachers
+                </span>
+
+            </a>
+
+
+            <a
+                href="submissions.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-inbox"></i>
+                </span>
+
+                <span class="nav-label">
+                    Mark Submissions
+                </span>
+
+                <span class="nav-badge">
+                    4
+                </span>
+
+            </a>
+
+
+            <a
+                href="results.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </span>
+
+                <span class="nav-label">
+                    Matokeo
+                </span>
+
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </span>
+
+                <span class="nav-label">
+                    Ripoti
+                </span>
+
+            </a>
+
+
+            <div class="nav-section-title">
+                MFUMO
+            </div>
+
+
+            <a
+                href="#"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-circle"></i>
+                </span>
+
+                <span class="nav-label">
+                    Wasifu
+                </span>
+
+            </a>
+
+
+            <a
+                href="#"
+                class="nav-link"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </span>
+
+                <span class="nav-label">
+                    Arifa
+                </span>
+
+                <span class="nav-badge warning">
+                    2
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- Logout -->
+
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                class="logout-button"
+                id="logoutBtn"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Toka kwenye mfumo
+                </span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    type="button"
+                    class="mobile-menu-btn"
+                    id="mobileMenuBtn"
+                >
+
+                    <i class="fa-solid fa-bars"></i>
+
+                </button>
+
+
+                <div class="breadcrumb">
+
+                    <span>
+                        Academic Master
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <a href="students.html">
+                        Wanafunzi
+                    </a>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <strong>
+                        Ongeza Mwanafunzi
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <button
+                    type="button"
+                    class="icon-button"
+                    title="Arifa"
+                >
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span class="notification-dot"></span>
+
+                </button>
+
+
+                <div class="topbar-user">
+
+                    <div class="topbar-avatar">
+                        MK
+                    </div>
+
+                    <div class="topbar-user-info">
+
+                        <strong>
+                            Mwalimu KIIZA
+                        </strong>
+
+                        <span>
+                            Academic Master
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <section class="page-container">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div class="page-title-area">
+
+                    <div class="page-title-icon">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h1>
+                            Ongeza Mwanafunzi
+                        </h1>
+
+                        <p>
+                            Sajili mwanafunzi mpya katika mfumo wa Msongola Secondary School.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="students.html"
+                    class="back-button"
+                >
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Rudi kwa Wanafunzi
+
+                </a>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORM
+            ================================================== -->
+
+            <form
+                id="addStudentForm"
+                novalidate
+            >
+
+
+                <!-- =============================================
+                     SECTION 1
+                ============================================== -->
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div class="section-number">
+                            01
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Taarifa za Mwanafunzi
+                            </h2>
+
+                            <p>
+                                Weka taarifa binafsi za mwanafunzi.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-card-body">
+
+                        <div class="form-grid">
+
+
+                            <!-- Admission -->
+
+                            <div class="form-group">
+
+                                <label for="admissionNumber">
+
+                                    Admission Number
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-id-card"></i>
+
+                                    <input
+                                        type="text"
+                                        id="admissionNumber"
+                                        name="admissionNumber"
+                                        placeholder="Mfano: MGS001"
+                                        maxlength="30"
+                                        autocomplete="off"
+                                        required
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Academic Master anaingiza namba ya mwanafunzi.
+                                </small>
+
+                                <div
+                                    class="field-error"
+                                    id="admissionNumberError"
+                                ></div>
+
+                            </div>
+
+
+                            <!-- First name -->
+
+                            <div class="form-group">
+
+                                <label for="firstName">
+
+                                    Jina la Kwanza
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-user"></i>
+
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        name="firstName"
+                                        placeholder="Mfano: Amina"
+                                        maxlength="60"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Middle name -->
+
+                            <div class="form-group">
+
+                                <label for="middleName">
+                                    Jina la Kati
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-user"></i>
+
+                                    <input
+                                        type="text"
+                                        id="middleName"
+                                        name="middleName"
+                                        placeholder="Mfano: Mohamed"
+                                        maxlength="60"
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Hiari.
+                                </small>
+
+                            </div>
+
+
+                            <!-- Last name -->
+
+                            <div class="form-group">
+
+                                <label for="lastName">
+
+                                    Jina la Mwisho
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-user"></i>
+
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        name="lastName"
+                                        placeholder="Mfano: Hassan"
+                                        maxlength="60"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Gender -->
+
+                            <div class="form-group">
+
+                                <label for="gender">
+
+                                    Jinsia
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="select-wrapper">
+
+                                    <i class="fa-solid fa-venus-mars"></i>
+
+                                    <select
+                                        id="gender"
+                                        name="gender"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Chagua jinsia
+                                        </option>
+
+                                        <option value="MALE">
+                                            Mwanaume
+                                        </option>
+
+                                        <option value="FEMALE">
+                                            Mwanamke
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- DOB -->
+
+                            <div class="form-group">
+
+                                <label for="dateOfBirth">
+                                    Tarehe ya Kuzaliwa
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-calendar"></i>
+
+                                    <input
+                                        type="date"
+                                        id="dateOfBirth"
+                                        name="dateOfBirth"
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Hiari.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     SECTION 2
+                ============================================== -->
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div class="section-number">
+                            02
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Taarifa za Masomo
+                            </h2>
+
+                            <p>
+                                Weka mwanafunzi katika Form na darasa husika.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-card-body">
+
+                        <div class="form-grid">
+
+
+                            <!-- Academic Year -->
+
+                            <div class="form-group">
+
+                                <label for="academicYear">
+
+                                    Academic Year
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="select-wrapper">
+
+                                    <i class="fa-solid fa-calendar-days"></i>
+
+                                    <select
+                                        id="academicYear"
+                                        name="academicYear"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Chagua mwaka wa masomo
+                                        </option>
+
+                                        <option value="2026">
+                                            2026
+                                        </option>
+
+                                        <option value="2027">
+                                            2027
+                                        </option>
+
+                                        <option value="2028">
+                                            2028
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Form -->
+
+                            <div class="form-group">
+
+                                <label for="studentForm">
+
+                                    Form
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="select-wrapper">
+
+                                    <i class="fa-solid fa-layer-group"></i>
+
+                                    <select
+                                        id="studentForm"
+                                        name="studentForm"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Chagua Form
+                                        </option>
+
+                                        <option value="FORM_1">
+                                            Form 1
+                                        </option>
+
+                                        <option value="FORM_2">
+                                            Form 2
+                                        </option>
+
+                                        <option value="FORM_3">
+                                            Form 3
+                                        </option>
+
+                                        <option value="FORM_4">
+                                            Form 4
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Class -->
+
+                            <div class="form-group">
+
+                                <label for="studentClass">
+
+                                    Darasa
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="select-wrapper">
+
+                                    <i class="fa-solid fa-school"></i>
+
+                                    <select
+                                        id="studentClass"
+                                        name="studentClass"
+                                        required
+                                    >
+
+                                        <option value="">
+                                            Chagua darasa
+                                        </option>
+
+                                        <option value="1A">
+                                            Form 1A
+                                        </option>
+
+                                        <option value="1B">
+                                            Form 1B
+                                        </option>
+
+                                        <option value="2A">
+                                            Form 2A
+                                        </option>
+
+                                        <option value="2B">
+                                            Form 2B
+                                        </option>
+
+                                        <option value="3A">
+                                            Form 3A
+                                        </option>
+
+                                        <option value="3B">
+                                            Form 3B
+                                        </option>
+
+                                        <option value="4A">
+                                            Form 4A
+                                        </option>
+
+                                        <option value="4B">
+                                            Form 4B
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <small>
+                                    Madarasa haya yanatoka moja kwa moja kwenye database.
+                                </small>
+
+                            </div>
+
+
+                            <!-- Admission date -->
+
+                            <div class="form-group">
+
+                                <label for="admissionDate">
+                                    Tarehe ya Kujiunga
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-calendar-check"></i>
+
+                                    <input
+                                        type="date"
+                                        id="admissionDate"
+                                        name="admissionDate"
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Student status -->
+
+                            <div class="form-group">
+
+                                <label for="studentStatus">
+
+                                    Hali ya Mwanafunzi
+
+                                    <span class="required">
+                                        *
+                                    </span>
+
+                                </label>
+
+
+                                <div class="select-wrapper">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    <select
+                                        id="studentStatus"
+                                        name="studentStatus"
+                                        required
+                                    >
+
+                                        <option value="ACTIVE">
+                                            Active
+                                        </option>
+
+                                        <option value="INACTIVE">
+                                            Inactive
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     SECTION 3
+                ============================================== -->
+
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div class="section-number">
+                            03
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Taarifa za Mzazi / Mlezi
+                            </h2>
+
+                            <p>
+                                Taarifa hizi zitasaidia mawasiliano ya shule.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-card-body">
+
+                        <div class="form-grid">
+
+
+                            <!-- Guardian name -->
+
+                            <div class="form-group">
+
+                                <label for="guardianName">
+                                    Jina la Mzazi / Mlezi
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-user-group"></i>
+
+                                    <input
+                                        type="text"
+                                        id="guardianName"
+                                        name="guardianName"
+                                        placeholder="Mfano: Hassan Ali"
+                                        maxlength="100"
+                                    >
+
+                                </div>
+
+                                <small>
+                                    Hiari kwa sasa.
+                                </small>
+
+                            </div>
+
+
+                            <!-- Phone -->
+
+                            <div class="form-group">
+
+                                <label for="guardianPhone">
+                                    Namba ya Simu
+                                </label>
+
+
+                                <div class="input-wrapper">
+
+                                    <i class="fa-solid fa-phone"></i>
+
+                                    <input
+                                        type="tel"
+                                        id="guardianPhone"
+                                        name="guardianPhone"
+                                        placeholder="Mfano: 0712345678"
+                                        maxlength="20"
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Address -->
+
+                            <div class="form-group full-width">
+
+                                <label for="address">
+                                    Anwani / Mahali Anapoishi
+                                </label>
+
+
+                                <div class="textarea-wrapper">
+
+                                    <i class="fa-solid fa-location-dot"></i>
+
+                                    <textarea
+                                        id="address"
+                                        name="address"
+                                        rows="3"
+                                        maxlength="255"
+                                        placeholder="Mfano: Msongola, Dar es Salaam"
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     INFORMATION NOTE
+                ============================================== -->
+
+                <div class="information-box">
+
+                    <div class="information-icon">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Muhimu
+                        </strong>
+
+                        <p>
+                            Admission Number lazima iwe ya kipekee.
+                            Mfumo hautaruhusu mwanafunzi mwingine kutumia
+                            Admission Number ambayo tayari ipo.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =============================================
+                     FORM MESSAGE
+                ============================================== -->
+
+                <div
+                    class="form-message"
+                    id="formMessage"
+                    role="alert"
+                ></div>
+
+
+
+                <!-- =============================================
+                     ACTIONS
+                ============================================== -->
+
+                <div class="form-actions">
+
+                    <a
+                        href="students.html"
+                        class="cancel-button"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Ghairi
+
+                    </a>
+
+
+                    <button
+                        type="reset"
+                        class="reset-button"
+                        id="resetFormBtn"
+                    >
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        Safisha
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                        id="saveStudentBtn"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Hifadhi Mwanafunzi
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+
+            <!-- FOOTER -->
+
+            <footer class="page-footer">
+
+                <span>
+                    © 2026 Msongola Secondary School
+                </span>
+
+                <span>
+                    Education is Light
+                </span>
+
+            </footer>
+
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- JavaScript -->
+
+<!-- Shared System Scripts -->
+<script src="../../js/api.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/app.js"></script>
+
+<!-- Page Script -->
+<script src="../../js/academic-master/add-student.js?v=20260928-3"></script>
+
+</body>
+
+</html>

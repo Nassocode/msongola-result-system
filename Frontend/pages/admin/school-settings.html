@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Mipangilio ya Shule - Msongola Result System"
+    >
+
+    <title>
+        Mipangilio ya Shule | Msongola Result System
+    </title>
+
+
+    <!-- GLOBAL CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+
+    <!-- PAGE CSS -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/admin-school-settings.css"
+    >
+
+
+    <!-- FONT AWESOME -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body
+    class="app-page admin-page admin-school-settings-page"
+    data-roles="ADMIN"
+>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+    <div class="sidebar-brand">
+
+        <div class="brand-logo">
+            <i class="fa-solid fa-school"></i>
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                MSONGOLA
+            </strong>
+
+            <span>
+                Result System
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+        <a
+            href="dashboard.html"
+            class="sidebar-link"
+        >
+
+            <i class="fa-solid fa-gauge-high"></i>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="users.html"
+            class="sidebar-link"
+        >
+
+            <i class="fa-solid fa-users"></i>
+
+            <span>
+                Watumiaji
+            </span>
+
+        </a>
+
+
+        <a
+            href="school-settings.html"
+            class="sidebar-link active"
+        >
+
+            <i class="fa-solid fa-school"></i>
+
+            <span>
+                Mipangilio ya Shule
+            </span>
+
+        </a>
+
+
+        <a
+            href="audit-logs.html"
+            class="sidebar-link"
+        >
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            <span>
+                Audit Logs
+            </span>
+
+        </a>
+
+
+        <div class="sidebar-divider"></div>
+
+
+        <a
+            href="profile.html"
+            class="sidebar-link"
+        >
+
+            <i class="fa-solid fa-user"></i>
+
+            <span>
+                Wasifu Wangu
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <button
+            type="button"
+            class="sidebar-logout"
+            data-logout
+        >
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>
+                Toka
+            </span>
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="main-content">
+
+
+    <!-- =================================================
+         TOPBAR
+    ================================================= -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                type="button"
+                class="mobile-menu-toggle"
+                aria-label="Fungua menu"
+            >
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="topbar-title">
+
+                <span>
+                    Admin Panel
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+
+            <button
+                type="button"
+                class="topbar-notification"
+                aria-label="Notifications"
+            >
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span
+                    class="notification-dot"
+                    id="notificationDot"
+                ></span>
+
+            </button>
+
+
+            <a
+                href="profile.html"
+                class="topbar-user"
+            >
+
+                <div class="topbar-avatar">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                </div>
+
+
+                <div class="topbar-user-info">
+
+                    <strong>
+                        Admin
+                    </strong>
+
+                    <span>
+                        Administrator
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         PAGE CONTENT
+    ================================================= -->
+
+    <section class="page-content">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div class="page-header-text">
+
+                <div class="breadcrumb">
+
+                    <a href="dashboard.html">
+                        Dashboard
+                    </a>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <span>
+                        Mipangilio ya Shule
+                    </span>
+
+                </div>
+
+
+                <h1>
+                    Mipangilio ya Shule
+                </h1>
+
+
+                <p>
+                    Simamia taarifa kuu za Msongola Secondary School.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SETTINGS GRID
+        ================================================= -->
+
+        <div class="settings-grid">
+
+
+            <!-- =============================================
+                 SCHOOL INFORMATION
+            ============================================= -->
+
+            <section class="settings-card">
+
+                <div class="settings-card-header">
+
+                    <div class="settings-card-icon">
+
+                        <i class="fa-solid fa-school"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            Taarifa za Shule
+                        </h2>
+
+                        <p>
+                            Taarifa hizi zitatumika kwenye mfumo
+                            na kwenye reports za wanafunzi.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FORM -->
+
+                <form
+                    id="schoolSettingsForm"
+                    class="settings-form"
+                >
+
+
+                    <!-- SCHOOL NAME -->
+
+                    <div class="form-group">
+
+                        <label for="schoolNameInput">
+
+                            Jina la Shule
+
+                            <span>
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-with-icon">
+
+                            <i class="fa-solid fa-school"></i>
+
+                            <input
+                                type="text"
+                                id="schoolNameInput"
+                                name="school_name"
+                                placeholder="Mfano: MSONGOLA SECONDARY SCHOOL"
+                                required
+                                maxlength="150"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- P.O BOX -->
+
+                    <div class="form-group">
+
+                        <label for="schoolBoxInput">
+
+                            P.O. Box
+
+                            <span>
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-with-icon">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input
+                                type="text"
+                                id="schoolBoxInput"
+                                name="po_box"
+                                placeholder="Mfano: P.O BOX 104727"
+                                required
+                                maxlength="100"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- MOTTO -->
+
+                    <div class="form-group">
+
+                        <label for="schoolMottoInput">
+
+                            Motto ya Shule
+
+                            <span>
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-with-icon">
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                            <input
+                                type="text"
+                                id="schoolMottoInput"
+                                name="motto"
+                                placeholder="Mfano: Education is Light"
+                                required
+                                maxlength="200"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- HEAD OF SCHOOL -->
+
+                    <div class="form-group">
+
+                        <label for="headOfSchoolInput">
+
+                            Head of School
+
+                            <span>
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="input-with-icon">
+
+                            <i class="fa-solid fa-user-tie"></i>
+
+                            <input
+                                type="text"
+                                id="headOfSchoolInput"
+                                name="head_of_school"
+                                placeholder="Mfano: NASSORO SHEKULAMBA"
+                                required
+                                maxlength="150"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="settings-form-actions">
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            id="resetSchoolSettingsButton"
+                        >
+
+                            <i class="fa-solid fa-rotate-left"></i>
+
+                            Rudisha
+
+                        </button>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="saveSchoolSettingsButton"
+                        >
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+
+                            Hifadhi Mabadiliko
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =============================================
+                 SCHOOL PREVIEW
+            ============================================= -->
+
+            <section class="settings-card school-preview-card">
+
+                <div class="settings-card-header">
+
+                    <div class="settings-card-icon">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2>
+                            Muonekano wa Taarifa
+                        </h2>
+
+                        <p>
+                            Preview ya taarifa zitakavyoonekana
+                            kwenye mfumo na reports.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="school-preview">
+
+
+                    <div class="preview-logo">
+
+                        <i class="fa-solid fa-school"></i>
+
+                    </div>
+
+
+                    <div class="preview-school-name">
+                        MSONGOLA SECONDARY SCHOOL
+                    </div>
+
+
+                    <div class="preview-box">
+                        P.O BOX 104727
+                    </div>
+
+
+                    <div class="preview-divider"></div>
+
+
+                    <div class="preview-motto">
+                        Education is Light
+                    </div>
+
+
+                    <div class="preview-head">
+
+                        <span>
+                            Head of School
+                        </span>
+
+                        <strong>
+                            NASSORO SHEKULAMBA
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- INFO -->
+
+                <div class="settings-info-box">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <p>
+                        Taarifa hizi zitatumika moja kwa moja
+                        kwenye report cards, PDF, Excel na sehemu
+                        nyingine za mfumo.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LOGO SECTION
+        ================================================= -->
+
+        <section class="settings-card logo-settings-card">
+
+            <div class="settings-card-header">
+
+                <div class="settings-card-icon">
+
+                    <i class="fa-solid fa-image"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h2>
+                        Logo ya Shule
+                    </h2>
+
+                    <p>
+                        Sehemu hii imeandaliwa kwa ajili ya
+                        kuongeza logo ya shule baadaye.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="logo-upload-area">
+
+                <div class="logo-placeholder">
+
+                    <i class="fa-solid fa-school"></i>
+
+                    <span>
+                        School Logo
+                    </span>
+
+                </div>
+
+
+                <div class="logo-upload-info">
+
+                    <h3>
+                        Logo ya Msongola Secondary School
+                    </h3>
+
+                    <p>
+                        Unaweza kuongeza logo ya shule
+                        baadaye. Logo itaonekana kwenye
+                        dashboard, report cards na documents.
+                    </p>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        disabled
+                    >
+
+                        <i class="fa-solid fa-upload"></i>
+
+                        Upload Logo
+
+                    </button>
+
+                    <small>
+                        Kipengele hiki kitawezeshwa kwenye
+                        hatua inayofuata.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SECURITY NOTICE
+        ================================================= -->
+
+        <section class="admin-settings-notice">
+
+            <div class="notice-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+
+            <div class="notice-content">
+
+                <h3>
+                    Usalama wa Mipangilio
+                </h3>
+
+                <p>
+                    Mabadiliko ya taarifa za shule yanaruhusiwa
+                    kwa Admin pekee na yanapaswa kuhifadhiwa
+                    kwenye audit logs za mfumo.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         TOAST
+    ================================================= -->
+
+    <div
+        class="admin-toast"
+        id="schoolSettingsToast"
+        role="alert"
+        aria-live="polite"
+    >
+
+        <div class="toast-icon">
+
+            <i
+                class="fa-solid fa-check"
+                id="schoolToastIcon"
+            ></i>
+
+        </div>
+
+
+        <div class="toast-content">
+
+            <strong id="schoolToastTitle">
+                Imefanikiwa
+            </strong>
+
+            <p id="schoolToastMessage">
+                Mabadiliko yamehifadhiwa.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="closeSchoolToastButton"
+            aria-label="Funga ujumbe"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+    </div>
+
+
+
+</main>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script src="../../js/api.js"></script>
+
+<script src="../../js/auth.js"></script>
+
+<script src="../../js/app.js"></script>
+
+<script src="../../js/admin/school-settings.js"></script>
+
+
+</body>
+
+</html>

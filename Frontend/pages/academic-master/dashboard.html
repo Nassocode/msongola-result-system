@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Academic Master Dashboard | Msongola Result System</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- Main Academic Master Dashboard CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/academic-master-dashboard.css"
+    >
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- =========================================
+         MOBILE SIDEBAR OVERLAY
+    ========================================== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================== -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Brand -->
+        <div class="brand">
+
+            <div class="brand-mark">
+                <i class="fa-solid fa-school"></i>
+            </div>
+
+            <div class="brand-text">
+                <h2>MSONGOLA</h2>
+                <span>RESULT SYSTEM</span>
+            </div>
+
+            <button
+                class="sidebar-close"
+                id="sidebarClose"
+                aria-label="Funga menyu"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <div class="sidebar-divider"></div>
+
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+
+            <!-- OVERVIEW -->
+            <p class="nav-label">MUHTASARI</p>
+
+            <a
+                href="dashboard.html"
+                class="nav-link active"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </span>
+
+                <span>Dashboard</span>
+            </a>
+
+
+            <!-- ACADEMIC MANAGEMENT -->
+            <p class="nav-label">USIMAMIZI WA MASOMO</p>
+
+            <a href="students.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </span>
+
+                <span>Wanafunzi</span>
+            </a>
+
+
+            <a href="teachers.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                </span>
+
+                <span>Walimu</span>
+            </a>
+
+
+            <a href="classes.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span>Madarasa</span>
+            </a>
+
+
+            <a href="subjects.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-book"></i>
+                </span>
+
+                <span>Masomo</span>
+            </a>
+
+
+            <!-- EXAMINATIONS -->
+            <p class="nav-label">MITIHANI & MATOKEO</p>
+
+            <a href="examinations.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-file-pen"></i>
+                </span>
+
+                <span>Mitihani</span>
+            </a>
+
+
+            <a href="assignments.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </span>
+
+                <span>Teacher Assignments</span>
+            </a>
+
+
+            <a href="class-teachers.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-tie"></i>
+                </span>
+
+                <span>Class Teachers</span>
+            </a>
+
+
+            <a href="submissions.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </span>
+
+                <span>Mark Submissions</span>
+
+                <span class="nav-badge" id="pendingBadge">
+                    0
+                </span>
+            </a>
+
+
+            <a href="results.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </span>
+
+                <span>Matokeo</span>
+            </a>
+
+
+            <a href="reports.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </span>
+
+                <span>Ripoti</span>
+            </a>
+
+
+            <!-- ACCOUNT -->
+            <p class="nav-label">AKAUNTI</p>
+
+            <a href="profile.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user"></i>
+                </span>
+
+                <span>Wasifu Wangu</span>
+            </a>
+
+
+            <a href="notifications.html" class="nav-link">
+                <span class="nav-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </span>
+
+                <span>Arifa</span>
+
+                <span class="nav-badge notification-badge">
+                    0
+                </span>
+            </a>
+
+        </nav>
+
+
+        <!-- Sidebar Bottom -->
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+
+                <div
+                    class="user-avatar"
+                    id="sidebarAvatar"
+                >
+                    A
+                </div>
+
+                <div class="sidebar-user-info">
+
+                    <strong id="sidebarUsername">
+                        Academic Master
+                    </strong>
+
+                    <span>
+                        Academic Master
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="logout-btn"
+                id="logoutBtn"
+            >
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>Ondoka</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =========================================
+         MAIN CONTENT
+    ========================================== -->
+    <main class="main-content">
+
+
+        <!-- =====================================
+             TOPBAR
+        ====================================== -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="menu-toggle"
+                    id="menuToggle"
+                    aria-label="Fungua menyu"
+                >
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+
+                <div class="page-heading">
+
+                    <span class="topbar-school-name">
+                        MSONGOLA SECONDARY SCHOOL
+                    </span>
+
+                    <h1>
+                        Academic Master Dashboard
+                    </h1>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <!-- Notification -->
+                <button
+                    class="icon-button notification-btn"
+                    id="notificationBtn"
+                    aria-label="Arifa"
+                >
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span
+                        class="notification-dot"
+                        id="notificationDot"
+                    ></span>
+
+                </button>
+
+
+                <!-- User -->
+                <div class="topbar-user">
+
+                    <div
+                        class="topbar-avatar"
+                        id="topbarAvatar"
+                    >
+                        A
+                    </div>
+
+                    <div class="topbar-user-info">
+
+                        <strong id="topbarUsername">
+                            Academic Master
+                        </strong>
+
+                        <span>
+                            Academic Master
+                        </span>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================
+             PAGE CONTENT
+        ====================================== -->
+        <section class="page-content">
+
+
+            <!-- =================================
+                 WELCOME SECTION
+            ================================== -->
+            <section class="welcome-section">
+
+                <div class="welcome-text">
+
+                    <span class="welcome-kicker">
+                        MSONGOLA RESULT SYSTEM
+                    </span>
+
+                    <h2>
+                        Karibu,
+                        <span id="welcomeUsername">
+                            Academic Master
+                        </span>
+                    </h2>
+
+                    <p>
+                        Simamia wanafunzi, walimu, mitihani,
+                        submissions na matokeo ya shule kwa
+                        ufanisi.
+                    </p>
+
+                </div>
+
+
+                <div class="welcome-date">
+
+                    <div class="date-icon">
+                        <i class="fa-regular fa-calendar"></i>
+                    </div>
+
+                    <div>
+                        <span>LEO</span>
+
+                        <strong id="currentDate">
+                            -
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 STATISTICS
+            ================================== -->
+            <section class="stats-grid">
+
+
+                <!-- Students -->
+                <article class="stat-card students-card">
+
+                    <div class="stat-card-top">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+
+                        <span class="stat-label">
+                            WANAFUNZI
+                        </span>
+
+                    </div>
+
+                    <div class="stat-value" id="totalStudents">
+                        0
+                    </div>
+
+                    <div class="stat-footer">
+                        <span>Wanafunzi waliosajiliwa</span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+
+                </article>
+
+
+
+                <!-- Teachers -->
+                <article class="stat-card teachers-card">
+
+                    <div class="stat-card-top">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+
+                        <span class="stat-label">
+                            WALIMU
+                        </span>
+
+                    </div>
+
+                    <div class="stat-value" id="totalTeachers">
+                        0
+                    </div>
+
+                    <div class="stat-footer">
+                        <span>Walimu waliopo</span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+
+                </article>
+
+
+
+                <!-- Classes -->
+                <article class="stat-card classes-card">
+
+                    <div class="stat-card-top">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <span class="stat-label">
+                            MADARASA
+                        </span>
+
+                    </div>
+
+                    <div class="stat-value" id="totalClasses">
+                        0
+                    </div>
+
+                    <div class="stat-footer">
+                        <span>Madarasa yanayotumika</span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+
+                </article>
+
+
+
+                <!-- Subjects -->
+                <article class="stat-card subjects-card">
+
+                    <div class="stat-card-top">
+
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+
+                        <span class="stat-label">
+                            MASOMO
+                        </span>
+
+                    </div>
+
+                    <div class="stat-value" id="totalSubjects">
+                        0
+                    </div>
+
+                    <div class="stat-footer">
+                        <span>Masomo yaliyosajiliwa</span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+
+                </article>
+
+            </section>
+
+
+
+            <!-- =================================
+                 SECONDARY STATS
+            ================================== -->
+            <section class="workflow-stats">
+
+
+                <!-- Pending -->
+                <article class="workflow-card pending">
+
+                    <div class="workflow-icon">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <span>
+                            SUBMISSIONS ZINAZOSUBIRI
+                        </span>
+
+                        <strong id="pendingSubmissions">
+                            0
+                        </strong>
+
+                        <small>
+                            Zinahitaji mapitio yako
+                        </small>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right workflow-arrow"></i>
+
+                </article>
+
+
+
+                <!-- Approved -->
+                <article class="workflow-card approved">
+
+                    <div class="workflow-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <span>
+                            ZILIZOIDHINISHWA
+                        </span>
+
+                        <strong id="approvedSubmissions">
+                            0
+                        </strong>
+
+                        <small>
+                            Submissions zilizokamilika
+                        </small>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right workflow-arrow"></i>
+
+                </article>
+
+
+
+                <!-- Returned -->
+                <article class="workflow-card returned">
+
+                    <div class="workflow-icon">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+
+                    <div class="workflow-content">
+
+                        <span>
+                            ZILIZORUDISHWA
+                        </span>
+
+                        <strong id="returnedSubmissions">
+                            0
+                        </strong>
+
+                        <small>
+                            Zinasubiri marekebisho
+                        </small>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right workflow-arrow"></i>
+
+                </article>
+
+            </section>
+
+
+
+            <!-- =================================
+                 MAIN DASHBOARD GRID
+            ================================== -->
+            <section class="dashboard-grid">
+
+
+                <!-- =================================
+                     SUBMISSION PROGRESS
+                ================================== -->
+                <article class="dashboard-panel submission-panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+
+                            <div class="panel-title-icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="panel-kicker">
+                                    ACADEMIC WORKFLOW
+                                </span>
+
+                                <h3>
+                                    Maendeleo ya Submissions
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+                            href="submissions.html"
+                            class="panel-action"
+                        >
+                            Angalia zote
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+
+                    <div class="progress-container">
+
+                        <div class="progress-summary">
+
+                            <div>
+
+                                <span>
+                                    Submission Progress
+                                </span>
+
+                                <strong id="submissionPercentage">
+                                    0%
+                                </strong>
+
+                            </div>
+
+                            <span id="submissionCount">
+                                0 / 0
+                            </span>
+
+                        </div>
+
+
+                        <div class="progress-bar">
+
+                            <div
+                                class="progress-fill"
+                                id="submissionProgress"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+
+                        <div class="progress-legend">
+
+                            <span>
+                                <i class="legend-dot submitted"></i>
+                                Submitted
+                            </span>
+
+                            <span>
+                                <i class="legend-dot pending"></i>
+                                Pending
+                            </span>
+
+                            <span>
+                                <i class="legend-dot returned"></i>
+                                Returned
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Submission List -->
+                    <div
+                        class="submission-list"
+                        id="submissionList"
+                    >
+
+                        <div class="empty-dashboard-state">
+
+                            <div class="empty-icon">
+                                <i class="fa-solid fa-inbox"></i>
+                            </div>
+
+                            <strong>
+                                Hakuna submissions kwa sasa
+                            </strong>
+
+                            <span>
+                                Taarifa za submissions zitaonekana hapa.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- =================================
+                     PENDING ACTIONS
+                ================================== -->
+                <article class="dashboard-panel actions-panel">
+
+                    <div class="panel-header">
+
+                        <div class="panel-title">
+
+                            <div class="panel-title-icon">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="panel-kicker">
+                                    KAZI ZA MUHIMU
+                                </span>
+
+                                <h3>
+                                    Pending Actions
+                                </h3>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="actions-list">
+
+
+                        <a
+                            href="submissions.html"
+                            class="action-item"
+                        >
+
+                            <div class="action-icon review">
+                                <i class="fa-solid fa-file-circle-check"></i>
+                            </div>
+
+                            <div class="action-content">
+
+                                <strong>
+                                    Kagua Marks Submissions
+                                </strong>
+
+                                <span>
+                                    <b id="pendingActionCount">0</b>
+                                    submissions zinahitaji mapitio
+                                </span>
+
+                            </div>
+
+                            <i class="fa-solid fa-chevron-right"></i>
+
+                        </a>
+
+
+
+                        <a
+                            href="students.html"
+                            class="action-item"
+                        >
+
+                            <div class="action-icon student">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </div>
+
+                            <div class="action-content">
+
+                                <strong>
+                                    Sajili Wanafunzi
+                                </strong>
+
+                                <span>
+                                    Ongeza wanafunzi wapya
+                                </span>
+
+                            </div>
+
+                            <i class="fa-solid fa-chevron-right"></i>
+
+                        </a>
+
+
+
+                        <a
+                            href="class-teachers.html"
+                            class="action-item"
+                        >
+
+                            <div class="action-icon teacher">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+
+                            <div class="action-content">
+
+                                <strong>
+                                    Assign Class Teachers
+                                </strong>
+
+                                <span>
+                                    Simamia walimu wa madarasa
+                                </span>
+
+                            </div>
+
+                            <i class="fa-solid fa-chevron-right"></i>
+
+                        </a>
+
+
+
+                        <a
+                            href="results.html"
+                            class="action-item"
+                        >
+
+                            <div class="action-icon result">
+                                <i class="fa-solid fa-chart-column"></i>
+                            </div>
+
+                            <div class="action-content">
+
+                                <strong>
+                                    Process Results
+                                </strong>
+
+                                <span>
+                                    Tengeneza matokeo ya wanafunzi
+                                </span>
+
+                            </div>
+
+                            <i class="fa-solid fa-chevron-right"></i>
+
+                        </a>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+
+
+            <!-- =================================
+                 RECENT ACTIVITY
+            ================================== -->
+            <section class="dashboard-panel activity-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+
+                        <div class="panel-title-icon">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+
+                        <div>
+
+                            <span class="panel-kicker">
+                                SYSTEM ACTIVITY
+                            </span>
+
+                            <h3>
+                                Shughuli za Hivi Karibuni
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="activity-status">
+                        <i class="fa-solid fa-circle"></i>
+                        Live
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="activity-list"
+                    id="activityList"
+                >
+
+                    <div class="empty-dashboard-state">
+
+                        <div class="empty-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+
+                        <strong>
+                            Hakuna shughuli bado
+                        </strong>
+
+                        <span>
+                            Shughuli za mfumo zitaonekana hapa.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 QUICK ACTIONS
+            ================================== -->
+            <section class="quick-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span>
+                            QUICK ACTIONS
+                        </span>
+
+                        <h3>
+                            Ufikiaji wa Haraka
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div class="quick-grid">
+
+
+                    <a
+                        href="students.html"
+                        class="quick-card"
+                    >
+
+                        <div class="quick-icon">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Wanafunzi
+                            </strong>
+
+                            <span>
+                                Simamia wanafunzi
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+
+                    <a
+                        href="teachers.html"
+                        class="quick-card"
+                    >
+
+                        <div class="quick-icon">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Walimu
+                            </strong>
+
+                            <span>
+                                Simamia walimu
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+
+                    <a
+                        href="examinations.html"
+                        class="quick-card"
+                    >
+
+                        <div class="quick-icon">
+                            <i class="fa-solid fa-file-pen"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Mitihani
+                            </strong>
+
+                            <span>
+                                Simamia mitihani
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+
+                    <a
+                        href="reports.html"
+                        class="quick-card"
+                    >
+
+                        <div class="quick-icon">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Ripoti
+                            </strong>
+
+                            <span>
+                                Tengeneza ripoti
+                            </span>
+
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+                 FOOTER
+            ================================== -->
+            <footer class="dashboard-footer">
+
+                <div>
+
+                    <strong>
+                        MSONGOLA SECONDARY SCHOOL
+                    </strong>
+
+                    <span>
+                        P.O BOX 104727
+                    </span>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Education is Light
+                    </span>
+
+                    <span>
+                        © <span id="currentYear"></span>
+                        Msongola Result System
+                    </span>
+
+                </div>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- Shared System Scripts -->
+<script src="../../js/api.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/app.js"></script>
+
+<!-- Academic Master Dashboard JS -->
+<script src="../../js/academic-master/dashboard.js"></script>
+
+</body>
+</html>

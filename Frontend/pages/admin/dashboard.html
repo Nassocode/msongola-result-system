@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Msongola Secondary School Result Management System - Administrator Dashboard"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0b294b"
+    >
+
+    <title>
+        Dashboard | Msongola Result System
+    </title>
+
+    <!-- GLOBAL CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <!-- ADMIN DASHBOARD CSS -->
+    <link
+        rel="stylesheet"
+        href="../../css/admin-dashboard.css"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+
+<body
+    class="app-page admin-page"
+    data-roles="ADMIN"
+>
+
+
+<!-- =====================================================
+     SIDEBAR OVERLAY
+     ===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<aside
+    class="app-sidebar"
+    id="sidebar"
+>
+
+    <!-- BRAND -->
+    <div class="sidebar-brand">
+
+        <a
+            href="dashboard.html"
+            class="sidebar-brand-link"
+        >
+
+            <span class="sidebar-brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+
+            <span class="sidebar-brand-text">
+
+                <strong>
+                    MSONGOLA
+                </strong>
+
+                <small>
+                    SECONDARY SCHOOL
+                </small>
+
+            </span>
+
+        </a>
+
+
+        <button
+            type="button"
+            class="sidebar-close"
+            id="sidebarClose"
+            aria-label="Funga menu"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+    </div>
+
+
+    <!-- SCHOOL LABEL -->
+    <div class="sidebar-section-label">
+        ADMINISTRATION
+    </div>
+
+
+    <!-- NAVIGATION -->
+    <nav
+        class="sidebar-nav"
+        aria-label="Main navigation"
+    >
+
+        <!-- DASHBOARD -->
+        <a
+            href="dashboard.html"
+            class="sidebar-nav-item active"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <!-- USERS -->
+        <a
+            href="/msongola-result-system/Frontend/pages/admin/users.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-users"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Watumiaji
+            </span>
+
+            <span class="sidebar-nav-arrow">
+                <i class="fa-solid fa-chevron-right"></i>
+            </span>
+
+        </a>
+
+
+        <!-- TEACHERS -->
+        <a
+            href="teachers.html"
+            class="sidebar-nav-item"
+        >
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </span>
+            <span class="sidebar-nav-text">Walimu</span>
+        </a>
+
+
+        <!-- CLASSES -->
+        <a
+            href="classes.html"
+            class="sidebar-nav-item"
+        >
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-school"></i>
+            </span>
+            <span class="sidebar-nav-text">Madarasa</span>
+        </a>
+
+
+        <!-- ASSIGNMENTS -->
+        <a
+            href="assignments.html"
+            class="sidebar-nav-item"
+        >
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-user-check"></i>
+            </span>
+            <span class="sidebar-nav-text">Assignments</span>
+        </a>
+
+
+        <!-- SUBJECTS -->
+        <a
+            href="subjects.html"
+            class="sidebar-nav-item"
+        >
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-book-open"></i>
+            </span>
+            <span class="sidebar-nav-text">Masomo</span>
+        </a>
+
+
+        <!-- SCHOOL SETTINGS -->
+        <a
+            href="school-settings.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-school"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Mipangilio ya Shule
+            </span>
+
+        </a>
+
+
+        <!-- AUDIT LOGS -->
+        <a
+            href="audit-logs.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Audit Logs
+            </span>
+
+        </a>
+
+
+        <!-- PROFILE -->
+        <a
+            href="profile.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-user-circle"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Wasifu Wangu
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!-- SIDEBAR FOOTER -->
+    <div class="sidebar-footer">
+
+        <div class="sidebar-system-status">
+
+            <span class="status-dot"></span>
+
+            <div>
+                <strong>
+                    Mfumo uko hewani
+                </strong>
+
+                <small>
+                    Msongola Result System
+                </small>
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="sidebar-logout"
+            data-action="logout"
+        >
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>
+                Toka kwenye mfumo
+            </span>
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN APPLICATION
+     ===================================================== -->
+
+<div class="app-shell">
+
+
+    <!-- =================================================
+         TOPBAR
+         ================================================= -->
+
+    <header class="app-topbar">
+
+        <div class="topbar-left">
+
+            <button
+                type="button"
+                class="sidebar-toggle"
+                id="sidebarToggle"
+                aria-label="Fungua menu"
+                aria-expanded="false"
+            >
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="topbar-page-title">
+
+                <span>
+                    MSONGOLA SECONDARY SCHOOL
+                </span>
+
+                <strong>
+                    Administrator Dashboard
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <!-- Notifications -->
+            <div class="topbar-notification-wrapper">
+
+                <button
+                    type="button"
+                    class="topbar-icon-button"
+                    id="notificationButton"
+                    aria-label="Notifications"
+                    aria-expanded="false"
+                >
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span
+                        id="notificationDot"
+                        class="notification-dot"
+                        hidden
+                    ></span>
+
+                </button>
+
+
+                <!-- Notification panel -->
+                <div
+                    class="notification-panel"
+                    id="notificationPanel"
+                >
+
+                    <div class="notification-panel-header">
+
+                        <div>
+                            <strong>
+                                Notifications
+                            </strong>
+
+                            <span>
+                                Taarifa za mfumo
+                            </span>
+                        </div>
+
+                        <i class="fa-regular fa-bell"></i>
+
+                    </div>
+
+
+                    <div class="notification-empty">
+
+                        <span>
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </span>
+
+                        <strong>
+                            Hakuna notifications
+                        </strong>
+
+                        <small>
+                            Taarifa mpya zitaonekana hapa.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- User -->
+            <a
+                href="profile.html"
+                class="topbar-user"
+            >
+
+                <span
+                    class="topbar-user-avatar"
+                    data-user-initials
+                >
+                    AD
+                </span>
+
+                <span class="topbar-user-info">
+
+                    <strong
+                        data-user-name
+                    >
+                        Administrator
+                    </strong>
+
+                    <small
+                        data-user-role
+                    >
+                        Administrator
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-down"></i>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         MAIN CONTENT
+         ================================================= -->
+
+    <main class="app-main">
+
+
+        <!-- PAGE HEADER -->
+        <section class="page-header">
+
+            <div>
+
+                <div class="breadcrumb">
+
+                    <span>
+                        Administration
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <strong>
+                        Dashboard
+                    </strong>
+
+                </div>
+
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p>
+                    Karibu kwenye kituo cha usimamizi
+                    wa mfumo wa Msongola Secondary School.
+                </p>
+
+            </div>
+
+
+            <div class="page-header-actions">
+
+                <span class="system-date">
+
+                    <i class="fa-regular fa-calendar"></i>
+
+                    <span id="currentDate">
+                        Leo
+                    </span>
+
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             WELCOME CARD
+             ================================================= -->
+
+        <section class="admin-welcome-card">
+
+            <div class="welcome-content">
+
+                <span class="welcome-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Administrator
+                </span>
+
+                <h2>
+                    Karibu,
+                    <span data-user-name>
+                        Administrator
+                    </span>
+                </h2>
+
+                <p>
+                    Wewe ndiye msimamizi mkuu wa
+                    mfumo. Dhibiti watumiaji,
+                    taarifa za shule na usalama
+                    wa mfumo kutoka hapa.
+                </p>
+
+                <div class="welcome-meta">
+
+                    <span>
+                        <i class="fa-solid fa-lock"></i>
+                        Access Level: Administrator
+                    </span>
+
+                    <span>
+                        <i class="fa-solid fa-server"></i>
+                        System Status: Online
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="welcome-visual">
+
+                <div class="welcome-circle circle-one"></div>
+
+                <div class="welcome-circle circle-two"></div>
+
+                <div class="welcome-icon">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SYSTEM STATISTICS
+             ================================================= -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-kicker">
+                        SYSTEM OVERVIEW
+                    </span>
+
+                    <h2>
+                        Muhtasari wa mfumo
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-stats-grid">
+
+
+                <!-- USERS -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon users">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div class="admin-stat-content">
+
+                        <span>
+                            Jumla ya Watumiaji
+                        </span>
+
+                        <strong id="totalUsers">
+                            0
+                        </strong>
+
+                        <small>
+                            Accounts zote za mfumo
+                        </small>
+
+                    </div>
+
+                    <div class="admin-stat-arrow">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                </article>
+
+
+                <!-- ACTIVE -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon active">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+
+                    <div class="admin-stat-content">
+
+                        <span>
+                            Watumiaji Active
+                        </span>
+
+                        <strong id="activeUsers">
+                            0
+                        </strong>
+
+                        <small>
+                            Accounts zinazotumika
+                        </small>
+
+                    </div>
+
+                    <div class="admin-stat-arrow">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                </article>
+
+
+                <!-- INACTIVE -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon inactive">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+
+                    <div class="admin-stat-content">
+
+                        <span>
+                            Watumiaji Inactive
+                        </span>
+
+                        <strong id="inactiveUsers">
+                            0
+                        </strong>
+
+                        <small>
+                            Accounts zilizozimwa
+                        </small>
+
+                    </div>
+
+                    <div class="admin-stat-arrow">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+
+                </article>
+
+
+                <!-- SECURITY -->
+                <article class="admin-stat-card">
+
+                    <div class="admin-stat-icon security">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div class="admin-stat-content">
+
+                        <span>
+                            System Security
+                        </span>
+
+                        <strong id="securityStatus">
+                            Secure
+                        </strong>
+
+                        <small>
+                            Authentication protected
+                        </small>
+
+                    </div>
+
+                    <div class="admin-stat-arrow">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MAIN DASHBOARD GRID
+             ================================================= -->
+
+        <section class="admin-dashboard-grid">
+
+
+            <!-- =============================================
+                 SCHOOL PROFILE
+                 ============================================= -->
+
+            <article class="dashboard-card school-profile-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <span class="card-kicker">
+                            SCHOOL PROFILE
+                        </span>
+
+                        <h3>
+                            Taarifa za shule
+                        </h3>
+
+                    </div>
+
+                    <a
+                        href="school-settings.html"
+                        class="card-action"
+                    >
+
+                        <i class="fa-solid fa-pen"></i>
+
+                        Hariri
+
+                    </a>
+
+                </div>
+
+
+                <div class="school-profile-body">
+
+
+                    <!-- School -->
+                    <div class="school-info-item">
+
+                        <div class="school-info-icon">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Jina la Shule
+                            </span>
+
+                            <strong id="schoolName">
+                                Msongola Secondary School
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- P.O BOX -->
+                    <div class="school-info-item">
+
+                        <div class="school-info-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+
+                        <div>
+
+                            <span>
+                                P.O. BOX
+                            </span>
+
+                            <strong id="schoolBox">
+                                104727
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MOTTO -->
+                    <div class="school-info-item">
+
+                        <div class="school-info-icon">
+                            <i class="fa-solid fa-quote-left"></i>
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Motto
+                            </span>
+
+                            <strong id="schoolMotto">
+                                Education is Light
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HEAD -->
+                    <div class="school-info-item">
+
+                        <div class="school-info-icon">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Head of School
+                            </span>
+
+                            <strong id="headOfSchool">
+                                NASSORO SHEKULAMBA
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- =============================================
+                 QUICK ACTIONS
+                 ============================================= -->
+
+            <article class="dashboard-card quick-actions-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <span class="card-kicker">
+                            QUICK ACTIONS
+                        </span>
+
+                        <h3>
+                            Vitendo vya haraka
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions-grid">
+
+
+                    <a
+                        href="/msongola-result-system/Frontend/pages/admin/users.html"
+                        class="quick-action"
+                    >
+
+                        <span class="quick-action-icon users">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </span>
+
+                        <span>
+                            <strong>
+                                Ongeza User
+                            </strong>
+
+                            <small>
+                                Tengeneza account mpya
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+                    <a
+                        href="school-settings.html"
+                        class="quick-action"
+                    >
+
+                        <span class="quick-action-icon school">
+                            <i class="fa-solid fa-school"></i>
+                        </span>
+
+                        <span>
+                            <strong>
+                                School Settings
+                            </strong>
+
+                            <small>
+                                Badili taarifa za shule
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+                    <a
+                        href="audit-logs.html"
+                        class="quick-action"
+                    >
+
+                        <span class="quick-action-icon audit">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </span>
+
+                        <span>
+                            <strong>
+                                Audit Logs
+                            </strong>
+
+                            <small>
+                                Angalia activity za mfumo
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+                    <a
+                        href="profile.html"
+                        class="quick-action"
+                    >
+
+                        <span class="quick-action-icon profile">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </span>
+
+                        <span>
+                            <strong>
+                                Wasifu Wangu
+                            </strong>
+
+                            <small>
+                                Dhibiti account yako
+                            </small>
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </article>
+
+
+        </section>
+
+
+        <!-- =================================================
+             RECENT ACTIVITY
+             ================================================= -->
+
+        <section class="dashboard-card activity-card">
+
+            <div class="dashboard-card-header">
+
+                <div>
+
+                    <span class="card-kicker">
+                        SYSTEM ACTIVITY
+                    </span>
+
+                    <h3>
+                        Shughuli za hivi karibuni
+                    </h3>
+
+                </div>
+
+                <a
+                    href="audit-logs.html"
+                    class="card-action"
+                >
+                    Tazama zote
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+
+            <div
+                class="activity-list"
+                id="recentActivities"
+            >
+
+                <!-- Activity 1 -->
+                <div class="activity-item">
+
+                    <div class="activity-icon login">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </div>
+
+                    <div class="activity-content">
+
+                        <strong>
+                            Administrator aliingia
+                        </strong>
+
+                        <span>
+                            Mfumo wa authentication
+                        </span>
+
+                    </div>
+
+                    <time>
+                        Sasa hivi
+                    </time>
+
+                </div>
+
+
+                <!-- Activity 2 -->
+                <div class="activity-item">
+
+                    <div class="activity-icon system">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+
+                    <div class="activity-content">
+
+                        <strong>
+                            System imewashwa
+                        </strong>
+
+                        <span>
+                            Msongola Result System
+                        </span>
+
+                    </div>
+
+                    <time>
+                        Leo
+                    </time>
+
+                </div>
+
+
+                <!-- Empty future state -->
+                <div
+                    class="activity-empty"
+                    hidden
+                >
+
+                    <i class="fa-regular fa-clock"></i>
+
+                    <span>
+                        Hakuna activity mpya.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ADMIN RESPONSIBILITY
+             ================================================= -->
+
+        <section class="admin-responsibility">
+
+            <div class="responsibility-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+            <div class="responsibility-content">
+
+                <span>
+                    ADMINISTRATOR ACCESS
+                </span>
+
+                <h3>
+                    Usalama wa mfumo ni jukumu lako.
+                </h3>
+
+                <p>
+                    Admin anasimamia accounts,
+                    school settings na system activity.
+                    Academic data na matokeo
+                    yanasimamiwa na Academic Master.
+                </p>
+
+            </div>
+
+            <a
+                href="audit-logs.html"
+                class="responsibility-action"
+            >
+
+                Angalia Audit Logs
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+        </section>
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <footer class="app-footer">
+
+            <div>
+
+                <strong>
+                    MSONGOLA SECONDARY SCHOOL
+                </strong>
+
+                <span>
+                    Result Management System
+                </span>
+
+            </div>
+
+            <div>
+
+                ©
+                <span id="currentYear"></span>
+
+                ·
+
+                Education is Light
+
+            </div>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     GLOBAL JS
+     ===================================================== -->
+
+<script src="../../js/api.js"></script>
+
+<script src="../../js/auth.js"></script>
+
+<script src="../../js/app.js"></script>
+
+
+<!-- =====================================================
+     ADMIN DASHBOARD JS
+     ===================================================== -->
+
+<script src="../../js/admin/dashboard.js"></script>
+
+</body>
+
+</html>

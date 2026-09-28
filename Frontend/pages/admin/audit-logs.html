@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Msongola Secondary School Result System - Audit Logs"
+    >
+
+    <title>Audit Logs | Msongola Result System</title>
+
+
+    <!-- =====================================================
+         GOOGLE FONTS
+    ====================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         GLOBAL CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+
+    <!-- =====================================================
+         RESPONSIVE CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/responsive.css"
+    >
+
+
+    <!-- =====================================================
+         PAGE CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../../css/admin-audit-logs.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         ADMIN LAYOUT
+    ====================================================== -->
+
+    <div class="admin-layout">
+
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside
+            class="sidebar"
+            id="adminSidebar"
+        >
+
+
+            <!-- BRAND -->
+
+            <div class="sidebar-brand">
+
+                <div class="brand-logo">
+                    MS
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        MSONGOLA
+                    </strong>
+
+                    <span>
+                        RESULT SYSTEM
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="sidebar-nav">
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="./dashboard.html"
+                    class="sidebar-link"
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- USERS -->
+
+                <a
+                    href="./users.html"
+                    class="sidebar-link"
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </span>
+
+                    <span>
+                        Watumiaji
+                    </span>
+
+                </a>
+
+
+                <!-- SCHOOL SETTINGS -->
+
+                <a
+                    href="./school-settings.html"
+                    class="sidebar-link"
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-school"></i>
+                    </span>
+
+                    <span>
+                        Mipangilio ya Shule
+                    </span>
+
+                </a>
+
+
+                <!-- AUDIT LOGS -->
+
+                <a
+                    href="./audit-logs.html"
+                    class="sidebar-link active"
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </span>
+
+                    <span>
+                        Audit Logs
+                    </span>
+
+                </a>
+
+
+                <!-- DIVIDER -->
+
+                <div class="sidebar-divider"></div>
+
+
+                <!-- PROFILE -->
+
+                <a
+                    href="./profile.html"
+                    class="sidebar-link"
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+
+                    <span>
+                        Wasifu Wangu
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR FOOTER -->
+
+            <div class="sidebar-footer">
+
+                <button
+                    type="button"
+                    class="sidebar-logout"
+                    data-logout
+                >
+
+                    <span class="sidebar-link-icon">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </span>
+
+                    <span>
+                        Toka kwenye Mfumo
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =================================================
+             SIDEBAR OVERLAY
+        ================================================== -->
+
+        <div
+            class="sidebar-overlay"
+            id="sidebarOverlay"
+        ></div>
+
+
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="main-content">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
+
+            <header class="topbar">
+
+
+                <!-- MOBILE MENU -->
+
+                <button
+                    type="button"
+                    class="mobile-menu-toggle"
+                    id="mobileMenuToggle"
+                    aria-label="Fungua menu"
+                >
+
+                    <i class="fa-solid fa-bars"></i>
+
+                </button>
+
+
+                <!-- PAGE TITLE -->
+
+                <div class="topbar-page-title">
+
+                    <span>
+                        Usimamizi wa Mfumo
+                    </span>
+
+                </div>
+
+
+                <!-- TOPBAR RIGHT -->
+
+                <div class="topbar-right">
+
+
+                    <!-- NOTIFICATIONS -->
+
+                    <button
+                        type="button"
+                        class="topbar-notification"
+                        aria-label="Notifications"
+                    >
+
+                        <i class="fa-regular fa-bell"></i>
+
+                        <span
+                            class="notification-dot"
+                            id="notificationDot"
+                        ></span>
+
+                    </button>
+
+
+                    <!-- USER -->
+
+                    <a
+                        href="./profile.html"
+                        class="topbar-user"
+                    >
+
+                        <div class="topbar-avatar">
+
+                            <i class="fa-solid fa-user"></i>
+
+                        </div>
+
+                        <div class="topbar-user-info">
+
+                            <strong id="topbarUsername">
+                                Admin
+                            </strong>
+
+                            <span>
+                                Administrator
+                            </span>
+
+                        </div>
+
+                    </a>
+
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 PAGE CONTENT
+            ================================================== -->
+
+            <section class="page-content">
+
+
+                <!-- =================================================
+                     PAGE HEADER
+                ================================================== -->
+
+                <div class="page-header">
+
+
+                    <div class="page-header-text">
+
+                        <div class="breadcrumb">
+
+                            <a href="./dashboard.html">
+                                Dashboard
+                            </a>
+
+                            <span>
+                                /
+                            </span>
+
+                            <span>
+                                Audit Logs
+                            </span>
+
+                        </div>
+
+
+                        <h1>
+                            Audit Logs
+                        </h1>
+
+
+                        <p>
+                            Fuatilia matukio na shughuli
+                            muhimu zinazofanyika ndani ya mfumo.
+                        </p>
+
+                    </div>
+
+
+                    <!-- REFRESH -->
+
+                    <div class="page-header-actions">
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="refreshAuditLogsButton"
+                        >
+
+                            <i class="fa-solid fa-rotate"></i>
+
+                            <span>
+                                Refresh
+                            </span>
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     SECURITY NOTICE
+                ================================================== -->
+
+                <div class="audit-security-notice">
+
+                    <div class="audit-security-icon">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Mfumo wa Usalama
+                        </strong>
+
+                        <p>
+                            Audit Logs huhifadhi taarifa za
+                            shughuli muhimu za watumiaji kwa
+                            ajili ya usalama, ufuatiliaji na
+                            accountability ya mfumo.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     STATISTICS
+                ================================================== -->
+
+                <div class="audit-stats-grid">
+
+
+                    <!-- TOTAL LOGS -->
+
+                    <div class="audit-stat-card">
+
+                        <div class="audit-stat-icon total">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                        </div>
+
+                        <div class="audit-stat-content">
+
+                            <span>
+                                Jumla ya Logs
+                            </span>
+
+                            <strong id="totalAuditLogs">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TODAY -->
+
+                    <div class="audit-stat-card">
+
+                        <div class="audit-stat-icon today">
+
+                            <i class="fa-solid fa-calendar-day"></i>
+
+                        </div>
+
+                        <div class="audit-stat-content">
+
+                            <span>
+                                Matukio Leo
+                            </span>
+
+                            <strong id="todayAuditLogs">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGIN ACTIVITIES -->
+
+                    <div class="audit-stat-card">
+
+                        <div class="audit-stat-icon login">
+
+                            <i class="fa-solid fa-right-to-bracket"></i>
+
+                        </div>
+
+                        <div class="audit-stat-content">
+
+                            <span>
+                                Login Activities
+                            </span>
+
+                            <strong id="loginAuditLogs">
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SECURITY -->
+
+                    <div class="audit-stat-card">
+
+                        <div class="audit-stat-icon security">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                        </div>
+
+                        <div class="audit-stat-content">
+
+                            <span>
+                                Security Status
+                            </span>
+
+                            <strong>
+                                Protected
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     FILTERS
+                ================================================== -->
+
+                <div class="audit-filter-card">
+
+
+                    <div class="audit-filter-header">
+
+                        <div>
+
+                            <h2>
+                                Tafuta na Chuja Logs
+                            </h2>
+
+                            <p>
+                                Tumia filters kupata tukio
+                                unalotafuta kwa haraka.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="audit-filters">
+
+
+                        <!-- SEARCH -->
+
+                        <div class="audit-filter-group search">
+
+                            <label
+                                for="auditLogSearch"
+                            >
+                                Tafuta
+                            </label>
+
+                            <div class="audit-input-wrapper">
+
+                                <i class="fa-solid fa-magnifying-glass"></i>
+
+                                <input
+                                    type="search"
+                                    id="auditLogSearch"
+                                    placeholder="Tafuta username, action, module..."
+                                    autocomplete="off"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTION -->
+
+                        <div class="audit-filter-group">
+
+                            <label
+                                for="auditLogActionFilter"
+                            >
+                                Action
+                            </label>
+
+                            <select
+                                id="auditLogActionFilter"
+                            >
+
+                                <option value="">
+                                    Actions zote
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- MODULE -->
+
+                        <div class="audit-filter-group">
+
+                            <label
+                                for="auditLogModuleFilter"
+                            >
+                                Module
+                            </label>
+
+                            <select
+                                id="auditLogModuleFilter"
+                            >
+
+                                <option value="">
+                                    Modules zote
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- CLEAR -->
+
+                        <div class="audit-filter-group audit-clear-group">
+
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                id="clearAuditFiltersButton"
+                            >
+
+                                <i class="fa-solid fa-filter-circle-xmark"></i>
+
+                                <span>
+                                    Ondoa Filters
+                                </span>
+
+                            </button>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     AUDIT TABLE CARD
+                ================================================== -->
+
+                <div class="audit-table-card">
+
+
+                    <!-- TABLE HEADER -->
+
+                    <div class="audit-table-header">
+
+                        <div>
+
+                            <h2>
+                                Historia ya Shughuli
+                            </h2>
+
+                            <p>
+                                Orodha ya shughuli zilizorekodiwa
+                                ndani ya mfumo.
+                            </p>
+
+                        </div>
+
+
+                        <div class="audit-record-count">
+
+                            <span id="auditVisibleCount">
+                                0
+                            </span>
+
+                            <span>
+                                records
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TABLE WRAPPER -->
+
+                    <div class="audit-table-wrapper">
+
+                        <table
+                            class="audit-table"
+                            id="auditLogsTable"
+                        >
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        #
+                                    </th>
+
+                                    <th>
+                                        Mtumiaji
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                    <th>
+                                        Module
+                                    </th>
+
+                                    <th>
+                                        Maelezo
+                                    </th>
+
+                                    <th>
+                                        IP Address
+                                    </th>
+
+                                    <th>
+                                        Tarehe
+                                    </th>
+
+                                    <th>
+                                        Hatua
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="auditLogsTableBody">
+
+                                <!-- JS will render logs here -->
+
+                                <tr>
+
+                                    <td
+                                        colspan="8"
+                                        class="audit-loading-state"
+                                    >
+
+                                        <div>
+
+                                            <i class="fa-solid fa-spinner fa-spin"></i>
+
+                                            <span>
+                                                Inapakia Audit Logs...
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- EMPTY STATE -->
+
+                    <div
+                        class="audit-empty-state"
+                        id="auditEmptyState"
+                        hidden
+                    >
+
+                        <div class="audit-empty-icon">
+
+                            <i class="fa-regular fa-folder-open"></i>
+
+                        </div>
+
+                        <h3>
+                            Hakuna Audit Logs
+                        </h3>
+
+                        <p>
+                            Hakuna shughuli zinazolingana
+                            na search au filters ulizoweka.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ERROR STATE -->
+
+                    <div
+                        class="audit-error-state"
+                        id="auditErrorState"
+                        hidden
+                    >
+
+                        <div class="audit-error-icon">
+
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                        </div>
+
+                        <h3>
+                            Imeshindikana Kupakia Logs
+                        </h3>
+
+                        <p id="auditErrorMessage">
+                            Kuna tatizo wakati wa kuwasiliana
+                            na server.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="retryAuditLogsButton"
+                        >
+
+                            <i class="fa-solid fa-rotate-right"></i>
+
+                            Jaribu Tena
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         AUDIT LOG DETAILS MODAL
+    ====================================================== -->
+
+    <div
+        class="audit-modal"
+        id="auditDetailsModal"
+        hidden
+    >
+
+        <div
+            class="audit-modal-overlay"
+            data-close-audit-modal
+        ></div>
+
+
+        <div
+            class="audit-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="auditModalTitle"
+        >
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="audit-modal-header">
+
+                <div>
+
+                    <span class="audit-modal-label">
+                        Audit Log Details
+                    </span>
+
+                    <h2 id="auditModalTitle">
+                        Maelezo ya Tukio
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="audit-modal-close"
+                    id="closeAuditModalButton"
+                    aria-label="Funga"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <!-- MODAL BODY -->
+
+            <div
+                class="audit-modal-body"
+                id="auditModalBody"
+            >
+
+                <!-- JS will populate details -->
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div
+        class="admin-toast"
+        id="adminToast"
+        role="status"
+        aria-live="polite"
+    >
+
+        <div class="admin-toast-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <div class="admin-toast-content">
+
+            <strong id="toastTitle">
+                Success
+            </strong>
+
+            <span id="toastMessage">
+                Action completed successfully.
+            </span>
+
+        </div>
+
+        <button
+            type="button"
+            class="admin-toast-close"
+            id="toastCloseButton"
+            aria-label="Close notification"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/js/all.min.js"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    ></script>
+
+
+    <!-- =====================================================
+         GLOBAL JS
+    ====================================================== -->
+
+    <script
+        src="../../js/api.js"
+    ></script>
+
+    <script
+        src="../../js/auth.js"
+    ></script>
+
+
+    <!-- =====================================================
+         PAGE JS
+    ====================================================== -->
+
+    <script
+        src="../../js/admin/audit-logs.js"
+    ></script>
+
+
+</body>
+
+</html>

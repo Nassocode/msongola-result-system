@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Usimamizi wa watumiaji - Msongola Secondary School Result Management System"
+    >
+
+    <meta
+        name="theme-color"
+        content="#0b294b"
+    >
+
+    <title>
+        Watumiaji | Msongola Result System
+    </title>
+
+    <!-- GLOBAL CSS -->
+    <link
+        rel="stylesheet"
+        href="/msongola-result-system/Frontend/css/style.css?v=20260928"
+    >
+
+    <!-- SHARED ADMIN LAYOUT CSS -->
+    <link
+        rel="stylesheet"
+        href="/msongola-result-system/Frontend/css/admin-dashboard.css?v=20260928"
+    >
+
+    <!-- USERS CSS -->
+    <link
+        rel="stylesheet"
+        href="/msongola-result-system/Frontend/css/admin-users.css?v=20260928"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+
+<body
+    class="app-page admin-page admin-users-page"
+    data-roles="ADMIN"
+>
+
+
+<!-- =====================================================
+     SIDEBAR OVERLAY
+     ===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+></div>
+
+
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<aside
+    class="app-sidebar"
+    id="sidebar"
+>
+
+    <div class="sidebar-brand">
+
+        <a
+            href="dashboard.html"
+            class="sidebar-brand-link"
+        >
+
+            <span class="sidebar-brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+
+            <span class="sidebar-brand-text">
+
+                <strong>
+                    MSONGOLA
+                </strong>
+
+                <small>
+                    SECONDARY SCHOOL
+                </small>
+
+            </span>
+
+        </a>
+
+
+        <button
+            type="button"
+            class="sidebar-close"
+            id="sidebarClose"
+            aria-label="Funga menu"
+        >
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+    </div>
+
+
+    <div class="sidebar-section-label">
+        ADMINISTRATION
+    </div>
+
+
+    <nav
+        class="sidebar-nav"
+        aria-label="Main navigation"
+    >
+
+        <a
+            href="dashboard.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="/msongola-result-system/Frontend/pages/admin/users.html"
+            class="sidebar-nav-item active"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-users"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Watumiaji
+            </span>
+
+            <span class="sidebar-nav-arrow">
+                <i class="fa-solid fa-chevron-right"></i>
+            </span>
+
+        </a>
+
+
+        <a
+            href="school-settings.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-school"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Mipangilio ya Shule
+            </span>
+
+        </a>
+
+
+        <a
+            href="audit-logs.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Audit Logs
+            </span>
+
+        </a>
+
+
+        <a
+            href="profile.html"
+            class="sidebar-nav-item"
+        >
+
+            <span class="sidebar-nav-icon">
+                <i class="fa-solid fa-user-circle"></i>
+            </span>
+
+            <span class="sidebar-nav-text">
+                Wasifu Wangu
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <div class="sidebar-system-status">
+
+            <span class="status-dot"></span>
+
+            <div>
+
+                <strong>
+                    Mfumo uko hewani
+                </strong>
+
+                <small>
+                    Msongola Result System
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="sidebar-logout"
+            data-logout
+        >
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>
+                Toka kwenye mfumo
+            </span>
+
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     APP SHELL
+     ===================================================== -->
+
+<div class="app-shell">
+
+
+    <!-- =================================================
+         TOPBAR
+         ================================================= -->
+
+    <header class="app-topbar">
+
+        <div class="topbar-left">
+
+            <button
+                type="button"
+                class="sidebar-toggle"
+                id="sidebarToggle"
+                aria-label="Fungua menu"
+                aria-expanded="false"
+            >
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="topbar-page-title">
+
+                <span>
+                    MSONGOLA SECONDARY SCHOOL
+                </span>
+
+                <strong>
+                    Usimamizi wa Watumiaji
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="topbar-notification-wrapper">
+
+                <button
+                    type="button"
+                    class="topbar-icon-button"
+                    id="notificationButton"
+                    aria-label="Notifications"
+                    aria-expanded="false"
+                >
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span
+                        id="notificationDot"
+                        class="notification-dot"
+                        hidden
+                    ></span>
+
+                </button>
+
+
+                <div
+                    class="notification-panel"
+                    id="notificationPanel"
+                >
+
+                    <div class="notification-panel-header">
+
+                        <div>
+
+                            <strong>
+                                Notifications
+                            </strong>
+
+                            <span>
+                                Taarifa za mfumo
+                            </span>
+
+                        </div>
+
+                        <i class="fa-regular fa-bell"></i>
+
+                    </div>
+
+
+                    <div class="notification-empty">
+
+                        <span>
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </span>
+
+                        <strong>
+                            Hakuna notifications
+                        </strong>
+
+                        <small>
+                            Taarifa mpya zitaonekana hapa.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="profile.html"
+                class="topbar-user"
+            >
+
+                <span
+                    class="topbar-user-avatar"
+                    data-user-initials
+                >
+                    AD
+                </span>
+
+                <span class="topbar-user-info">
+
+                    <strong data-user-name>
+                        Administrator
+                    </strong>
+
+                    <small data-user-role>
+                        Administrator
+                    </small>
+
+                </span>
+
+                <i class="fa-solid fa-chevron-down"></i>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =================================================
+         MAIN
+         ================================================= -->
+
+    <main class="app-main">
+
+
+        <!-- =============================================
+             PAGE HEADER
+             ============================================= -->
+
+        <section class="page-header users-page-header">
+
+            <div>
+
+                <div class="breadcrumb">
+
+                    <span>
+                        Administration
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <strong>
+                        Watumiaji
+                    </strong>
+
+                </div>
+
+
+                <h1>
+                    Watumiaji
+                </h1>
+
+
+                <p>
+                    Dhibiti accounts za watumiaji
+                    wanaotumia Msongola Result System.
+                </p>
+
+            </div>
+
+
+            <div class="page-header-actions">
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="openCreateUserButton"
+                >
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    <span>
+                        Ongeza User
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =============================================
+             USER STATISTICS
+             ============================================= -->
+
+        <section class="user-statistics-grid">
+
+
+            <article class="user-stat-card">
+
+                <div class="user-stat-icon total">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>
+                        Jumla ya Watumiaji
+                    </span>
+
+                    <strong id="usersTotal">
+                        0
+                    </strong>
+
+                    <small>
+                        Accounts zote
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="user-stat-card">
+
+                <div class="user-stat-icon active">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>
+                        Active
+                    </span>
+
+                    <strong id="usersActive">
+                        0
+                    </strong>
+
+                    <small>
+                        Accounts zinazotumika
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="user-stat-card">
+
+                <div class="user-stat-icon inactive">
+
+                    <i class="fa-solid fa-user-slash"></i>
+
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>
+                        Inactive
+                    </span>
+
+                    <strong id="usersInactive">
+                        0
+                    </strong>
+
+                    <small>
+                        Accounts zilizozimwa
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="user-stat-card">
+
+                <div class="user-stat-icon academic">
+
+                    <i class="fa-solid fa-user-tie"></i>
+
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>
+                        Academic Masters
+                    </span>
+
+                    <strong id="academicMasterCount">
+                        0
+                    </strong>
+
+                    <small>
+                        Wasimamizi wa taaluma
+                    </small>
+
+                </div>
+
+            </article>
+
+
+            <article class="user-stat-card">
+
+                <div class="user-stat-icon teacher">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>
+                        Subject Teachers
+                    </span>
+
+                    <strong id="teacherCount">
+                        0
+                    </strong>
+
+                    <small>
+                        Walimu wa masomo
+                    </small>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- =============================================
+             USERS CARD
+             ============================================= -->
+
+        <section class="dashboard-card users-management-card">
+
+
+            <div class="dashboard-card-header users-card-header">
+
+                <div>
+
+                    <span class="card-kicker">
+                        USER MANAGEMENT
+                    </span>
+
+                    <h3>
+                        Accounts za mfumo
+                    </h3>
+
+                </div>
+
+
+                <span
+                    class="users-result-count"
+                    id="usersResultCount"
+                >
+                    0 users
+                </span>
+
+            </div>
+
+
+            <!-- =========================================
+                 FILTERS
+                 ========================================= -->
+
+            <div class="users-toolbar">
+
+
+                <div class="users-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="search"
+                        id="userSearch"
+                        placeholder="Tafuta username..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div class="users-filter">
+
+                    <label for="roleFilter">
+                        Role
+                    </label>
+
+                    <select id="roleFilter">
+
+                        <option value="">
+                            Roles zote
+                        </option>
+
+                        <option value="ACADEMIC_MASTER">
+                            Academic Master
+                        </option>
+
+                        <option value="SUBJECT_TEACHER">
+                            Subject Teacher
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="users-filter">
+
+                    <label for="statusFilter">
+                        Status
+                    </label>
+
+                    <select id="statusFilter">
+
+                        <option value="">
+                            Status zote
+                        </option>
+
+                        <option value="ACTIVE">
+                            Active
+                        </option>
+
+                        <option value="INACTIVE">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="resetFiltersButton"
+                >
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                    <span>
+                        Reset
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================================
+                 TABLE
+                 ========================================= -->
+
+            <div class="users-table-wrapper">
+
+                <table class="users-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                USERNAME
+                            </th>
+
+                            <th>
+                                ROLE
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                CREATED
+                            </th>
+
+                            <th>
+                                UPDATED
+                            </th>
+
+                            <th class="actions-column">
+                                ACTIONS
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="usersTableBody">
+
+                        <tr class="users-loading-row">
+
+                            <td colspan="7">
+
+                                <div class="users-loading">
+
+                                    <span class="loading-spinner"></span>
+
+                                    <span>
+                                        Inapakia users...
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                <!-- Empty state -->
+
+                <div
+                    class="users-empty-state"
+                    id="usersEmptyState"
+                    hidden
+                >
+
+                    <div class="empty-icon">
+
+                        <i class="fa-solid fa-users-slash"></i>
+
+                    </div>
+
+                    <h3>
+                        Hakuna users
+                    </h3>
+
+                    <p>
+                        Hakuna account inayolingana
+                        na search au filter ulizochagua.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================
+                 PAGINATION
+                 ========================================= -->
+
+            <div class="users-pagination">
+
+                <span id="paginationInfo">
+                    Showing 0 users
+                </span>
+
+
+                <div class="pagination-buttons">
+
+                    <button
+                        type="button"
+                        id="previousPageButton"
+                        disabled
+                        aria-label="Previous page"
+                    >
+
+                        <i class="fa-solid fa-chevron-left"></i>
+
+                    </button>
+
+
+                    <span id="currentPageNumber">
+                        1
+                    </span>
+
+
+                    <button
+                        type="button"
+                        id="nextPageButton"
+                        disabled
+                        aria-label="Next page"
+                    >
+
+                        <i class="fa-solid fa-chevron-right"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =============================================
+             SECURITY NOTICE
+             ============================================= -->
+
+        <section class="users-security-notice">
+
+            <div class="security-notice-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+
+            <div class="security-notice-content">
+
+                <span>
+                    ADMINISTRATOR CONTROL
+                </span>
+
+                <h3>
+                    Usimamizi wa accounts
+                </h3>
+
+                <p>
+                    Admin ndiye mwenye mamlaka ya
+                    kutengeneza, kusimamia na kuzima
+                    accounts za Academic Master na
+                    Subject Teacher.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =============================================
+             FOOTER
+             ============================================= -->
+
+        <footer class="app-footer">
+
+            <div>
+
+                <strong>
+                    MSONGOLA SECONDARY SCHOOL
+                </strong>
+
+                <span>
+                    Result Management System
+                </span>
+
+            </div>
+
+
+            <div>
+
+                ©
+                <span id="currentYear"></span>
+
+                ·
+
+                Education is Light
+
+            </div>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     CREATE USER MODAL
+     ===================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="createUserModal"
+    hidden
+>
+
+    <div
+        class="user-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="createUserModalTitle"
+    >
+
+
+        <div class="user-modal-header">
+
+            <div>
+
+                <span class="modal-kicker">
+                    NEW ACCOUNT
+                </span>
+
+                <h2 id="createUserModalTitle">
+                    Ongeza User
+                </h2>
+
+                <p>
+                    Tengeneza account mpya ya mfumo.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeCreateUserButton"
+                aria-label="Funga"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="createUserForm"
+            novalidate
+        >
+
+
+            <div class="form-alert"
+                id="createUserAlert"
+                hidden
+            >
+            </div>
+
+
+            <!-- Username -->
+
+            <div class="form-group">
+
+                <label for="createUsername">
+
+                    Username
+
+                    <span>
+                        *
+                    </span>
+
+                </label>
+
+                <div class="input-with-icon">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="createUsername"
+                        name="username"
+                        placeholder="Mfano: teacher01"
+                        autocomplete="username"
+                        maxlength="50"
+                        required
+                    >
+
+                </div>
+
+                <small>
+                    Username lazima iwe unique.
+                </small>
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="form-group">
+
+                <label for="createPassword">
+
+                    Password
+
+                    <span>
+                        *
+                    </span>
+
+                </label>
+
+                <div class="input-with-icon password-input">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="createPassword"
+                        name="password"
+                        placeholder="Ingiza password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="createPassword"
+                        aria-label="Onyesha password"
+                    >
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+                <small>
+                    Password iwe na angalau characters 8.
+                </small>
+
+            </div>
+
+
+            <!-- Confirm Password -->
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+
+                    Confirm Password
+
+                    <span>
+                        *
+                    </span>
+
+                </label>
+
+                <div class="input-with-icon password-input">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Rudia password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="confirmPassword"
+                        aria-label="Onyesha password"
+                    >
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Role -->
+
+            <div class="form-group">
+
+                <label for="createRole">
+
+                    Role
+
+                    <span>
+                        *
+                    </span>
+
+                </label>
+
+                <div class="input-with-icon">
+
+                    <i class="fa-solid fa-user-tag"></i>
+
+                    <select
+                        id="createRole"
+                        name="role"
+                        required
+                    >
+
+                        <option value="">
+                            Chagua role
+                        </option>
+
+                        <option value="ACADEMIC_MASTER">
+                            Academic Master
+                        </option>
+
+                        <option value="SUBJECT_TEACHER">
+                            Subject Teacher
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="form-group">
+
+                <label for="createStatus">
+                    Status
+                </label>
+
+                <div class="input-with-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    <select
+                        id="createStatus"
+                        name="status"
+                    >
+
+                        <option value="ACTIVE">
+                            Active
+                        </option>
+
+                        <option value="INACTIVE">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+
+            <div class="user-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelCreateUserButton"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    Ghairi
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="createUserSubmitButton"
+                >
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    <span>
+                        Tengeneza Account
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     EDIT USER MODAL
+     ===================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="editUserModal"
+    hidden
+>
+
+    <div
+        class="user-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="editUserModalTitle"
+    >
+
+        <div class="user-modal-header">
+
+            <div>
+
+                <span class="modal-kicker">
+                    EDIT ACCOUNT
+                </span>
+
+                <h2 id="editUserModalTitle">
+                    Hariri User
+                </h2>
+
+                <p>
+                    Badili taarifa za account.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closeEditUserButton"
+                aria-label="Funga"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="editUserForm"
+            novalidate
+        >
+
+            <input
+                type="hidden"
+                id="editUserId"
+            >
+
+
+            <div
+                class="form-alert"
+                id="editUserAlert"
+                hidden
+            >
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editUsername">
+                    Username
+                    <span>*</span>
+                </label>
+
+                <div class="input-with-icon">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="editUsername"
+                        maxlength="50"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editRole">
+                    Role
+                    <span>*</span>
+                </label>
+
+                <div class="input-with-icon">
+
+                    <i class="fa-solid fa-user-tag"></i>
+
+                    <select
+                        id="editRole"
+                        required
+                    >
+
+                        <option value="ACADEMIC_MASTER">
+                            Academic Master
+                        </option>
+
+                        <option value="SUBJECT_TEACHER">
+                            Subject Teacher
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="user-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelEditUserButton"
+                >
+
+                    Ghairi
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="editUserSubmitButton"
+                >
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Hifadhi Mabadiliko
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PASSWORD MODAL
+     ===================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="passwordUserModal"
+    hidden
+>
+
+    <div
+        class="user-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="passwordUserModalTitle"
+    >
+
+        <div class="user-modal-header">
+
+            <div>
+
+                <span class="modal-kicker">
+                    SECURITY
+                </span>
+
+                <h2 id="passwordUserModalTitle">
+                    Badili Password
+                </h2>
+
+                <p>
+                    Weka password mpya ya user.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="closePasswordUserButton"
+                aria-label="Funga"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form
+            id="passwordUserForm"
+            novalidate
+        >
+
+            <input
+                type="hidden"
+                id="passwordUserId"
+            >
+
+
+            <div
+                class="form-alert"
+                id="passwordUserAlert"
+                hidden
+            >
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="newUserPassword">
+
+                    Password Mpya
+
+                    <span>*</span>
+
+                </label>
+
+                <div class="input-with-icon password-input">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="newUserPassword"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="newUserPassword"
+                        aria-label="Onyesha password"
+                    >
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirmNewUserPassword">
+
+                    Confirm Password
+
+                    <span>*</span>
+
+                </label>
+
+                <div class="input-with-icon password-input">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="confirmNewUserPassword"
+                        minlength="8"
+                        autocomplete="new-password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle="confirmNewUserPassword"
+                        aria-label="Onyesha password"
+                    >
+
+                        <i class="fa-regular fa-eye"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="user-modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelPasswordUserButton"
+                >
+
+                    Ghairi
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="passwordUserSubmitButton"
+                >
+
+                    <i class="fa-solid fa-key"></i>
+
+                    Badili Password
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     STATUS CONFIRMATION MODAL
+     ===================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="statusUserModal"
+    hidden
+>
+
+    <div
+        class="user-modal user-modal-small"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="statusUserModalTitle"
+    >
+
+        <div class="confirm-icon">
+
+            <i class="fa-solid fa-user-lock"></i>
+
+        </div>
+
+
+        <h2 id="statusUserModalTitle">
+            Badili Status
+        </h2>
+
+
+        <p id="statusUserMessage">
+            Unataka kubadili status ya user huyu?
+        </p>
+
+
+        <input
+            type="hidden"
+            id="statusUserId"
+        >
+
+        <input
+            type="hidden"
+            id="statusNewValue"
+        >
+
+
+        <div class="user-modal-actions">
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="cancelStatusUserButton"
+            >
+
+                Ghairi
+
+            </button>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                id="confirmStatusUserButton"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Endelea
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+     ===================================================== -->
+
+<div
+    class="admin-toast"
+    id="adminToast"
+    role="status"
+    aria-live="polite"
+    hidden
+>
+
+    <span class="toast-icon">
+        <i class="fa-solid fa-check"></i>
+    </span>
+
+    <div>
+
+        <strong id="toastTitle">
+            Success
+        </strong>
+
+        <span id="toastMessage">
+            Kitendo kimefanikiwa.
+        </span>
+
+    </div>
+
+    <button
+        type="button"
+        id="closeToastButton"
+        aria-label="Funga ujumbe"
+    >
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script src="../../js/api.js"></script>
+
+<script src="../../js/auth.js"></script>
+
+<script src="../../js/app.js"></script>
+
+<script src="../../js/admin/users.js?v=20260928-5"></script>
+
+
+</body>
+
+</html>

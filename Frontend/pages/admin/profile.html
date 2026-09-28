@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Wasifu Wangu | Msongola Result System</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/admin-profile.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="sidebar-header">
+
+            <div class="brand-logo">
+
+                <div class="brand-icon">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+
+                <div>
+                    <h2>Msongola</h2>
+                    <span>Result System</span>
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="sidebar-close"
+                id="sidebarClose"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <div class="nav-section-title">
+                MFUMO
+            </div>
+
+
+            <a
+                href="dashboard.html"
+                class="nav-link"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </span>
+
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="users.html"
+                class="nav-link"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-users"></i>
+                </span>
+
+                <span>Watumiaji</span>
+            </a>
+
+
+            <a
+                href="school-settings.html"
+                class="nav-link"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-school"></i>
+                </span>
+
+                <span>Wasifu wa Shule</span>
+            </a>
+
+
+            <a
+                href="audit-logs.html"
+                class="nav-link"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </span>
+
+                <span>Audit Logs</span>
+            </a>
+
+
+            <div class="nav-section-title">
+                AKAUNTI
+            </div>
+
+
+            <a
+                href="profile.html"
+                class="nav-link active"
+            >
+                <span class="nav-icon">
+                    <i class="fa-solid fa-user-circle"></i>
+                </span>
+
+                <span>Wasifu Wangu</span>
+            </a>
+
+
+            <button
+                type="button"
+                class="nav-link logout-link"
+                id="logoutBtn"
+            >
+
+                <span class="nav-icon">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </span>
+
+                <span>Toka kwenye Mfumo</span>
+
+            </button>
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <div class="admin-mini-profile">
+
+                <div class="admin-avatar">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+
+                <div class="admin-mini-info">
+
+                    <strong id="sidebarUsername">
+                        Admin
+                    </strong>
+
+                    <span>
+                        Msimamizi wa Mfumo
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+    ></div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="main-area">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button
+                type="button"
+                class="mobile-menu-btn"
+                id="mobileMenuBtn"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+
+            <div class="topbar-title">
+
+                <span>
+                    Akaunti ya Mtumiaji
+                </span>
+
+                <h1>
+                    Wasifu Wangu
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <a
+                    href="profile.html"
+                    class="topbar-profile"
+                >
+
+                    <div class="topbar-avatar">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+
+                    <div class="topbar-user-info">
+
+                        <strong id="topbarUsername">
+                            Admin
+                        </strong>
+
+                        <span>
+                            ADMIN
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <main class="profile-content">
+
+
+            <div class="profile-breadcrumb">
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+                <span>
+                    Wasifu Wangu
+                </span>
+
+            </div>
+
+
+            <!-- PROFILE HERO -->
+
+            <section class="profile-hero">
+
+                <div class="profile-avatar-large">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                </div>
+
+
+                <div class="profile-hero-info">
+
+                    <span class="profile-role">
+                        SYSTEM ADMINISTRATOR
+                    </span>
+
+                    <h2 id="profileUsername">
+                        Admin
+                    </h2>
+
+                    <p>
+                        Msimamizi mkuu wa mfumo wa
+                        matokeo wa Msongola Secondary School.
+                    </p>
+
+                    <div class="profile-status">
+
+                        <span class="status-dot"></span>
+
+                        Akaunti Active
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= GRID ================= -->
+
+            <div class="profile-grid">
+
+
+                <!-- ACCOUNT INFORMATION -->
+
+                <section class="profile-card">
+
+                    <div class="profile-card-header">
+
+                        <div class="profile-card-icon blue">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+
+                        <div>
+                            <h3>
+                                Taarifa za Akaunti
+                            </h3>
+
+                            <p>
+                                Taarifa za msingi za akaunti yako.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-info-list">
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                Username
+                            </span>
+
+                            <strong id="accountUsername">
+                                Admin
+                            </strong>
+
+                        </div>
+
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                Role
+                            </span>
+
+                            <strong>
+                                ADMIN
+                            </strong>
+
+                        </div>
+
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                Account Status
+                            </span>
+
+                            <strong class="active-text">
+                                ACTIVE
+                            </strong>
+
+                        </div>
+
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                User ID
+                            </span>
+
+                            <strong id="accountUserId">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                Account Created
+                            </span>
+
+                            <strong id="accountCreated">
+                                —
+                            </strong>
+
+                        </div>
+
+
+                        <div class="profile-info-item">
+
+                            <span>
+                                Last Updated
+                            </span>
+
+                            <strong id="accountUpdated">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- SECURITY -->
+
+                <section class="profile-card">
+
+                    <div class="profile-card-header">
+
+                        <div class="profile-card-icon purple">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Usalama wa Akaunti
+                            </h3>
+
+                            <p>
+                                Linda akaunti yako ya mfumo.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="security-list">
+
+                        <div class="security-item">
+
+                            <div class="security-item-icon">
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+
+                            <div class="security-item-content">
+
+                                <strong>
+                                    Password
+                                </strong>
+
+                                <span>
+                                    Password yako imehifadhiwa
+                                    kwa usalama.
+                                </span>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="security-btn"
+                                id="changePasswordBtn"
+                            >
+                                Badilisha
+                            </button>
+
+                        </div>
+
+
+                        <div class="security-item">
+
+                            <div class="security-item-icon">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+
+                            <div class="security-item-content">
+
+                                <strong>
+                                    Audit Logs
+                                </strong>
+
+                                <span>
+                                    Angalia shughuli za akaunti.
+                                </span>
+
+                            </div>
+
+                            <a
+                                href="audit-logs.html"
+                                class="security-btn"
+                            >
+                                Angalia
+                            </a>
+
+                        </div>
+
+
+                        <div class="security-item">
+
+                            <div class="security-item-icon">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+
+                            <div class="security-item-content">
+
+                                <strong>
+                                    Session
+                                </strong>
+
+                                <span>
+                                    Toka kwenye session hii.
+                                </span>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="security-btn danger"
+                                id="profileLogoutBtn"
+                            >
+                                Logout
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- SYSTEM RESPONSIBILITY -->
+
+                <section class="profile-card full-width">
+
+                    <div class="profile-card-header">
+
+                        <div class="profile-card-icon gold">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Majukumu ya Administrator
+                            </h3>
+
+                            <p>
+                                Eneo la usimamizi wa akaunti hii.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="responsibility-grid">
+
+                        <div class="responsibility-item">
+
+                            <i class="fa-solid fa-users-gear"></i>
+
+                            <div>
+
+                                <strong>
+                                    Usimamizi wa Watumiaji
+                                </strong>
+
+                                <span>
+                                    Kuunda na kusimamia akaunti
+                                    za Academic Master na
+                                    Subject Teachers.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="responsibility-item">
+
+                            <i class="fa-solid fa-school"></i>
+
+                            <div>
+
+                                <strong>
+                                    School Profile
+                                </strong>
+
+                                <span>
+                                    Kusimamia taarifa rasmi
+                                    za shule na mfumo.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="responsibility-item">
+
+                            <i class="fa-solid fa-file-shield"></i>
+
+                            <div>
+
+                                <strong>
+                                    Audit & Security
+                                </strong>
+
+                                <span>
+                                    Kufuatilia shughuli muhimu
+                                    zinazofanyika ndani ya mfumo.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="responsibility-item">
+
+                            <i class="fa-solid fa-gears"></i>
+
+                            <div>
+
+                                <strong>
+                                    System Configuration
+                                </strong>
+
+                                <span>
+                                    Kusimamia mipangilio ya
+                                    msingi ya mfumo.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+        <footer class="admin-footer">
+
+            <span>
+                © 2026 Msongola Secondary School
+            </span>
+
+            <span>
+                Msongola Result System
+            </span>
+
+        </footer>
+
+    </div>
+
+</div>
+
+
+<!-- ================= CHANGE PASSWORD MODAL ================= -->
+
+<div
+    class="password-modal-overlay"
+    id="passwordModal"
+    hidden
+>
+
+    <div class="password-modal">
+
+        <div class="password-modal-header">
+
+            <div>
+
+                <span>
+                    SECURITY
+                </span>
+
+                <h3>
+                    Badilisha Password
+                </h3>
+
+            </div>
+
+            <button
+                type="button"
+                id="closePasswordModal"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="changePasswordForm">
+
+            <div class="password-field">
+
+                <label for="currentPassword">
+                    Password ya Sasa
+                </label>
+
+                <input
+                    type="password"
+                    id="currentPassword"
+                    required
+                >
+
+            </div>
+
+
+            <div class="password-field">
+
+                <label for="newPassword">
+                    Password Mpya
+                </label>
+
+                <input
+                    type="password"
+                    id="newPassword"
+                    minlength="8"
+                    required
+                >
+
+            </div>
+
+
+            <div class="password-field">
+
+                <label for="confirmPassword">
+                    Rudia Password Mpya
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    minlength="8"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                id="passwordMessage"
+                class="password-message"
+            ></div>
+
+
+            <div class="password-actions">
+
+                <button
+                    type="button"
+                    class="cancel-password"
+                    id="cancelPasswordBtn"
+                >
+                    Ghairi
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-password"
+                >
+                    <i class="fa-solid fa-lock"></i>
+                    Badilisha Password
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="../../js/admin/profile.js"></script>
+
+</body>
+</html>
