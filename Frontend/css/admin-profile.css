@@ -1,7 +1,7 @@
 :root {
     --profile-navy: #102a43;
-    --profile-blue: #2563eb;
-    --profile-purple: #7657d9;
+    --profile-blue: #168aad;
+    --profile-purple: #0f718f;
     --profile-gold: #d99a16;
 
     --profile-green: #159957;
@@ -25,6 +25,14 @@ body {
     background: var(--profile-bg);
 }
 
+.admin-page .admin-layout {
+    display: contents;
+}
+
+.admin-page .app-main.profile-content {
+    padding: 28px 30px;
+}
+
 
 /* ===============================
    CONTENT
@@ -33,6 +41,24 @@ body {
 .profile-content {
     padding: 28px;
 }
+
+.profile-feedback {
+    margin: 0 0 18px;
+    padding: 12px 15px;
+    border: 1px solid #d5e7ee;
+    border-radius: 9px;
+    background: #eff9fb;
+    color: #0f5269;
+    font-size: 13px;
+}
+
+.profile-feedback.error {
+    border-color: #f2c9cc;
+    background: #fff3f3;
+    color: #a71930;
+}
+
+.profile-feedback[hidden] { display: none; }
 
 
 /* ===============================
@@ -706,6 +732,11 @@ body {
     color: #fff;
 }
 
+.save-password:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+
 
 /* ===============================
    RESPONSIVE
@@ -729,6 +760,10 @@ body {
 
 
 @media (max-width: 700px) {
+
+    .admin-page .app-main.profile-content {
+        padding: 18px;
+    }
 
     .profile-content {
         padding: 18px;

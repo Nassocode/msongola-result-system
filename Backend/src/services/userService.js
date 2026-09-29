@@ -32,6 +32,7 @@ async function createUser(data) {
         role,
         status = "ACTIVE"
     } = data;
+    const normalizedRole = String(role || "").trim().toUpperCase();
 
     if (!username || !password || !role) {
         throw new Error(
@@ -39,7 +40,7 @@ async function createUser(data) {
         );
     }
 
-    if (!ALLOWED_ROLES.includes(role)) {
+    if (!ALLOWED_ROLES.includes(normalizedRole)) {
         throw new Error(
             "Role hii hairuhusiwi kuundwa na Admin"
         );
@@ -65,6 +66,19 @@ async function createUser(data) {
         );
     }
 
+    const teacherProfile = {
+        teacherNumber: String(data.teacher_number || "").trim().toUpperCase(),
+        firstName: String(data.first_name || "").trim(),
+        middleName: String(data.middle_name || "").trim() || null,
+        lastName: String(data.last_name || "").trim()
+    };
+
+    if (normalizedRole === "SUBJECT_TEACHER") {
+        if (!teacherProfile.teacherNumber || !teacherProfile.firstName || !teacherProfile.lastName) {
+            throw new Error("Teacher number, jina la kwanza na jina la mwisho vinahitajika kwa Subject Teacher.");
+        }
+    }
+
     const exists = await userModel.usernameExists(
         cleanUsername
     );
@@ -80,12 +94,19 @@ async function createUser(data) {
         12
     );
 
-    const userId = await userModel.createUser({
-        username: cleanUsername,
-        passwordHash,
-        role,
-        status: normalizedStatus
-    });
+    const userId = normalizedRole === "SUBJECT_TEACHER"
+        ? await userModel.createUserWithTeacher({
+            username: cleanUsername,
+            passwordHash,
+            status: normalizedStatus,
+            ...teacherProfile
+        })
+        : await userModel.createUser({
+            username: cleanUsername,
+            passwordHash,
+            role: normalizedRole,
+            status: normalizedStatus
+        });
 
     return await userModel.findUserById(userId);
 }
@@ -235,11 +256,35 @@ async function changeUserPassword(id, password) {
     return true;
 }
 
+async function changeOwnPassword(userId, data) {
+    const currentPassword = String(data.current_password || "");
+    const newPassword = String(data.new_password || "");
+
+    if (!currentPassword || !newPassword) {
+        throw new Error("Password ya sasa na password mpya vinahitajika.");
+    }
+    if (newPassword.length < 8) {
+        throw new Error("Password mpya lazima iwe na angalau characters 8.");
+    }
+    if (newPassword === currentPassword) {
+        throw new Error("Password mpya lazima iwe tofauti na ya sasa.");
+    }
+
+    const passwordHash = await userModel.findPasswordHashById(userId);
+    if (!passwordHash || !await bcrypt.compare(currentPassword, passwordHash)) {
+        throw new Error("Password ya sasa si sahihi.");
+    }
+
+    await userModel.updateUserPassword(userId, await bcrypt.hash(newPassword, 12));
+    return true;
+}
+
 module.exports = {
     createUser,
     getAllUsers,
     getUserById,
     updateUser,
     changeUserStatus,
-    changeUserPassword
+    changeUserPassword,
+    changeOwnPassword
 };

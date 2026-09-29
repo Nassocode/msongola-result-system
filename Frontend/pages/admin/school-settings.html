@@ -35,6 +35,11 @@
         href="../../css/admin-school-settings.css"
     >
 
+    <link
+        rel="stylesheet"
+        href="../../css/admin-dashboard.css?v=20260929-3"
+    >
+
 
     <!-- FONT AWESOME -->
 
@@ -56,34 +61,31 @@
      SIDEBAR
 ===================================================== -->
 
-<aside class="sidebar">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar app-sidebar" id="sidebar">
 
     <div class="sidebar-brand">
 
-        <div class="brand-logo">
-            <i class="fa-solid fa-school"></i>
-        </div>
+        <a href="dashboard.html" class="sidebar-brand-link">
+            <span class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+            <span class="sidebar-brand-text"><strong>MSONGOLA</strong><small>SECONDARY SCHOOL</small></span>
+        </a>
 
-        <div class="brand-text">
-
-            <strong>
-                MSONGOLA
-            </strong>
-
-            <span>
-                Result System
-            </span>
-
-        </div>
+        <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Funga menu">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
 
     </div>
 
 
-    <nav class="sidebar-nav">
+    <div class="sidebar-section-label">ADMINISTRATION</div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
 
         <a
             href="dashboard.html"
-            class="sidebar-link"
+            class="sidebar-link sidebar-nav-item"
         >
 
             <i class="fa-solid fa-gauge-high"></i>
@@ -97,7 +99,7 @@
 
         <a
             href="users.html"
-            class="sidebar-link"
+            class="sidebar-link sidebar-nav-item"
         >
 
             <i class="fa-solid fa-users"></i>
@@ -109,9 +111,16 @@
         </a>
 
 
+        <a href="teachers.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-chalkboard-user"></i><span>Walimu</span></a>
+        <a href="classes.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-school"></i><span>Madarasa</span></a>
+        <a href="assignments.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-user-check"></i><span>Assignments</span></a>
+        <a href="class-teachers.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-person-chalkboard"></i><span>Waratibu wa Darasa</span></a>
+        <a href="form-coordinators.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-people-roof"></i><span>Waratibu wa Form</span></a>
+        <a href="subjects.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-book-open"></i><span>Masomo</span></a>
+
         <a
             href="school-settings.html"
-            class="sidebar-link active"
+            class="sidebar-link sidebar-nav-item active"
         >
 
             <i class="fa-solid fa-school"></i>
@@ -125,7 +134,7 @@
 
         <a
             href="audit-logs.html"
-            class="sidebar-link"
+            class="sidebar-link sidebar-nav-item"
         >
 
             <i class="fa-solid fa-clock-rotate-left"></i>
@@ -137,12 +146,9 @@
         </a>
 
 
-        <div class="sidebar-divider"></div>
-
-
         <a
             href="profile.html"
-            class="sidebar-link"
+            class="sidebar-link sidebar-nav-item"
         >
 
             <i class="fa-solid fa-user"></i>
@@ -182,6 +188,7 @@
      MAIN CONTENT
 ===================================================== -->
 
+<div class="app-shell">
 <main class="main-content">
 
 
@@ -189,13 +196,14 @@
          TOPBAR
     ================================================= -->
 
-    <header class="topbar">
+    <header class="topbar app-topbar">
 
         <div class="topbar-left">
 
             <button
                 type="button"
-                class="mobile-menu-toggle"
+                class="mobile-menu-toggle sidebar-toggle"
+                id="sidebarToggle"
                 aria-label="Fungua menu"
             >
 
@@ -792,6 +800,7 @@
 
 
 </main>
+</div>
 
 
 
@@ -803,7 +812,7 @@
 
 <script src="../../js/auth.js"></script>
 
-<script src="../../js/app.js"></script>
+<script src="../../js/app.js?v=20260929-2"></script>
 
 <script src="../../js/admin/school-settings.js"></script>
 

@@ -1,107 +1,1407 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="sw">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Ripoti za Matokeo | Academic Master</title>
-    <link rel="stylesheet" href="../../css/academic-operations.css?v=2">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
-        .report-controls { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:18px 20px; }
-        .report-controls label { display:grid; gap:6px; color:#627d98; font-size:12px; font-weight:700; }
-        .report-controls select,.report-note { width:100%; min-height:42px; padding:9px 11px; border:1px solid #d2dde6; border-radius:8px; background:#fff; color:#102a43; font:inherit; }
-        .report-preview { margin-top:18px; }
-        .report-brand { padding:24px; text-align:center; border-bottom:2px solid #c89b3c; }
-        .report-brand h2 { margin:0; color:#102a43; font-size:21px; }
-        .report-brand p { margin:4px 0 0; color:#627d98; }
-        .report-title { margin-top:13px!important; color:#a47c28!important; font-size:16px!important; text-transform:uppercase; }
-        .report-meta { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px 18px; padding:18px 22px; border-bottom:1px solid #e6eaf0; }
-        .report-meta div { display:grid; gap:3px; }
-        .report-meta span { color:#829ab1; font-size:10px; text-transform:uppercase; }
-        .report-meta strong { color:#102a43; font-size:13px; }
-        .report-note-wrap { padding:18px 22px; border-bottom:1px solid #e6eaf0; }
-        .report-note-wrap label { display:block; margin-bottom:7px; color:#627d98; font-size:11px; font-weight:700; }
-        .report-note { min-height:76px; resize:vertical; }
-        .report-remarks { width:170px; min-height:34px; padding:6px 8px; border:1px solid #d2dde6; border-radius:6px; font:inherit; font-size:11px; }
-        .report-remark-text { display:none; }
-        .signatures { display:grid; grid-template-columns:repeat(3,1fr); gap:30px; padding:35px 22px 24px; }
-        .signature { padding-top:8px; border-top:1px solid #829ab1; text-align:center; }
-        .signature span { display:block; color:#627d98; font-size:11px; }
-        .report-empty { padding:40px 20px; text-align:center; color:#627d98; }
-        .export-actions { display:flex; justify-content:flex-end; gap:8px; padding:14px 20px; border-top:1px solid #e6eaf0; }
-        .report-section-title { padding:16px 22px 8px; color:#102a43; font-size:14px; font-weight:800; }
-        .official-value { user-select:text; }
-        @media(max-width:700px) { .report-controls,.report-meta { grid-template-columns:1fr; }.signatures { grid-template-columns:1fr; gap:20px; }.report-remarks { width:140px; } }
-        @media print {
-            .report-controls,.report-note-wrap,.export-actions,.ops-header .ops-actions,.ops-toolbar,.ops-error { display:none!important; }
-            .report-preview { margin:0; border:0; box-shadow:none; }
-            .report-brand { padding:12px; }
-            .report-meta { padding:10px 12px; }
-            .report-remarks { display:none; }
-            .report-remark-text { display:inline!important; }
-            .ops-shell { padding:0!important; }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Ripoti | Academic Master | Msongola Result System</title>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<!-- Same Academic Master Dashboard CSS -->
+<link
+    rel="stylesheet"
+    href="../../css/academic-master-dashboard.css"
+>
+
+<!-- Reports CSS -->
+<link
+    rel="stylesheet"
+    href="../../css/academic-master-reports.css"
+>
+```
+
 </head>
-<body class="academic-ops" data-operation="reportBuilder">
-    <main class="ops-shell">
-        <header class="ops-header">
-            <div><h1><i class="fa-solid fa-file-lines"></i> Ripoti za Matokeo</h1><p>Tengeneza, hariri na export ripoti za darasa kwa PDF au Excel.</p></div>
-            <div class="ops-actions">
-                <button class="ops-button secondary" id="exportExcel" type="button" disabled><i class="fa-solid fa-file-excel"></i> Excel</button>
-                <button class="ops-button" id="exportPdf" type="button" disabled><i class="fa-solid fa-file-pdf"></i> PDF</button>
-            </div>
-        </header>
 
-        <section class="ops-panel">
-            <div class="ops-section-title">Chagua ripoti</div>
-            <div class="report-controls">
-                <label for="reportExam">Mtihani<select id="reportExam"><option value="">Inapakia mitihani...</option></select></label>
-                <label for="reportClass">Darasa<select id="reportClass" disabled><option value="">Chagua mtihani kwanza</option></select></label>
+<body>
+
+<div class="app-shell">
+
+```
+<!-- =========================================
+     MOBILE SIDEBAR OVERLAY
+========================================== -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+
+<!-- =========================================
+     SIDEBAR
+========================================== -->
+<aside class="sidebar" id="sidebar">
+
+    <!-- Brand -->
+    <div class="brand">
+
+        <div class="brand-mark">
+            <i class="fa-solid fa-school"></i>
+        </div>
+
+        <div class="brand-text">
+            <h2>MSONGOLA</h2>
+            <span>RESULT SYSTEM</span>
+        </div>
+
+        <button
+            class="sidebar-close"
+            id="sidebarClose"
+            aria-label="Funga menyu"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+    </div>
+
+
+    <div class="sidebar-divider"></div>
+
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+
+        <p class="nav-label">MUHTASARI</p>
+
+        <a href="dashboard.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </span>
+            <span>Dashboard</span>
+        </a>
+
+
+        <p class="nav-label">USIMAMIZI WA MASOMO</p>
+
+        <a href="students.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-user-graduate"></i>
+            </span>
+            <span>Wanafunzi</span>
+        </a>
+
+
+        <a href="teachers.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-chalkboard-user"></i>
+            </span>
+            <span>Walimu</span>
+        </a>
+
+
+        <a href="classes.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-users"></i>
+            </span>
+            <span>Madarasa</span>
+        </a>
+
+
+        <a href="subjects.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-book"></i>
+            </span>
+            <span>Masomo</span>
+        </a>
+
+
+        <p class="nav-label">MITIHANI & MATOKEO</p>
+
+        <a href="examinations.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-file-pen"></i>
+            </span>
+            <span>Mitihani</span>
+        </a>
+
+
+        <a href="assignments.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-user-check"></i>
+            </span>
+            <span>Teacher Assignments</span>
+        </a>
+
+
+        <a href="class-teachers.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-user-tie"></i>
+            </span>
+            <span>Class Teachers</span>
+        </a>
+
+
+        <a href="submissions.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-file-circle-check"></i>
+            </span>
+
+            <span>Mark Submissions</span>
+
+            <span class="nav-badge" id="pendingBadge">
+                0
+            </span>
+        </a>
+
+
+        <a href="results.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </span>
+            <span>Matokeo</span>
+        </a>
+
+
+        <!-- ACTIVE REPORTS -->
+        <a
+            href="reports.html"
+            class="nav-link active"
+            aria-current="page"
+        >
+            <span class="nav-icon">
+                <i class="fa-solid fa-file-lines"></i>
+            </span>
+            <span>Ripoti</span>
+        </a>
+
+
+        <p class="nav-label">AKAUNTI</p>
+
+        <a href="profile.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-user"></i>
+            </span>
+            <span>Wasifu Wangu</span>
+        </a>
+
+
+        <a href="notifications.html" class="nav-link">
+            <span class="nav-icon">
+                <i class="fa-solid fa-bell"></i>
+            </span>
+
+            <span>Arifa</span>
+
+            <span class="nav-badge notification-badge">
+                0
+            </span>
+        </a>
+
+    </nav>
+
+
+    <!-- Sidebar Bottom -->
+    <div class="sidebar-bottom">
+
+        <div class="sidebar-user">
+
+            <div
+                class="user-avatar"
+                id="sidebarAvatar"
+            >
+                A
             </div>
-            <div id="reportError" class="ops-error" hidden></div>
+
+            <div class="sidebar-user-info">
+
+                <strong id="sidebarUsername">
+                    Academic Master
+                </strong>
+
+                <span>
+                    Academic Master
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="logout-btn"
+            id="logoutBtn"
+        >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Ondoka</span>
+        </button>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================
+     MAIN CONTENT
+========================================== -->
+<main class="main-content">
+
+
+    <!-- =====================================
+         TOPBAR
+    ====================================== -->
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Fungua menyu"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+
+            <div class="page-heading">
+
+                <span class="topbar-school-name">
+                    MSONGOLA SECONDARY SCHOOL
+                </span>
+
+                <h1>
+                    Reports Center
+                </h1>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <button
+                class="icon-button notification-btn"
+                id="notificationBtn"
+                aria-label="Arifa"
+            >
+                <i class="fa-regular fa-bell"></i>
+
+                <span
+                    class="notification-dot"
+                    id="notificationDot"
+                ></span>
+            </button>
+
+
+            <div class="topbar-user">
+
+                <div
+                    class="topbar-avatar"
+                    id="topbarAvatar"
+                >
+                    A
+                </div>
+
+                <div class="topbar-user-info">
+
+                    <strong id="topbarUsername">
+                        Academic Master
+                    </strong>
+
+                    <span>
+                        Academic Master
+                    </span>
+
+                </div>
+
+                <i class="fa-solid fa-chevron-down"></i>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================
+         PAGE CONTENT
+    ====================================== -->
+    <section class="page-content reports-page">
+
+
+        <!-- =================================
+             PAGE INTRO
+        ================================== -->
+        <section class="reports-intro">
+
+            <div class="reports-intro-content">
+
+                <span class="reports-kicker">
+                    MSONGOLA RESULT SYSTEM
+                </span>
+
+                <h2>
+                    Kituo cha Ripoti
+                </h2>
+
+                <p>
+                    Tengeneza, kagua, chapisha na hifadhi
+                    ripoti za wanafunzi kwa kutumia matokeo
+                    yaliyoidhinishwa pekee.
+                </p>
+
+            </div>
+
+
+            <div class="reports-intro-icon">
+                <i class="fa-solid fa-file-invoice"></i>
+            </div>
+
         </section>
 
-        <section class="ops-panel report-preview" id="reportPreview" hidden>
-            <div class="report-brand">
-                <h2 id="reportSchoolName">MSONGOLA SECONDARY SCHOOL</h2>
-                <p id="reportSchoolAddress"></p>
-                <p id="reportMotto"></p>
-                <h2 class="report-title" id="reportHeading">TAARIFA YA MATOKEO</h2>
+
+
+        <!-- =================================
+             REPORT TYPE
+        ================================== -->
+        <section class="dashboard-panel report-type-panel">
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+
+                    <div class="panel-title-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+
+                    <div>
+
+                        <span class="panel-kicker">
+                            REPORT CENTER
+                        </span>
+
+                        <h3>
+                            Aina ya Ripoti
+                        </h3>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div class="report-meta">
-                <div><span>Mtihani</span><strong id="reportExamName">-</strong></div>
-                <div><span>Darasa</span><strong id="reportClassName">-</strong></div>
-                <div><span>Mwaka wa masomo</span><strong id="reportYear">-</strong></div>
-                <div><span>Head of School</span><strong id="reportHead" class="official-value">-</strong></div>
-                <div><span>Academic Master</span><strong id="reportAcademicMaster" class="official-value">-</strong></div>
-                <div><span>Class Teacher</span><strong id="reportClassTeacher" class="official-value">-</strong></div>
+
+
+            <div
+                class="report-type-grid"
+                id="reportType"
+            >
+
+                <button
+                    type="button"
+                    class="report-type-card active"
+                    data-report-type="class"
+                >
+
+                    <span class="report-type-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </span>
+
+                    <span class="report-type-content">
+
+                        <strong>
+                            Ripoti ya Darasa
+                        </strong>
+
+                        <small>
+                            Matokeo ya wanafunzi wote wa darasa
+                        </small>
+
+                    </span>
+
+                    <i class="fa-solid fa-check report-type-check"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="report-type-card"
+                    data-report-type="student"
+                >
+
+                    <span class="report-type-icon">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </span>
+
+                    <span class="report-type-content">
+
+                        <strong>
+                            Ripoti ya Mwanafunzi
+                        </strong>
+
+                        <small>
+                            Ripoti rasmi ya mwanafunzi mmoja
+                        </small>
+
+                    </span>
+
+                    <i class="fa-solid fa-check report-type-check"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="report-type-card"
+                    data-report-type="subject"
+                >
+
+                    <span class="report-type-icon">
+                        <i class="fa-solid fa-book-open"></i>
+                    </span>
+
+                    <span class="report-type-content">
+
+                        <strong>
+                            Utendaji wa Somo
+                        </strong>
+
+                        <small>
+                            Uchambuzi wa matokeo ya somo
+                        </small>
+
+                    </span>
+
+                    <i class="fa-solid fa-check report-type-check"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="report-type-card"
+                    data-report-type="summary"
+                >
+
+                    <span class="report-type-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </span>
+
+                    <span class="report-type-content">
+
+                        <strong>
+                            Muhtasari wa Matokeo
+                        </strong>
+
+                        <small>
+                            Muhtasari wa performance ya darasa
+                        </small>
+
+                    </span>
+
+                    <i class="fa-solid fa-check report-type-check"></i>
+
+                </button>
+
             </div>
-            <div class="report-note-wrap">
-                <label for="reportNarrative">Maoni ya jumla ya ripoti (unaweza kuhariri)</label>
-                <textarea class="report-note" id="reportNarrative" placeholder="Andika maelezo ya jumla kuhusu matokeo ya darasa..."></textarea>
-            </div>
-            <div class="report-section-title">Muhtasari wa Wanafunzi</div>
-            <div class="ops-table-wrap">
-                <table class="ops-table" id="reportTable">
-                    <thead><tr><th>#</th><th>Admission No.</th><th>Mwanafunzi</th><th>Masomo / Alama</th><th>Jumla</th><th>Wastani</th><th>Points</th><th>Division</th><th>Nafasi</th><th>Maoni</th></tr></thead>
-                    <tbody id="reportRows"></tbody>
-                </table>
-                <div class="report-empty" id="reportEmpty" hidden>Hakuna wanafunzi active kwenye darasa hili.</div>
-            </div>
-            <div class="signatures">
-                <div class="signature"><strong id="signatureHead">-</strong><span>Head of School</span></div>
-                <div class="signature"><strong id="signatureAcademic">-</strong><span>Academic Master</span></div>
-                <div class="signature"><strong id="signatureClassTeacher">-</strong><span>Class Teacher</span></div>
-            </div>
-            <div class="export-actions">
-                <button class="ops-button secondary" id="exportExcelBottom" type="button"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-                <button class="ops-button" id="exportPdfBottom" type="button"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
-            </div>
+
         </section>
-    </main>
-    <script src="../../js/api.js"></script>
-    <script src="../../js/auth.js"></script>
-    <script src="../../js/academic-master/report-builder.js?v=1"></script>
+
+
+
+        <!-- =================================
+             FILTERS
+        ================================== -->
+        <section class="dashboard-panel report-filter-panel">
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+
+                    <div class="panel-title-icon">
+                        <i class="fa-solid fa-filter"></i>
+                    </div>
+
+                    <div>
+
+                        <span class="panel-kicker">
+                            REPORT PARAMETERS
+                        </span>
+
+                        <h3>
+                            Chagua Taarifa za Ripoti
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <span class="report-security-badge">
+                    <i class="fa-solid fa-lock"></i>
+                    Approved Results Only
+                </span>
+
+            </div>
+
+
+            <div class="report-filters-grid">
+
+
+                <!-- Academic Year -->
+                <div class="form-group">
+
+                    <label for="reportYear">
+                        Academic Year
+                    </label>
+
+                    <select id="reportYear">
+                        <option value="">
+                            Chagua Academic Year
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Examination -->
+                <div class="form-group">
+
+                    <label for="reportExam">
+                        Examination
+                    </label>
+
+                    <select id="reportExam">
+                        <option value="">
+                            Chagua Examination
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Form -->
+                <div class="form-group">
+
+                    <label for="reportForm">
+                        Form
+                    </label>
+
+                    <select id="reportForm">
+                        <option value="">
+                            Chagua Form
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Class -->
+                <div class="form-group">
+
+                    <label for="reportClass">
+                        Darasa
+                    </label>
+
+                    <select id="reportClass">
+                        <option value="">
+                            Chagua Darasa
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Student -->
+                <div
+                    class="form-group conditional-filter"
+                    id="studentFilterGroup"
+                    hidden
+                >
+
+                    <label for="reportStudent">
+                        Mwanafunzi
+                    </label>
+
+                    <select id="reportStudent">
+                        <option value="">
+                            Chagua Mwanafunzi
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <!-- Subject -->
+                <div
+                    class="form-group conditional-filter"
+                    id="subjectFilterGroup"
+                    hidden
+                >
+
+                    <label for="reportSubject">
+                        Somo
+                    </label>
+
+                    <select id="reportSubject">
+                        <option value="">
+                            Chagua Somo
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="filter-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="generateReport"
+                >
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    Tengeneza Ripoti
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="resetReportFilters"
+                >
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Safisha
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             SUMMARY
+        ================================== -->
+        <section
+            class="report-summary-grid"
+            id="reportSummary"
+        >
+
+            <article class="report-summary-card">
+
+                <div class="report-summary-icon">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        WANAFUNZI
+                    </span>
+
+                    <strong id="summaryStudents">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="report-summary-card">
+
+                <div class="report-summary-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        WASTANI
+                    </span>
+
+                    <strong id="summaryAverage">
+                        0.00
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="report-summary-card">
+
+                <div class="report-summary-icon">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        TOTAL POINTS
+                    </span>
+
+                    <strong id="summaryPoints">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="report-summary-card">
+
+                <div class="report-summary-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div>
+
+                    <span>
+                        APPROVED
+                    </span>
+
+                    <strong id="summaryApproved">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =================================
+             REPORT PREVIEW
+        ================================== -->
+        <section
+            class="dashboard-panel report-preview-panel"
+            id="reportPreview"
+        >
+
+            <div class="panel-header report-preview-toolbar">
+
+                <div class="panel-title">
+
+                    <div class="panel-title-icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+
+                    <div>
+
+                        <span class="panel-kicker">
+                            OFFICIAL REPORT
+                        </span>
+
+                        <h3>
+                            Report Preview
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div class="report-toolbar-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        id="exportExcel"
+                    >
+                        <i class="fa-solid fa-file-excel"></i>
+                        Excel
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        id="exportPdf"
+                    >
+                        <i class="fa-solid fa-file-pdf"></i>
+                        PDF
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="printReport"
+                    >
+                        <i class="fa-solid fa-print"></i>
+                        Print
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Report Empty State -->
+            <div
+                class="report-empty"
+                id="reportEmpty"
+            >
+
+                <div class="report-empty-icon">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                </div>
+
+                <h3>
+                    Hakuna Ripoti Iliyotengenezwa
+                </h3>
+
+                <p>
+                    Chagua aina ya ripoti, academic year,
+                    examination, form na class kisha bonyeza
+                    <strong>Tengeneza Ripoti</strong>.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================
+                 OFFICIAL A4 REPORT
+            ================================== -->
+            <div
+                class="official-report"
+                id="officialReport"
+                hidden
+            >
+
+                <!-- Header -->
+                <header class="official-report-header">
+
+                    <div class="school-logo-wrapper">
+
+                        <div
+                            class="school-logo"
+                            id="reportSchoolLogo"
+                        >
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+
+                    </div>
+
+
+                    <div class="school-heading">
+
+                        <h1 id="reportSchoolName">
+                            MSONGOLA SECONDARY SCHOOL
+                        </h1>
+
+                        <p id="reportSchoolAddress">
+                            P.O BOX 104727
+                        </p>
+
+                        <p
+                            class="school-motto"
+                            id="reportMotto"
+                        >
+                            EDUCATION IS LIGHT
+                        </p>
+
+                        <h2>
+                            STUDENT ACADEMIC REPORT
+                        </h2>
+
+                    </div>
+
+                </header>
+
+
+
+                <div class="official-report-divider"></div>
+
+
+
+                <!-- Report Meta -->
+                <section class="report-meta-grid">
+
+                    <div class="meta-item">
+
+                        <span>
+                            Examination
+                        </span>
+
+                        <strong id="reportExamName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Academic Year
+                        </span>
+
+                        <strong id="reportYearName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Form
+                        </span>
+
+                        <strong id="reportFormName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Class
+                        </span>
+
+                        <strong id="reportClassName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Head of School
+                        </span>
+
+                        <strong id="reportHead">
+                            NASSORO SHEKULAMBA
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Academic Master
+                        </span>
+
+                        <strong id="reportAcademicMaster">
+                            Mwalimu KIIZA
+                        </strong>
+
+                    </div>
+
+
+                    <div class="meta-item">
+
+                        <span>
+                            Class Teacher
+                        </span>
+
+                        <strong id="reportClassTeacher">
+                            -
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- Student Information -->
+                <section
+                    class="student-report-information"
+                    id="studentReportInformation"
+                >
+
+                    <div class="student-info-title">
+                        <i class="fa-solid fa-user-graduate"></i>
+                        <span>Taarifa za Mwanafunzi</span>
+                    </div>
+
+
+                    <div class="student-info-grid">
+
+                        <div>
+                            <span>Jina Kamili</span>
+                            <strong id="reportStudentName">-</strong>
+                        </div>
+
+                        <div>
+                            <span>Admission Number</span>
+                            <strong id="reportAdmissionNumber">-</strong>
+                        </div>
+
+                        <div>
+                            <span>Form</span>
+                            <strong id="reportStudentForm">-</strong>
+                        </div>
+
+                        <div>
+                            <span>Class</span>
+                            <strong id="reportStudentClass">-</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- Results Table -->
+                <section class="official-results-section">
+
+                    <div class="official-section-heading">
+
+                        <span>
+                            MATOKEO YA MASOMO
+                        </span>
+
+                        <small>
+                            Approved results
+                        </small>
+
+                    </div>
+
+
+                    <div class="table-responsive">
+
+                        <table class="official-results-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>#</th>
+
+                                    <th>
+                                        Admission No.
+                                    </th>
+
+                                    <th>
+                                        Mwanafunzi
+                                    </th>
+
+                                    <th>
+                                        Masomo / Alama
+                                    </th>
+
+                                    <th>
+                                        Jumla
+                                    </th>
+
+                                    <th>
+                                        Wastani
+                                    </th>
+
+                                    <th>
+                                        Points
+                                    </th>
+
+                                    <th>
+                                        Division
+                                    </th>
+
+                                    <th>
+                                        Nafasi
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="reportRows">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- Result Summary -->
+                <section class="official-result-summary">
+
+                    <div class="result-summary-item">
+
+                        <span>
+                            Total Marks
+                        </span>
+
+                        <strong id="reportTotalMarks">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="result-summary-item">
+
+                        <span>
+                            Average
+                        </span>
+
+                        <strong id="reportAverage">
+                            0.00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="result-summary-item">
+
+                        <span>
+                            Total Points
+                        </span>
+
+                        <strong id="reportTotalPoints">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="result-summary-item">
+
+                        <span>
+                            Division
+                        </span>
+
+                        <strong id="reportDivision">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="result-summary-item">
+
+                        <span>
+                            Class Position
+                        </span>
+
+                        <strong id="reportPosition">
+                            -
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- Remarks -->
+                <section class="report-remarks">
+
+                    <div class="official-section-heading">
+
+                        <span>
+                            MAONI
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="reportNarrative"
+                        rows="4"
+                        placeholder="Andika maoni ya ripoti hapa..."
+                    ></textarea>
+
+                </section>
+
+
+
+                <!-- Official Footer -->
+                <footer class="official-report-footer">
+
+
+                    <!-- Class Teacher -->
+                    <div class="signature-block">
+
+                        <span class="signature-role">
+                            Class Teacher
+                        </span>
+
+                        <strong id="signatureClassTeacher">
+                            -
+                        </strong>
+
+                        <small>
+                            Jina la Class Teacher
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- Academic Master -->
+                    <div class="signature-block">
+
+                        <span class="signature-role">
+                            Academic Master
+                        </span>
+
+                        <strong id="signatureAcademic">
+                            Mwalimu KIIZA
+                        </strong>
+
+                        <div class="signature-line">
+                            Signature: __________________
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Head of School -->
+                    <div class="signature-block stamp-block">
+
+                        <span class="signature-role">
+                            Head of School
+                        </span>
+
+                        <strong id="signatureHead">
+                            NASSORO SHEKULAMBA
+                        </strong>
+
+                        <div class="official-stamp">
+                            OFFICIAL SCHOOL STAMP
+                        </div>
+
+                    </div>
+
+                </footer>
+
+
+                <div class="report-footer-note">
+                    Official report generated by Msongola Result System.
+                    Only approved results are included in this report.
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             BOTTOM ACTIONS
+        ================================== -->
+        <section class="report-bottom-actions">
+
+            <button
+                type="button"
+                class="btn btn-outline"
+                id="exportExcelBottom"
+            >
+                <i class="fa-solid fa-file-excel"></i>
+                Export Excel
+            </button>
+
+
+            <button
+                type="button"
+                class="btn btn-outline"
+                id="exportPdfBottom"
+            >
+                <i class="fa-solid fa-file-pdf"></i>
+                Export PDF
+            </button>
+
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="printReportBottom"
+            >
+                <i class="fa-solid fa-print"></i>
+                Print Report
+            </button>
+
+        </section>
+
+
+
+        <!-- =================================
+             FOOTER
+        ================================== -->
+        <footer class="dashboard-footer">
+
+            <div>
+
+                <strong>
+                    MSONGOLA SECONDARY SCHOOL
+                </strong>
+
+                <span>
+                    P.O BOX 104727
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Education is Light
+                </span>
+
+                <span>
+                    © <span id="currentYear"></span>
+                    Msongola Result System
+                </span>
+
+            </div>
+
+        </footer>
+
+    </section>
+
+</main>
+```
+
+</div>
+
+<!-- Shared System Scripts -->
+
+<script src="../../js/api.js"></script>
+
+<script src="../../js/auth.js"></script>
+
+<script src="../../js/app.js"></script>
+
+<!-- Academic Master Dashboard behaviour -->
+
+<script src="../../js/academic-master/dashboard.js"></script>
+
+<!-- Reports JS -->
+
+<script src="../../js/academic-master/report-builder.js"></script>
+
 </body>
 </html>

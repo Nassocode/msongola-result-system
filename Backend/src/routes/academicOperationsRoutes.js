@@ -13,8 +13,6 @@ router.patch("/examinations/:id/status", controller.updateExaminationStatus);
 router.get("/assignments", controller.getAssignments);
 
 router.get("/class-teachers", controller.getClassTeachers);
-router.get("/class-teachers/options", controller.getClassTeacherOptions);
-router.post("/class-teachers", controller.createClassTeacher);
 
 router.get("/submissions", controller.getSubmissions);
 router.patch("/submissions/:id/review", controller.reviewSubmission);

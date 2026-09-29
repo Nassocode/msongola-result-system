@@ -56,10 +56,49 @@ async function createAssignment(req, res) {
     try { return res.status(201).json({ success: true, data: await catalogService.createAssignment(req.body) }); }
     catch (error) { return sendError(res, error); }
 }
+async function getClassTeachers(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getClassTeachers() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function getClassTeacherOptions(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getClassTeacherOptions() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function createClassTeacher(req, res) {
+    try { return res.status(201).json({ success: true, data: await catalogService.createClassTeacher(req.body) }); }
+    catch (error) { return sendError(res, error); }
+}
+module.exports = { getTeachers, getTeacherUserOptions, createTeacher, getSubjects, createSubject, getClasses, getClassOptions, createClass, getAssignments, getAssignmentOptions, createAssignment, getClassTeachers, getClassTeacherOptions, createClassTeacher, getFormCoordinators, getFormCoordinatorOptions, createFormCoordinator, updateCatalogStatus };
+
+async function getClassTeachers(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getClassTeachers() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function getClassTeacherOptions(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getClassTeacherOptions() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function createClassTeacher(req, res) {
+    try { return res.status(201).json({ success: true, data: await catalogService.createClassTeacher(req.body) }); }
+    catch (error) { return sendError(res, error); }
+}
+
+async function getFormCoordinators(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getFormCoordinators() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function getFormCoordinatorOptions(req, res) {
+    try { return res.json({ success: true, data: await catalogService.getFormCoordinatorOptions() }); }
+    catch (error) { return sendError(res, error); }
+}
+async function createFormCoordinator(req, res) {
+    try { return res.status(201).json({ success: true, data: await catalogService.createFormCoordinator(req.body) }); }
+    catch (error) { return sendError(res, error); }
+}
 
 async function updateCatalogStatus(req, res) {
     try { return res.json({ success: true, data: await catalogService.updateCatalogStatus(req.params.resource, req.params.id, req.body.status) }); }
     catch (error) { return sendError(res, error); }
 }
 
-module.exports = { getTeachers, getTeacherUserOptions, createTeacher, getSubjects, createSubject, getClasses, getClassOptions, createClass, getAssignments, getAssignmentOptions, createAssignment, updateCatalogStatus };
+module.exports = { getTeachers, getTeacherUserOptions, createTeacher, getSubjects, createSubject, getClasses, getClassOptions, createClass, getAssignments, getAssignmentOptions, createAssignment, getClassTeachers, getClassTeacherOptions, createClassTeacher, getFormCoordinators, getFormCoordinatorOptions, createFormCoordinator, updateCatalogStatus };

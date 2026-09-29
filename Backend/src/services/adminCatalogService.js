@@ -64,11 +64,45 @@ async function getAssignments() { return catalogModel.getAssignments(); }
 async function getAssignmentOptions() { return catalogModel.getAssignmentOptions(); }
 async function createAssignment(data) {
     const ids = ["teacher_id", "class_id", "subject_id", "academic_year_id"].map((key) => Number(data[key]));
-    if (ids.some((id) => !Number.isInteger(id))) throw new Error("Teacher, class, subject na academic year vinahitajika");
+    if (ids.some((id) => !Number.isInteger(id) || id < 1)) throw new Error("Teacher, class, subject na academic year vinahitajika");
     const status = String(data.status || "ACTIVE").toUpperCase();
     if (!["ACTIVE", "INACTIVE"].includes(status)) throw new Error("Status sio sahihi");
     const id = await catalogModel.createAssignment({ teacher_id: ids[0], class_id: ids[1], subject_id: ids[2], academic_year_id: ids[3], status });
     return { id, status };
+}
+
+async function getClassTeachers() { return catalogModel.getClassTeachers(); }
+async function getClassTeacherOptions() { return catalogModel.getClassTeacherOptions(); }
+async function createClassTeacher(data) {
+    const teacherId = Number(data.teacher_id);
+    const classId = Number(data.class_id);
+    const academicYearId = Number(data.academic_year_id);
+    if (![teacherId, classId, academicYearId].every((value) => Number.isInteger(value) && value > 0)) {
+        throw new Error("Mwalimu, darasa na mwaka wa masomo vinahitajika.");
+    }
+    const id = await catalogModel.createClassTeacher({
+        teacher_id: teacherId,
+        class_id: classId,
+        academic_year_id: academicYearId
+    });
+    return { id, teacher_id: teacherId, class_id: classId, academic_year_id: academicYearId, status: "ACTIVE" };
+}
+
+async function getFormCoordinators() { return catalogModel.getFormCoordinators(); }
+async function getFormCoordinatorOptions() { return catalogModel.getFormCoordinatorOptions(); }
+async function createFormCoordinator(data) {
+    const teacherId = Number(data.teacher_id);
+    const formId = Number(data.form_id);
+    const academicYearId = Number(data.academic_year_id);
+    if (![teacherId, formId, academicYearId].every((value) => Number.isInteger(value) && value > 0)) {
+        throw new Error("Mwalimu, form na mwaka wa masomo vinahitajika.");
+    }
+    const id = await catalogModel.createFormCoordinator({
+        teacher_id: teacherId,
+        form_id: formId,
+        academic_year_id: academicYearId
+    });
+    return { id, teacher_id: teacherId, form_id: formId, academic_year_id: academicYearId, status: "ACTIVE" };
 }
 
 async function updateCatalogStatus(resource, rawId, rawStatus) {
@@ -81,4 +115,4 @@ async function updateCatalogStatus(resource, rawId, rawStatus) {
     return { id, status };
 }
 
-module.exports = { getTeachers, getTeacherUserOptions, createTeacher, getSubjects, createSubject, getClasses, getClassOptions, createClass, getAssignments, getAssignmentOptions, createAssignment, updateCatalogStatus };
+module.exports = { getTeachers, getTeacherUserOptions, createTeacher, getSubjects, createSubject, getClasses, getClassOptions, createClass, getAssignments, getAssignmentOptions, createAssignment, getClassTeachers, getClassTeacherOptions, createClassTeacher, getFormCoordinators, getFormCoordinatorOptions, createFormCoordinator, updateCatalogStatus };

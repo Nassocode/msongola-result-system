@@ -24,6 +24,13 @@ router.get(
     userController.getAllUsers
 );
 
+router.patch(
+    "/me/password",
+    protect,
+    authorize("ADMIN"),
+    userController.changeOwnPassword
+);
+
 router.get(
     "/:id",
     protect,

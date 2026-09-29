@@ -63,6 +63,38 @@ async function createUser({
     return result.insertId;
 }
 
+async function createUserWithTeacher({
+    username,
+    passwordHash,
+    status = "ACTIVE",
+    teacherNumber,
+    firstName,
+    middleName,
+    lastName
+}) {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+        const [userResult] = await connection.execute(`
+            INSERT INTO users (username, password_hash, role, status)
+            VALUES (?, ?, 'SUBJECT_TEACHER', ?)
+        `, [username, passwordHash, status]);
+
+        await connection.execute(`
+            INSERT INTO teachers (user_id, teacher_number, first_name, middle_name, last_name, status)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `, [userResult.insertId, teacherNumber, firstName, middleName || null, lastName, status]);
+
+        await connection.commit();
+        return userResult.insertId;
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+}
+
 
 // UPDATE USER
 async function updateUser(id, username, role) {
@@ -112,6 +144,14 @@ async function updateUserPassword(id, passwordHash) {
     return result.affectedRows;
 }
 
+async function findPasswordHashById(id) {
+    const [rows] = await pool.execute(
+        "SELECT password_hash FROM users WHERE id = ? LIMIT 1",
+        [id]
+    );
+    return rows[0]?.password_hash || null;
+}
+
 
 // CHECK USERNAME EXISTS
 async function usernameExists(username, excludeId = null) {
@@ -139,8 +179,10 @@ module.exports = {
     findAllUsers,
     findUserById,
     createUser,
+    createUserWithTeacher,
     updateUser,
     updateUserStatus,
     updateUserPassword,
+    findPasswordHashById,
     usernameExists
 };

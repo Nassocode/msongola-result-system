@@ -18,12 +18,14 @@ async function getTeacherDashboard(userId) {
         SELECT
             ta.id,
             c.class_name,
+            f.form_name,
             s.subject_name,
             ay.year_label AS academic_year,
             ta.status
         FROM teacher_assignments ta
         INNER JOIN teachers t ON t.id = ta.teacher_id
         INNER JOIN classes c ON c.id = ta.class_id
+        INNER JOIN forms f ON f.id = c.form_id
         INNER JOIN subjects s ON s.id = ta.subject_id
         INNER JOIN academic_years ay ON ay.id = ta.academic_year_id
         WHERE t.user_id = ?

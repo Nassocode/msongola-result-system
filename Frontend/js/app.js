@@ -56,11 +56,11 @@
     function openSidebar() {
         if (!sidebar) return;
 
-        sidebar.classList.add("is-open");
+        sidebar.classList.add("is-open", "open");
         document.body.classList.add("sidebar-open");
 
         if (sidebarOverlay) {
-            sidebarOverlay.classList.add("is-visible");
+            sidebarOverlay.classList.add("is-visible", "active");
         }
 
         if (sidebarToggle) {
@@ -71,11 +71,11 @@
     function closeSidebar() {
         if (!sidebar) return;
 
-        sidebar.classList.remove("is-open");
+        sidebar.classList.remove("is-open", "open");
         document.body.classList.remove("sidebar-open");
 
         if (sidebarOverlay) {
-            sidebarOverlay.classList.remove("is-visible");
+            sidebarOverlay.classList.remove("is-visible", "active");
         }
 
         if (sidebarToggle) {
@@ -86,7 +86,7 @@
     function toggleSidebar() {
         if (!sidebar) return;
 
-        if (sidebar.classList.contains("is-open")) {
+        if (sidebar.classList.contains("is-open") || sidebar.classList.contains("open")) {
             closeSidebar();
         } else {
             openSidebar();

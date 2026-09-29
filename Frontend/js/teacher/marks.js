@@ -14,6 +14,7 @@
         empty: document.getElementById("emptyMessage"),
         save: document.getElementById("saveDraftButton"),
         submit: document.getElementById("submitMarksButton"),
+        refresh: document.getElementById("refreshRosterButton"),
         logout: document.getElementById("logoutButton")
     };
 
@@ -32,17 +33,23 @@
         elements.message.hidden = false;
     }
 
+    function enableExamSelection(enabled) {
+        elements.examination.disabled = !enabled;
+        elements.examination.title = enabled ? "Chagua mtihani" : "Hakuna mtihani uliofunguliwa";
+    }
+
     function setBusy(busy) {
         elements.save.disabled = busy || !context?.students?.length || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
         elements.submit.disabled = busy || !context?.students?.length || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
         elements.assignment.disabled = busy;
         elements.examination.disabled = busy || !elements.examination.options.length;
+        elements.refresh.disabled = busy || !elements.assignment.value || !elements.examination.value;
     }
 
     function populateAssignments(items) {
         assignments = items;
         elements.assignment.innerHTML = items.length
-            ? `<option value="">Chagua assignment</option>${items.map((item) => `<option value="${item.id}">${escapeHTML(item.class_name)} / ${escapeHTML(item.subject_name)} / ${escapeHTML(item.academic_year)}</option>`).join("")}`
+            ? `<option value="">Chagua assignment</option>${items.map((item) => `<option value="${item.id}">${escapeHTML(item.form_name ? `${item.form_name} - ${item.class_name}` : item.class_name)} / ${escapeHTML(item.subject_name)} / ${escapeHTML(item.academic_year)}</option>`).join("")}`
             : '<option value="">Hakuna assignment active</option>';
     }
 
@@ -57,11 +64,15 @@
         elements.table.hidden = data.students.length === 0;
         elements.empty.hidden = data.students.length > 0;
         elements.loading.hidden = true;
-        elements.summary.textContent = `${data.students.length} wanafunzi katika ${data.assignment.class_name}`;
+        const classLabel = data.assignment.form_name
+            ? `${data.assignment.form_name} - ${data.assignment.class_name}`
+            : data.assignment.class_name;
+        elements.summary.textContent = `${data.students.length} wanafunzi katika ${classLabel}`;
         elements.info.textContent = `${data.assignment.subject_name} · ${data.assignment.academic_year}`;
         elements.status.textContent = data.submission ? `Hali: ${data.submission.status}` : "Hali: Draft";
         elements.save.disabled = locked || !data.students.length;
         elements.submit.disabled = locked || !data.students.length;
+        elements.refresh.disabled = false;
     }
 
     async function loadContext() {
@@ -70,6 +81,7 @@
             context = null;
             elements.examination.innerHTML = '<option value="">Chagua assignment kwanza</option>';
             elements.examination.disabled = true;
+            elements.refresh.disabled = true;
             elements.rows.innerHTML = "";
             elements.table.hidden = true;
             elements.empty.hidden = false;
@@ -90,16 +102,30 @@
             const response = await MsongolaAPI.get(`/teacher/marks/entry?assignment_id=${encodeURIComponent(assignmentId)}`);
             if (!response?.success) throw new Error(response?.message || "Imeshindikana kupakia taarifa.");
             const data = response.data || {};
-            elements.examination.innerHTML = data.examinations.length
-                ? `<option value="">Chagua mtihani</option>${data.examinations.map((exam) => `<option value="${exam.id}">${escapeHTML(exam.exam_name)}${exam.term ? ` - ${escapeHTML(exam.term)}` : ""}</option>`).join("")}`
+            const exams = Array.isArray(data.examinations) ? data.examinations : [];
+
+            elements.examination.innerHTML = exams.length
+                ? `<option value="">Chagua mtihani</option>${exams.map((exam) => `<option value="${exam.id}">${escapeHTML(exam.exam_name)}${exam.term ? ` - ${escapeHTML(exam.term)}` : ""}</option>`).join("")}`
                 : '<option value="">Hakuna mtihani uliofunguliwa</option>';
-            elements.examination.disabled = data.examinations.length === 0;
+
+            enableExamSelection(exams.length > 0);
             context = null;
             elements.rows.innerHTML = "";
             elements.table.hidden = true;
             elements.empty.hidden = false;
-            elements.empty.textContent = data.examinations.length ? "Chagua mtihani ili kuonyesha wanafunzi." : "Hakuna mtihani uliofunguliwa kwa mwaka wa assignment hii.";
-            elements.info.textContent = `${data.assignment.class_name} · ${data.assignment.subject_name} · ${data.assignment.academic_year}`;
+            elements.empty.textContent = exams.length ? "Inapakia mtihani..." : "Hakuna mtihani uliofunguliwa kwa mwaka wa assignment hii.";
+
+            if (exams.length) {
+                const preferredExam = exams.find((exam) => String(exam.id) === String(elements.examination.value)) || exams[0];
+                elements.examination.value = String(preferredExam.id);
+                await loadExamRoster();
+                return;
+            }
+
+            const classLabel = data.assignment.form_name
+                ? `${data.assignment.form_name} - ${data.assignment.class_name}`
+                : data.assignment.class_name;
+            elements.info.textContent = `${classLabel} · ${data.assignment.subject_name} · ${data.assignment.academic_year}`;
             elements.loading.hidden = true;
         } catch (error) {
             elements.loading.hidden = true;
@@ -110,8 +136,17 @@
     async function loadExamRoster() {
         const assignmentId = elements.assignment.value;
         const examinationId = elements.examination.value;
-        if (!assignmentId || !examinationId) return;
+        if (!assignmentId || !examinationId) {
+            context = null;
+            elements.refresh.disabled = true;
+            elements.rows.innerHTML = "";
+            elements.table.hidden = true;
+            elements.empty.hidden = false;
+            elements.empty.textContent = "Chagua mtihani ili kuonyesha wanafunzi.";
+            return;
+        }
         elements.loading.hidden = false;
+        elements.refresh.disabled = true;
         elements.table.hidden = true;
         elements.message.hidden = true;
         try {
@@ -119,10 +154,26 @@
             if (!response?.success) throw new Error(response?.message || "Imeshindikana kupakia wanafunzi.");
             context = response.data;
             renderRoster(context);
+            elements.loading.hidden = true;
+            elements.empty.hidden = true;
         } catch (error) {
             elements.loading.hidden = true;
+            elements.table.hidden = true;
+            elements.refresh.disabled = false;
+            elements.empty.hidden = false;
+            elements.empty.textContent = error.message || "Imeshindikana kupakia wanafunzi.";
             showMessage(error.message, true);
         }
+    }
+
+    async function refreshRoster() {
+        if (!context) return;
+        const savedMarks = new Map((context.marks || []).map((mark) => [Number(mark.student_id), String(mark.marks ?? "")]));
+        const hasUnsavedMarks = [...document.querySelectorAll(".mark-input")].some((input) =>
+            input.value !== (savedMarks.get(Number(input.dataset.studentId)) || "")
+        );
+        if (hasUnsavedMarks && !window.confirm("Kuna alama ambazo hazijahifadhiwa. Ukisasisha, mabadiliko haya yatapotea. Endelea?")) return;
+        await loadExamRoster();
     }
 
     function collectMarks() {
@@ -161,6 +212,12 @@
             const missing = context.students.length - marks.length;
             if (missing > 0) throw new Error(`Jaza alama za wanafunzi wote. Bado ${missing} hazijaingizwa.`);
             setBusy(true);
+            const saveResponse = await MsongolaAPI.put("/teacher/marks/draft", {
+                assignment_id: context.assignment.id,
+                examination_id: context.examination_id,
+                marks
+            });
+            if (!saveResponse?.success) throw new Error(saveResponse?.message || "Imeshindikana kuhifadhi alama.");
             const response = await MsongolaAPI.post("/teacher/marks/submit", {
                 assignment_id: context.assignment.id,
                 examination_id: context.examination_id
@@ -180,6 +237,7 @@
         if (!await MsongolaAuth.protectPage({ roles: ["SUBJECT_TEACHER"] })) return;
         elements.assignment.addEventListener("change", loadContext);
         elements.examination.addEventListener("change", loadExamRoster);
+        elements.refresh.addEventListener("click", refreshRoster);
         elements.save.addEventListener("click", saveDraft);
         elements.submit.addEventListener("click", submitMarks);
         elements.logout.addEventListener("click", () => MsongolaAuth.logout());

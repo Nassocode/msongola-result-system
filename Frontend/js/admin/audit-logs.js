@@ -149,6 +149,11 @@
                 "adminSidebar"
             );
 
+        elements.sidebarClose =
+            document.getElementById(
+                "sidebarClose"
+            );
+
         elements.sidebarOverlay =
             document.getElementById(
                 "sidebarOverlay"
@@ -257,23 +262,13 @@
         elements.mobileMenuToggle.addEventListener(
             "click",
             () => {
-
-                elements.sidebar.classList.toggle(
-                    "open"
-                );
-
-                if (
-                    elements.sidebarOverlay
-                ) {
-
-                    elements.sidebarOverlay.classList.toggle(
-                        "active"
-                    );
-
-                }
-
+                const isOpen = elements.sidebar.classList.toggle("open");
+                elements.sidebarOverlay?.classList.toggle("active", isOpen);
+                elements.mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
             }
         );
+
+        elements.sidebarClose?.addEventListener("click", closeSidebar);
 
 
         if (
@@ -330,6 +325,8 @@
             );
 
         }
+
+        elements.mobileMenuToggle?.setAttribute("aria-expanded", "false");
 
     }
 

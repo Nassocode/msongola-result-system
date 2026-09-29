@@ -1,70 +1,789 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Teacher Dashboard | Msongola Result System</title>
-	<link rel="stylesheet" href="../css/style.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-	<style>
-		.teacher-page { min-height: 100vh; background: #f4f7fa; color: #102a43; }
-		.teacher-shell { max-width: 1180px; margin: 0 auto; padding: 32px 24px; }
-		.teacher-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
-		.teacher-header h1 { margin: 0 0 6px; font-size: 30px; }
-		.teacher-header p { margin: 0; color: #627d98; }
-		.teacher-actions { display: flex; gap: 10px; }
-		.teacher-button { border: 0; border-radius: 8px; padding: 11px 16px; font: inherit; cursor: pointer; }
-		.teacher-button.primary { background: #0b294b; color: #fff; }
-		.teacher-button.secondary { background: #fff; color: #0b294b; border: 1px solid #d9e2ec; }
-		.teacher-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
-		.teacher-stat, .teacher-panel { background: #fff; border: 1px solid #e3ebf2; border-radius: 12px; box-shadow: 0 6px 20px rgba(11, 41, 75, .06); }
-		.teacher-stat { padding: 20px; }
-		.teacher-stat span { display: block; color: #627d98; font-size: 13px; }
-		.teacher-stat strong { display: block; margin-top: 8px; color: #0b294b; font-size: 28px; }
-		.teacher-panel { padding: 22px; }
-		.teacher-panel h2 { margin: 0 0 16px; font-size: 20px; }
-		.teacher-table { width: 100%; border-collapse: collapse; }
-		.teacher-table th, .teacher-table td { padding: 13px 10px; border-bottom: 1px solid #edf2f7; text-align: left; }
-		.teacher-table th { color: #627d98; font-size: 12px; text-transform: uppercase; }
-		.teacher-empty { color: #627d98; padding: 20px 0; }
-		.teacher-error { color: #c83b4a; margin-top: 12px; }
-		@media (max-width: 760px) { .teacher-header { align-items: flex-start; flex-direction: column; } .teacher-stats { grid-template-columns: repeat(2, 1fr); } .teacher-panel { overflow-x: auto; } .teacher-table { min-width: 560px; } }
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Subject Teacher | Msongola Result System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin-dashboard.css?v=20260929-3">
+    <link rel="stylesheet" href="../css/teacher-credit.css?v=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --navy: #0b294b;
+            --navy-2: #133a60;
+            --teal: #168aad;
+            --teal-soft: rgba(22, 138, 173, 0.12);
+            --muted: #627d98;
+            --line: #dfe7ee;
+            --bg: #edf3f9;
+            --card: #ffffff;
+            --success: #198754;
+            --warning: #f59e0b;
+            --danger: #d92d20;
+            --shadow: 0 18px 38px rgba(11, 41, 75, 0.10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(22,138,173,0.12), transparent 22%),
+                linear-gradient(180deg, #f4f8fc 0%, var(--bg) 100%);
+            color: var(--navy);
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button, select, input { font: inherit; }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 270px;
+            background: linear-gradient(180deg, #091f39 0%, #102d4d 100%);
+            color: #ebf2ff;
+            padding: 22px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 12px 0 28px rgba(11, 41, 75, 0.14);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 8px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+
+        .sidebar-brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--teal), var(--navy));
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-brand-text strong {
+            font-size: 18px;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar-brand-text small {
+            color: rgba(235,242,255,0.72);
+            letter-spacing: 0.12em;
+            font-size: 9px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: auto;
+        }
+
+        .sidebar-section-label {
+            margin: 8px 8px 4px;
+            color: rgba(235,242,255,0.6);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            color: rgba(235,242,255,0.88);
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .sidebar-nav-item:hover,
+        .sidebar-nav-item.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        .sidebar-nav-icon {
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 3px 2px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(22,138,173,0.36), rgba(255,255,255,0.12));
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-user-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .sidebar-user-info span {
+            color: rgba(234,242,255,0.7);
+            font-size: 12px;
+        }
+
+        .sidebar-system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 12px;
+            color: rgba(235,242,255,0.8);
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 0 5px rgba(52,211,153,0.15);
+        }
+
+        .sidebar-system-status strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .sidebar-system-status small {
+            display: block;
+            color: rgba(235,242,255,0.7);
+            margin-top: 2px;
+        }
+
+        .sidebar-logout {
+            width: 100%;
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-panel {
+            flex: 1;
+            padding: 28px 28px 32px;
+        }
+
+        .app-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .topbar-page-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .topbar-page-title span {
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.12em;
+        }
+
+        .topbar-page-title strong {
+            font-size: 30px;
+            letter-spacing: -0.04em;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .ghost-btn,
+        .action-btn {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--navy), var(--navy-2));
+            color: #fff;
+            box-shadow: 0 10px 18px rgba(11,41,75,0.18);
+        }
+
+        .ghost-btn {
+            background: var(--card);
+            color: var(--navy);
+            border: 1px solid var(--line);
+            box-shadow: 0 8px 18px rgba(11,41,75,0.04);
+        }
+
+        .primary-btn:hover,
+        .ghost-btn:hover,
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .teacher-welcome {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 22px 24px;
+            background: linear-gradient(135deg, rgba(11,41,75,0.96), rgba(22,138,173,0.9));
+            border-radius: 20px;
+            color: #fff;
+            box-shadow: 0 18px 32px rgba(9,31,57,0.18);
+            margin-bottom: 22px;
+        }
+
+        .teacher-welcome p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 70%;
+        }
+
+        .teacher-welcome .welcome-badges {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .welcome-badges span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.12);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            position: relative;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+            border-radius: 18px;
+            padding: 18px 20px;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto auto 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--navy), var(--teal));
+        }
+
+        .stat-card .stat-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: rgba(22,138,173,0.12);
+            color: var(--teal);
+        }
+
+        .stat-card strong {
+            display: block;
+            font-size: 32px;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+        }
+
+        .stat-card:nth-child(1) strong { color: var(--navy); }
+        .stat-card:nth-child(2) strong { color: var(--warning); }
+        .stat-card:nth-child(3) strong { color: var(--teal); }
+        .stat-card:nth-child(4) strong { color: var(--success); }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .quick-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 36px rgba(11,41,75,0.1);
+        }
+
+        .quick-card .icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(22,138,173,0.16), rgba(11,41,75,0.08));
+            color: var(--navy);
+            font-size: 18px;
+            margin-bottom: 14px;
+        }
+
+        .quick-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .quick-card p {
+            margin: 0 0 16px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .quick-card a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .notification-all-link {
+            color: var(--teal);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 620px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px 18px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: #f8fbfe;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        tbody tr:hover {
+            background: rgba(22,138,173,0.02);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .status-active { background: rgba(25, 135, 84, 0.12); color: var(--success); }
+        .status-draft { background: rgba(245, 158, 11, 0.12); color: #b7791f; }
+        .status-submitted { background: rgba(22,138,173,0.12); color: var(--teal); }
+        .status-approved { background: rgba(25,135,84,0.12); color: var(--success); }
+        .status-returned { background: rgba(217,45,32,0.12); color: var(--danger); }
+
+        .info-list {
+            list-style: none;
+            margin: 0;
+            padding: 16px 20px 18px;
+        }
+
+        .info-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf2f7;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list span:first-child {
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .empty-state {
+            padding: 28px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .dashboard-notification-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-notification-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #edf2f7;
+            border-left: 3px solid transparent;
+        }
+
+        .dashboard-notification-item:last-child { border-bottom: none; }
+        .dashboard-notification-item.unread { border-left-color: var(--teal); background: rgba(22,138,173,0.035); }
+        .dashboard-notification-item strong { display: block; margin-bottom: 5px; }
+        .dashboard-notification-item p { margin: 0 0 7px; color: var(--muted); line-height: 1.5; }
+        .dashboard-notification-item time { color: var(--muted); font-size: 12px; }
+
+        .error-box {
+            padding: 18px 20px;
+            color: var(--danger);
+            background: rgba(217,45,32,0.06);
+            border: 1px solid rgba(217,45,32,0.12);
+            border-radius: 12px;
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        .error-box.show { display: block; }
+
+        @media (max-width: 980px) {
+            .topbar-page-title strong { font-size: 24px; }
+            .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .quick-grid, .panel-grid { grid-template-columns: 1fr; }
+            .teacher-welcome { flex-direction: column; align-items: flex-start; }
+            .teacher-welcome p { max-width: 100%; }
+            .teacher-welcome .welcome-badges { justify-content: flex-start; }
+        }
+
+        @media (max-width: 560px) {
+            .main-panel { padding: 18px 16px 28px; }
+            .app-topbar { flex-direction: column; align-items: flex-start; }
+            .topbar-right { width: 100%; }
+            .primary-btn, .ghost-btn { flex: 1; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .teacher-welcome { padding: 18px 18px; }
+        }
+    </style>
 </head>
-<body class="teacher-page">
-	<main class="teacher-shell">
-		<header class="teacher-header">
-			<div>
-				<h1>Teacher Dashboard</h1>
-				<p id="teacherWelcome">Karibu kwenye mfumo wa matokeo.</p>
-			</div>
-			<div class="teacher-actions">
-				<a class="teacher-button secondary" href="marks-entry.html"><i class="fa-solid fa-pen-to-square"></i> Ingiza Alama</a>
-				<button class="teacher-button secondary" id="refreshTeacherDashboard" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
-				<button class="teacher-button primary" id="teacherLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i> Toka</button>
-			</div>
-		</header>
+<body class="app-page admin-page teacher-dashboard-page">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar app-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <a href="dashboard.html" class="sidebar-brand-link">
+                    <span class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+                    <span class="sidebar-brand-text"><strong>MSONGOLA</strong><small>SECONDARY SCHOOL</small></span>
+                </a>
+                <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Funga menu"><i class="fa-solid fa-xmark"></i></button>
+            </div>
 
-		<section class="teacher-stats" aria-label="Teacher statistics">
-			<article class="teacher-stat"><span>Assignments</span><strong id="teacherAssignments">0</strong></article>
-			<article class="teacher-stat"><span>Draft submissions</span><strong id="teacherDrafts">0</strong></article>
-			<article class="teacher-stat"><span>Submitted</span><strong id="teacherSubmitted">0</strong></article>
-			<article class="teacher-stat"><span>Approved</span><strong id="teacherApproved">0</strong></article>
-		</section>
+            <div class="sidebar-section-label">SUBJECT TEACHER</div>
+            <nav class="sidebar-nav" aria-label="Subject teacher navigation">
+                <a href="dashboard.html" class="sidebar-nav-item active" aria-current="page"><span class="sidebar-nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span class="sidebar-nav-text">Dashboard</span></a>
 
-		<section class="teacher-panel">
-			<h2>My Classes and Subjects</h2>
-			<div id="teacherAssignmentsLoading" class="teacher-empty">Inapakia assignments...</div>
-			<div id="teacherAssignmentsError" class="teacher-error" hidden></div>
-			<table class="teacher-table" id="teacherAssignmentsTable" hidden>
-				<thead><tr><th>Class</th><th>Subject</th><th>Academic Year</th><th>Status</th></tr></thead>
-				<tbody id="teacherAssignmentsBody"></tbody>
-			</table>
-			<p id="teacherAssignmentsEmpty" class="teacher-empty" hidden>Hakuna assignment iliyo active.</p>
-		</section>
-	</main>
-	<script src="../js/api.js"></script>
-	<script src="../js/auth.js"></script>
-	<script src="../js/teacher/dashboard.js?v=20260928-2"></script>
+                <a href="marks-entry.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-pen-to-square"></i></span><span class="sidebar-nav-text">Ingiza Alama</span></a>
+                <a href="my-classes.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-users"></i></span><span class="sidebar-nav-text">Madarasa Yangu</span></a>
+                <a href="notifications.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-bell"></i></span><span class="sidebar-nav-text">Arifa</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar" id="sidebarAvatar">T</div>
+                    <div class="sidebar-user-info">
+                        <strong id="sidebarUsername">Teacher</strong>
+                        <span>Subject Teacher</span>
+                    </div>
+                </div>
+                <div class="sidebar-system-status"><span class="status-dot"></span><div><strong>Mfumo uko hewani</strong><small>Msongola Result System</small></div></div>
+                <button id="logoutBtn" class="sidebar-logout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Toka kwenye mfumo</span></button>
+            </div>
+    </aside>
+
+    <div class="app-shell">
+        <main class="main-panel app-main">
+            <header class="app-topbar">
+                <div class="topbar-left">
+                    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Fungua menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+                    <div class="topbar-page-title">
+                        <span>MSONGOLA SECONDARY SCHOOL</span>
+                        <strong>Dashboard ya Mwalimu</strong>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <a href="marks-entry.html" class="primary-btn"><i class="fa-solid fa-pen-to-square"></i> Ingiza Alama</a>
+                    <button id="refreshTeacherDashboard" class="ghost-btn" type="button" aria-label="Refresh dashboard"><i class="fa-solid fa-rotate"></i></button>
+                </div>
+            </header>
+
+            <section class="teacher-welcome">
+                <p id="teacherWelcome">Karibu kwenye mfumo wa matokeo.</p>
+                <div class="welcome-badges">
+                    <span><i class="fa-solid fa-check-circle"></i> Kazi ya leo</span>
+                    <span><i class="fa-solid fa-clock"></i> Kusasishwa</span>
+                </div>
+            </section>
+
+            <div id="dashboardError" class="error-box" aria-live="polite"></div>
+
+            <section class="stats-grid" aria-label="teacher statistics">
+                <article class="stat-card">
+                    <div class="stat-label">
+                        <span>Assignments</span>
+                        <span class="stat-icon"><i class="fa-solid fa-book-open-reader"></i></span>
+                    </div>
+                    <strong id="teacherAssignments">0</strong>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-label">
+                        <span>Drafts</span>
+                        <span class="stat-icon"><i class="fa-regular fa-pen-to-square"></i></span>
+                    </div>
+                    <strong id="teacherDrafts">0</strong>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-label">
+                        <span>Submitted</span>
+                        <span class="stat-icon"><i class="fa-solid fa-paper-plane"></i></span>
+                    </div>
+                    <strong id="teacherSubmitted">0</strong>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-label">
+                        <span>Approved</span>
+                        <span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span>
+                    </div>
+                    <strong id="teacherApproved">0</strong>
+                </article>
+            </section>
+
+            <section class="quick-grid" aria-label="quick actions">
+                <article class="quick-card">
+                    <div class="icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <h3>Ingiza Alama</h3>
+                    <p>Rekodi alama za wanafunzi kwenye assignment uliyopewa.</p>
+                    <a href="marks-entry.html">Fungua <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+                <article class="quick-card">
+                    <div class="icon"><i class="fa-solid fa-users"></i></div>
+                    <h3>Madarasa Yangu</h3>
+                    <p>Angalia madarasa yako na masomo yanayosomwa.</p>
+                    <a href="my-classes.html">Fungua <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+
+                <article class="quick-card">
+                    <div class="icon"><i class="fa-solid fa-bell"></i></div>
+                    <h3>Arifa</h3>
+                    <p>Angalia taarifa na maelekezo ya mfumo.</p>
+                    <a href="notifications.html">Fungua <i class="fa-solid fa-arrow-right"></i></a>
+                </article>
+            </section>
+
+            <section class="panel-grid">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Assignments Yangu</h2>
+                        <span id="assignmentSummary">0 active</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Darasa</th>
+                                    <th>Somo</th>
+                                    <th>Mwaka</th>
+                                    <th>Hali</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherAssignmentsBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="teacherAssignmentsEmpty" class="empty-state" hidden>Hakuna assignment active kwa sasa.</div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Muhtasari</h2>
+                        <span id="teacherSummaryMeta">Kwa sasa</span>
+                    </div>
+                    <ul class="info-list">
+                        <li><span>Assignments</span><strong id="summaryAssignments">0</strong></li>
+                        <li><span>Drafts</span><strong id="summaryDrafts">0</strong></li>
+                        <li><span>Submitted</span><strong id="summarySubmitted">0</strong></li>
+                        <li><span>Approved</span><strong id="summaryApproved">0</strong></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="panel dashboard-notifications" aria-labelledby="dashboardNotificationsTitle">
+                <div class="panel-header">
+                    <h2 id="dashboardNotificationsTitle">Arifa za Hivi Karibuni</h2>
+                    <a href="notifications.html" class="notification-all-link">Ona arifa zote <i class="fa-solid fa-arrow-right"></i></a>
+                    <span id="dashboardNotificationCount">0 mpya</span>
+                </div>
+                <ul id="dashboardNotificationList" class="dashboard-notification-list"></ul>
+                <div id="dashboardNotificationsEmpty" class="empty-state">Hakuna arifa kwa sasa.</div>
+            </section>
+        <footer class="teacher-credit">
+            <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+            <a href="tel:+255616957125">Phone Number: +255 616 957 125</a>
+        </footer>
+        </main>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/teacher/dashboard.js"></script>
 </body>
 </html>
+

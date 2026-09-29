@@ -39,6 +39,7 @@
         ["examinations.html", "Mitihani", "fa-file-pen"],
         ["assignments.html", "Teacher Assignments", "fa-user-check"],
         ["class-teachers.html", "Class Teachers", "fa-person-chalkboard"],
+        ["form-coordinators.html", "Form Coordinators", "fa-people-group"],
         ["submissions.html", "Mark Submissions", "fa-inbox"],
         ["results.html", "Matokeo", "fa-chart-column"],
         ["reports.html", "Ripoti", "fa-file-lines"],
@@ -63,9 +64,9 @@
                 <p class="nav-label">USIMAMIZI WA MASOMO</p>
                 ${navigation.slice(1, 5).map((item) => `<a href="${item[0]}" class="nav-link"><span class="nav-icon"><i class="fa-solid ${item[2]}"></i></span><span>${item[1]}</span></a>`).join("")}
                 <p class="nav-label">MITIHANI & MATOKEO</p>
-                ${navigation.slice(5, 11).map((item) => `<a href="${item[0]}" class="nav-link"><span class="nav-icon"><i class="fa-solid ${item[2]}"></i></span><span>${item[1]}</span></a>`).join("")}
+                ${navigation.slice(5, 12).map((item) => `<a href="${item[0]}" class="nav-link"><span class="nav-icon"><i class="fa-solid ${item[2]}"></i></span><span>${item[1]}</span></a>`).join("")}
                 <p class="nav-label">AKAUNTI</p>
-                ${navigation.slice(11).map((item) => `<a href="${item[0]}" class="nav-link"><span class="nav-icon"><i class="fa-solid ${item[2]}"></i></span><span>${item[1]}</span></a>`).join("")}
+                ${navigation.slice(12).map((item) => `<a href="${item[0]}" class="nav-link"><span class="nav-icon"><i class="fa-solid ${item[2]}"></i></span><span>${item[1]}</span></a>`).join("")}
             </nav>
             <div class="sidebar-bottom"><div class="sidebar-user"><div class="user-avatar" data-aux-avatar>AM</div><div class="sidebar-user-info"><strong data-aux-name>Academic Master</strong><span>Academic Master</span></div></div><button class="logout-btn" id="auxLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Toka kwenye mfumo</span></button></div>
         </aside>

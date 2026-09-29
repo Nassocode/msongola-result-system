@@ -62,20 +62,25 @@
 
     <link
         rel="stylesheet"
-        href="../../css/admin-audit-logs.css"
+        href="../../css/admin-audit-logs.css?v=20260929-2"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/admin-dashboard.css?v=20260929-3"
     >
 
 </head>
 
 
-<body>
+<body class="app-page admin-page">
 
 
     <!-- =====================================================
          ADMIN LAYOUT
     ====================================================== -->
 
-    <div class="admin-layout">
+    <div class="admin-layout app-shell">
 
 
         <!-- =================================================
@@ -83,7 +88,7 @@
         ================================================== -->
 
         <aside
-            class="sidebar"
+            class="sidebar app-sidebar"
             id="adminSidebar"
         >
 
@@ -91,24 +96,16 @@
             <!-- BRAND -->
 
             <div class="sidebar-brand">
-
-                <div class="brand-logo">
-                    MS
-                </div>
-
-                <div class="brand-text">
-
-                    <strong>
-                        MSONGOLA
-                    </strong>
-
-                    <span>
-                        RESULT SYSTEM
-                    </span>
-
-                </div>
-
+                <a href="./dashboard.html" class="sidebar-brand-link">
+                    <span class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+                    <span class="sidebar-brand-text"><strong>MSONGOLA</strong><small>SECONDARY SCHOOL</small></span>
+                </a>
+                <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Funga menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
+
+            <div class="sidebar-section-label">ADMINISTRATION</div>
 
 
             <!-- NAVIGATION -->
@@ -120,7 +117,7 @@
 
                 <a
                     href="./dashboard.html"
-                    class="sidebar-link"
+                    class="sidebar-link sidebar-nav-item"
                 >
 
                     <span class="sidebar-link-icon">
@@ -138,7 +135,7 @@
 
                 <a
                     href="./users.html"
-                    class="sidebar-link"
+                    class="sidebar-link sidebar-nav-item"
                 >
 
                     <span class="sidebar-link-icon">
@@ -152,11 +149,18 @@
                 </a>
 
 
+                <a href="./teachers.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="sidebar-nav-text">Walimu</span></a>
+                <a href="./classes.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-school"></i></span><span class="sidebar-nav-text">Madarasa</span></a>
+                <a href="./assignments.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-user-check"></i></span><span class="sidebar-nav-text">Assignments</span></a>
+                <a href="./class-teachers.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-person-chalkboard"></i></span><span class="sidebar-nav-text">Waratibu wa Darasa</span></a>
+                <a href="./form-coordinators.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-people-roof"></i></span><span class="sidebar-nav-text">Waratibu wa Form</span></a>
+                <a href="./subjects.html" class="sidebar-link sidebar-nav-item"><span class="sidebar-link-icon sidebar-nav-icon"><i class="fa-solid fa-book-open"></i></span><span class="sidebar-nav-text">Masomo</span></a>
+
                 <!-- SCHOOL SETTINGS -->
 
                 <a
                     href="./school-settings.html"
-                    class="sidebar-link"
+                    class="sidebar-link sidebar-nav-item"
                 >
 
                     <span class="sidebar-link-icon">
@@ -174,7 +178,7 @@
 
                 <a
                     href="./audit-logs.html"
-                    class="sidebar-link active"
+                    class="sidebar-link sidebar-nav-item active"
                 >
 
                     <span class="sidebar-link-icon">
@@ -188,16 +192,11 @@
                 </a>
 
 
-                <!-- DIVIDER -->
-
-                <div class="sidebar-divider"></div>
-
-
                 <!-- PROFILE -->
 
                 <a
                     href="./profile.html"
-                    class="sidebar-link"
+                    class="sidebar-link sidebar-nav-item"
                 >
 
                     <span class="sidebar-link-icon">
@@ -216,6 +215,14 @@
             <!-- SIDEBAR FOOTER -->
 
             <div class="sidebar-footer">
+
+                <div class="sidebar-system-status">
+                    <span class="status-dot"></span>
+                    <div>
+                        <strong>Mfumo uko hewani</strong>
+                        <small>Msongola Result System</small>
+                    </div>
+                </div>
 
                 <button
                     type="button"
@@ -260,14 +267,15 @@
                  TOPBAR
             ================================================== -->
 
-            <header class="topbar">
+            <header class="topbar app-topbar">
 
 
                 <!-- MOBILE MENU -->
 
+                <div class="topbar-left">
                 <button
                     type="button"
-                    class="mobile-menu-toggle"
+                    class="mobile-menu-toggle sidebar-toggle"
                     id="mobileMenuToggle"
                     aria-label="Fungua menu"
                 >
@@ -282,9 +290,11 @@
                 <div class="topbar-page-title">
 
                     <span>
-                        Usimamizi wa Mfumo
+                        MSONGOLA SECONDARY SCHOOL
                     </span>
+                    <strong>Audit Logs</strong>
 
+                </div>
                 </div>
 
 
@@ -1020,7 +1030,7 @@
     ====================================================== -->
 
     <script
-        src="../../js/admin/audit-logs.js"
+        src="../../js/admin/audit-logs.js?v=20260929-2"
     ></script>
 
 

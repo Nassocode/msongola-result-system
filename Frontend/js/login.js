@@ -74,13 +74,13 @@
     const ROLE_DASHBOARDS = {
 
         ADMIN:
-            "/msongola-result-system/frontend/pages/admin/dashboard.html",
+            "/msongola-result-system/Frontend/pages/admin/dashboard.html",
 
         ACADEMIC_MASTER:
-            "/msongola-result-system/frontend/pages/academic-master/dashboard.html",
+            "/msongola-result-system/Frontend/pages/academic-master/dashboard.html",
 
         SUBJECT_TEACHER:
-            "/msongola-result-system/frontend/pages/teacher/dashboard.html"
+            "/msongola-result-system/Frontend/teacher/dashboard.html"
 
     };
 

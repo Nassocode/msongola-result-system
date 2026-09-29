@@ -1,13 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     const TOKEN_KEY = "msongola_token";
     const USER_KEY = "msongola_user";
 
     const token =
-        localStorage.getItem(TOKEN_KEY);
+        sessionStorage.getItem(TOKEN_KEY);
 
     const storedUser =
-        localStorage.getItem(USER_KEY);
+        sessionStorage.getItem(USER_KEY);
 
 
     /* ===============================
@@ -31,8 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (error) {
 
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
 
         window.location.href =
             "../login.html";
@@ -53,6 +53,19 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    try {
+        const response = await MsongolaAPI.get(`/users/${encodeURIComponent(user.id)}`);
+        if (!response?.success || !response.data) {
+            throw new Error(response?.message || "Taarifa za wasifu hazikupatikana.");
+        }
+        user = response.data;
+    } catch (error) {
+        const message = document.getElementById("profileMessage");
+        message.textContent = error.message || "Imeshindikana kupakia wasifu kutoka kwenye mfumo.";
+        message.classList.add("error");
+        message.hidden = false;
+    }
+
 
     /* ===============================
        USER DATA
@@ -62,9 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
         user.username || "Admin";
 
 
-    document.getElementById(
-        "sidebarUsername"
-    ).textContent = username;
+    const sidebarUsername = document.getElementById("sidebarUsername");
+    if (sidebarUsername) sidebarUsername.textContent = username;
 
 
     document.getElementById(
@@ -75,6 +87,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById(
         "profileUsername"
     ).textContent = username;
+
+    document.getElementById("profileRole").textContent = String(user.role || "ADMIN").replaceAll("_", " ");
+    document.getElementById("accountRole").textContent = String(user.role || "ADMIN");
+    document.getElementById("accountStatus").textContent = String(user.status || "UNKNOWN");
+    document.getElementById("accountStatus").classList.toggle("active-text", user.status === "ACTIVE");
+    document.getElementById("profileStatusLabel").textContent = `Akaunti ${String(user.status || "UNKNOWN").toLowerCase()}`;
 
 
     document.getElementById(
@@ -125,109 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         );
     }
-
-
-    /* ===============================
-       SIDEBAR
-    =============================== */
-
-    const sidebar =
-        document.getElementById("sidebar");
-
-    const mobileMenuBtn =
-        document.getElementById("mobileMenuBtn");
-
-    const sidebarClose =
-        document.getElementById("sidebarClose");
-
-    const sidebarOverlay =
-        document.getElementById("sidebarOverlay");
-
-
-    function openSidebar() {
-
-        sidebar?.classList.add(
-            "sidebar-open"
-        );
-
-        sidebarOverlay?.classList.add(
-            "active"
-        );
-    }
-
-
-    function closeSidebar() {
-
-        sidebar?.classList.remove(
-            "sidebar-open"
-        );
-
-        sidebarOverlay?.classList.remove(
-            "active"
-        );
-    }
-
-
-    mobileMenuBtn?.addEventListener(
-        "click",
-        openSidebar
-    );
-
-
-    sidebarClose?.addEventListener(
-        "click",
-        closeSidebar
-    );
-
-
-    sidebarOverlay?.addEventListener(
-        "click",
-        closeSidebar
-    );
-
-
-    /* ===============================
-       LOGOUT
-    =============================== */
-
-    function logout() {
-
-        const confirmed =
-            confirm(
-                "Una uhakika unataka kutoka kwenye mfumo?"
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        localStorage.removeItem(
-            TOKEN_KEY
-        );
-
-        localStorage.removeItem(
-            USER_KEY
-        );
-
-        window.location.href =
-            "../login.html";
-    }
-
-
-    document
-        .getElementById("logoutBtn")
-        ?.addEventListener(
-            "click",
-            logout
-        );
-
-
-    document
-        .getElementById("profileLogoutBtn")
-        ?.addEventListener(
-            "click",
-            logout
-        );
 
 
     /* ===============================
@@ -423,22 +338,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                /*
-                    BACKEND INAKUJA:
+                const form = event.currentTarget;
+                const submitButton = form.querySelector('[type="submit"]');
+                submitButton.disabled = true;
 
-                    PATCH
-                    /api/users/:id/password
-
-                    Kwa sasa hatutumii
-                    API mpaka backend endpoint
-                    iwe tayari.
-                */
-
-
-                showPasswordMessage(
-                    "Password endpoint bado haijaunganishwa na backend.",
-                    "error"
-                );
+                try {
+                    const response = await MsongolaAPI.patch("/users/me/password", {
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    });
+                    if (!response?.success) {
+                        throw new Error(response?.message || "Imeshindikana kubadilisha password.");
+                    }
+                    showPasswordMessage(response.message || "Password imebadilishwa.", "success");
+                    form.reset();
+                } catch (error) {
+                    showPasswordMessage(error.message || "Imeshindikana kubadilisha password.", "error");
+                } finally {
+                    submitButton.disabled = false;
+                }
 
             }
         );

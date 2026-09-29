@@ -24,37 +24,42 @@
 
     <link
         rel="stylesheet"
-        href="../../css/admin-profile.css"
+        href="../../css/admin-dashboard.css?v=20260929-2"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../css/admin-profile.css?v=2"
     >
 
 </head>
 
 
-<body>
+<body class="app-page admin-page" data-roles="ADMIN">
 
 <div class="admin-layout">
 
     <!-- ================= SIDEBAR ================= -->
 
     <aside
-        class="sidebar"
+        class="app-sidebar"
         id="sidebar"
     >
 
-        <div class="sidebar-header">
+        <div class="sidebar-brand">
 
-            <div class="brand-logo">
+            <a href="dashboard.html" class="sidebar-brand-link">
 
-                <div class="brand-icon">
+                <div class="sidebar-brand-icon">
                     <i class="fa-solid fa-school"></i>
                 </div>
 
-                <div>
-                    <h2>Msongola</h2>
-                    <span>Result System</span>
+                <div class="sidebar-brand-text">
+                    <strong>MSONGOLA</strong>
+                    <small>SECONDARY SCHOOL</small>
                 </div>
 
-            </div>
+            </a>
 
 
             <button
@@ -70,16 +75,16 @@
 
         <nav class="sidebar-nav">
 
-            <div class="nav-section-title">
+            <div class="sidebar-section-label">
                 MFUMO
             </div>
 
 
             <a
                 href="dashboard.html"
-                class="nav-link"
+                class="sidebar-nav-item"
             >
-                <span class="nav-icon">
+                <span class="sidebar-nav-icon">
                     <i class="fa-solid fa-gauge-high"></i>
                 </span>
 
@@ -89,9 +94,9 @@
 
             <a
                 href="users.html"
-                class="nav-link"
+                class="sidebar-nav-item"
             >
-                <span class="nav-icon">
+                <span class="sidebar-nav-icon">
                     <i class="fa-solid fa-users"></i>
                 </span>
 
@@ -99,23 +104,53 @@
             </a>
 
 
+            <a href="teachers.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span>
+                <span>Walimu</span>
+            </a>
+
+            <a href="classes.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-school"></i></span>
+                <span>Madarasa</span>
+            </a>
+
+            <a href="assignments.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-user-check"></i></span>
+                <span>Assignments</span>
+            </a>
+
+            <a href="class-teachers.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-person-chalkboard"></i></span>
+                <span>Waratibu wa Darasa</span>
+            </a>
+
+            <a href="form-coordinators.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-people-roof"></i></span>
+                <span>Waratibu wa Form</span>
+            </a>
+
+            <a href="subjects.html" class="sidebar-nav-item">
+                <span class="sidebar-nav-icon"><i class="fa-solid fa-book-open"></i></span>
+                <span>Masomo</span>
+            </a>
+
             <a
                 href="school-settings.html"
-                class="nav-link"
+                class="sidebar-nav-item"
             >
-                <span class="nav-icon">
+                <span class="sidebar-nav-icon">
                     <i class="fa-solid fa-school"></i>
                 </span>
 
-                <span>Wasifu wa Shule</span>
+                <span>Mipangilio ya Shule</span>
             </a>
 
 
             <a
                 href="audit-logs.html"
-                class="nav-link"
+                class="sidebar-nav-item"
             >
-                <span class="nav-icon">
+                <span class="sidebar-nav-icon">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </span>
 
@@ -123,16 +158,12 @@
             </a>
 
 
-            <div class="nav-section-title">
-                AKAUNTI
-            </div>
-
-
             <a
                 href="profile.html"
-                class="nav-link active"
+                class="sidebar-nav-item active"
+                aria-current="page"
             >
-                <span class="nav-icon">
+                <span class="sidebar-nav-icon">
                     <i class="fa-solid fa-user-circle"></i>
                 </span>
 
@@ -140,45 +171,21 @@
             </a>
 
 
-            <button
-                type="button"
-                class="nav-link logout-link"
-                id="logoutBtn"
-            >
-
-                <span class="nav-icon">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </span>
-
-                <span>Toka kwenye Mfumo</span>
-
-            </button>
-
         </nav>
 
 
         <div class="sidebar-footer">
-
-            <div class="admin-mini-profile">
-
-                <div class="admin-avatar">
-                    <i class="fa-solid fa-user-shield"></i>
+            <div class="sidebar-system-status">
+                <span class="status-dot"></span>
+                <div>
+                    <strong>Mfumo uko hewani</strong>
+                    <small>Msongola Result System</small>
                 </div>
-
-                <div class="admin-mini-info">
-
-                    <strong id="sidebarUsername">
-                        Admin
-                    </strong>
-
-                    <span>
-                        Msimamizi wa Mfumo
-                    </span>
-
-                </div>
-
             </div>
-
+            <button type="button" class="sidebar-logout" data-action="logout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Toka kwenye mfumo</span>
+            </button>
         </div>
 
     </aside>
@@ -192,55 +199,57 @@
 
     <!-- ================= MAIN ================= -->
 
-    <div class="main-area">
+    <div class="app-shell">
 
 
         <!-- TOPBAR -->
 
-        <header class="topbar">
+        <header class="app-topbar">
 
             <button
                 type="button"
-                class="mobile-menu-btn"
-                id="mobileMenuBtn"
+                class="sidebar-toggle"
+                id="sidebarToggle"
+                aria-expanded="false"
+                aria-label="Fungua menu"
             >
                 <i class="fa-solid fa-bars"></i>
             </button>
 
 
-            <div class="topbar-title">
+            <div class="topbar-page-title">
 
                 <span>
                     Akaunti ya Mtumiaji
                 </span>
 
-                <h1>
+                <strong>
                     Wasifu Wangu
-                </h1>
+                </strong>
 
             </div>
 
 
-            <div class="topbar-actions">
+            <div class="topbar-right">
 
                 <a
                     href="profile.html"
-                    class="topbar-profile"
+                    class="topbar-user"
                 >
 
-                    <div class="topbar-avatar">
+                    <div class="topbar-user-avatar" data-user-initials>
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
 
                     <div class="topbar-user-info">
 
-                        <strong id="topbarUsername">
+                        <strong id="topbarUsername" data-user-name>
                             Admin
                         </strong>
 
-                        <span>
+                        <small data-user-role>
                             ADMIN
-                        </span>
+                        </small>
 
                     </div>
 
@@ -253,7 +262,7 @@
 
         <!-- ================= CONTENT ================= -->
 
-        <main class="profile-content">
+        <main class="app-main profile-content">
 
 
             <div class="profile-breadcrumb">
@@ -270,6 +279,8 @@
 
             </div>
 
+            <div class="profile-feedback" id="profileMessage" role="status" aria-live="polite" hidden></div>
+
 
             <!-- PROFILE HERO -->
 
@@ -284,7 +295,7 @@
 
                 <div class="profile-hero-info">
 
-                    <span class="profile-role">
+                    <span class="profile-role" id="profileRole">
                         SYSTEM ADMINISTRATOR
                     </span>
 
@@ -297,11 +308,11 @@
                         matokeo wa Msongola Secondary School.
                     </p>
 
-                    <div class="profile-status">
+                    <div class="profile-status" id="profileStatus">
 
                         <span class="status-dot"></span>
 
-                        Akaunti Active
+                        <span id="profileStatusLabel">Akaunti active</span>
 
                     </div>
 
@@ -359,7 +370,7 @@
                                 Role
                             </span>
 
-                            <strong>
+                            <strong id="accountRole">
                                 ADMIN
                             </strong>
 
@@ -372,7 +383,7 @@
                                 Account Status
                             </span>
 
-                            <strong class="active-text">
+                            <strong class="active-text" id="accountStatus">
                                 ACTIVE
                             </strong>
 
@@ -529,6 +540,7 @@
                                 type="button"
                                 class="security-btn danger"
                                 id="profileLogoutBtn"
+                                data-action="logout"
                             >
                                 Logout
                             </button>
@@ -656,7 +668,7 @@
         </main>
 
 
-        <footer class="admin-footer">
+        <footer class="app-footer">
 
             <span>
                 © 2026 Msongola Secondary School
@@ -718,6 +730,7 @@
                 <input
                     type="password"
                     id="currentPassword"
+                    autocomplete="current-password"
                     required
                 >
 
@@ -734,6 +747,7 @@
                     type="password"
                     id="newPassword"
                     minlength="8"
+                    autocomplete="new-password"
                     required
                 >
 
@@ -750,6 +764,7 @@
                     type="password"
                     id="confirmPassword"
                     minlength="8"
+                    autocomplete="new-password"
                     required
                 >
 
@@ -789,6 +804,9 @@
 </div>
 
 
+<script src="../../js/api.js"></script>
+<script src="../../js/auth.js"></script>
+<script src="../../js/app.js"></script>
 <script src="../../js/admin/profile.js"></script>
 
 </body>

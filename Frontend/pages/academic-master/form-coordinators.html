@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Coordinators | Academic Master</title>
+    <link rel="stylesheet" href="../../css/admin-catalog.css?v=20260929-7">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="catalog-page" data-catalog="formCoordinators" data-role="ACADEMIC_MASTER">
+    <main class="catalog-shell">
+        <header class="catalog-header">
+            <div>
+                <h1><i class="fa-solid fa-people-group"></i> Form Coordinators</h1>
+                <p>View-only list of teachers assigned by Admin to coordinate each whole form.</p>
+            </div>
+        </header>
+        <section class="catalog-panel">
+            <div class="catalog-toolbar">
+                <input id="catalogSearch" type="search" placeholder="Search form, coordinator, or year...">
+                <strong>Assigned form coordinators</strong>
+            </div>
+            <div id="catalogError" class="catalog-error" hidden></div>
+            <div class="catalog-table-wrap">
+                <table class="catalog-table" id="catalogTable">
+                    <thead><tr><th>#</th><th>Form</th><th>Coordinator</th><th>Teacher Number</th><th>Academic Year</th><th>Status</th></tr></thead>
+                    <tbody id="catalogList"></tbody>
+                </table>
+                <div id="catalogEmpty" class="catalog-empty" hidden>No form coordinators have been assigned yet.</div>
+            </div>
+        </section>
+    </main>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/admin/catalog.js?v=20260929-8"></script>
+</body>
+</html>

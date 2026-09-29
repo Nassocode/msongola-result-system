@@ -50,6 +50,7 @@ async function createStudent(data) {
     const gender = String(data.gender || "").trim().toUpperCase();
     const academicYear = String(data.academic_year || "").trim();
     const className = String(data.class_name || "").trim();
+    const classId = Number(data.class_id);
     const status = String(data.status || "ACTIVE").trim().toUpperCase();
 
     if (!admissionNumber) {
@@ -72,7 +73,7 @@ async function createStudent(data) {
         throw new Error("Academic Year inahitajika");
     }
 
-    if (!className) {
+    if (!className && !(Number.isInteger(classId) && classId > 0)) {
         throw new Error("Darasa linahitajika");
     }
 
@@ -85,7 +86,9 @@ async function createStudent(data) {
         throw new Error("Admission Number hii tayari ipo");
     }
 
-    const matchedClass = await studentModel.findClassByName(className, academicYear);
+    const matchedClass = Number.isInteger(classId) && classId > 0
+        ? await studentModel.findClassById(classId, academicYear)
+        : await studentModel.findClassByName(className, academicYear);
     if (!matchedClass) {
         throw new Error("Darasa lililochaguliwa halijapatikana kwa mwaka uliochaguliwa");
     }
@@ -118,15 +121,18 @@ async function updateStudent(id, data) {
     const gender = String(data.gender || "").trim().toUpperCase();
     const academicYear = String(data.academic_year || "").trim();
     const className = String(data.class_name || "").trim();
+    const classId = Number(data.class_id);
     const status = String(data.status || "ACTIVE").trim().toUpperCase();
 
-    if (!admissionNumber || !firstName || !lastName || !academicYear || !className) throw new Error("Jaza taarifa zote zinazohitajika.");
+    if (!admissionNumber || !firstName || !lastName || !academicYear || (!className && !(Number.isInteger(classId) && classId > 0))) throw new Error("Jaza taarifa zote zinazohitajika.");
     if (!["MALE", "FEMALE"].includes(gender)) throw new Error("Jinsia sio sahihi");
     if (!["ACTIVE", "INACTIVE", "GRADUATED", "TRANSFERRED"].includes(status)) throw new Error("Status ya mwanafunzi sio sahihi");
 
     const duplicate = await studentModel.getStudentByAdmissionNumber(admissionNumber, studentId);
     if (duplicate) throw new Error("Admission Number hii tayari inatumika.");
-    const matchedClass = await studentModel.findClassByName(className, academicYear);
+    const matchedClass = Number.isInteger(classId) && classId > 0
+        ? await studentModel.findClassById(classId, academicYear)
+        : await studentModel.findClassByName(className, academicYear);
     if (!matchedClass) throw new Error("Darasa halijapatikana kwa mwaka uliochaguliwa.");
 
     await studentModel.updateStudent(studentId, {

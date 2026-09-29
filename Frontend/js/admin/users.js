@@ -121,6 +121,21 @@
         createRole:
             $("#createRole"),
 
+        teacherProfileFields:
+            $("#teacherProfileFields"),
+
+        createTeacherNumber:
+            $("#createTeacherNumber"),
+
+        createTeacherFirstName:
+            $("#createTeacherFirstName"),
+
+        createTeacherMiddleName:
+            $("#createTeacherMiddleName"),
+
+        createTeacherLastName:
+            $("#createTeacherLastName"),
+
         createStatus:
             $("#createStatus"),
 
@@ -410,6 +425,9 @@
                 handleCreateUser
             );
         }
+
+        elements.createRole?.addEventListener("change", updateTeacherProfileFields);
+        updateTeacherProfileFields();
 
 
         /* Edit User */
@@ -1426,6 +1444,8 @@
             elements.createStatus.value =
                 "ACTIVE";
         }
+
+        updateTeacherProfileFields();
     }
 
 
@@ -1474,6 +1494,13 @@
                 elements.createStatus?.value ||
                 "ACTIVE"
             );
+
+        const teacherProfile = {
+            teacher_number: String(elements.createTeacherNumber?.value || "").trim(),
+            first_name: String(elements.createTeacherFirstName?.value || "").trim(),
+            middle_name: String(elements.createTeacherMiddleName?.value || "").trim(),
+            last_name: String(elements.createTeacherLastName?.value || "").trim()
+        };
 
 
         /*
@@ -1553,6 +1580,11 @@
             return;
         }
 
+        if (role === "SUBJECT_TEACHER" && (!teacherProfile.teacher_number || !teacherProfile.first_name || !teacherProfile.last_name)) {
+            showAlert(elements.createUserAlert, "Weka teacher number, jina la kwanza na jina la mwisho la Subject Teacher.");
+            return;
+        }
+
 
         setButtonLoading(
             elements.createUserSubmitButton,
@@ -1570,7 +1602,8 @@
                         username,
                         password,
                         role,
-                        status
+                        status,
+                        ...(role === "SUBJECT_TEACHER" ? teacherProfile : {})
                     }
                 );
 
@@ -1620,6 +1653,14 @@
                 false
             );
         }
+    }
+
+    function updateTeacherProfileFields() {
+        const isSubjectTeacher = elements.createRole?.value === "SUBJECT_TEACHER";
+        if (elements.teacherProfileFields) elements.teacherProfileFields.hidden = !isSubjectTeacher;
+        [elements.createTeacherNumber, elements.createTeacherFirstName, elements.createTeacherLastName].forEach((field) => {
+            if (field) field.required = isSubjectTeacher;
+        });
     }
 
 

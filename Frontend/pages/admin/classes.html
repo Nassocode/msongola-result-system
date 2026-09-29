@@ -1,1 +1,48 @@
-<!doctype html><html lang="sw"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Madarasa | Msongola Result System</title><link rel="stylesheet" href="../../css/admin-catalog.css?v=20260928-1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></head><body class="catalog-page" data-catalog="classes"><main class="catalog-shell"><header class="catalog-header"><div><h1><i class="fa-solid fa-school"></i> Madarasa</h1><p>Simamia madarasa kwa form na mwaka wa masomo.</p></div><div class="catalog-actions"><button class="catalog-button primary" id="openCatalogModal" type="button"><i class="fa-solid fa-plus"></i> Ongeza Darasa</button><a class="catalog-button secondary" href="dashboard.html">Dashboard</a></div></header><section class="catalog-panel"><div class="catalog-toolbar"><input id="catalogSearch" type="search" placeholder="Tafuta darasa, form au mwaka..."><strong>Class Directory</strong></div><div id="catalogError" class="catalog-error" hidden></div><div class="catalog-table-wrap"><table class="catalog-table" id="catalogTable"><thead><tr><th>#</th><th>Darasa</th><th>Form</th><th>Academic Year</th><th>Capacity</th><th>Status</th></tr></thead><tbody id="catalogList"></tbody></table><div id="catalogEmpty" class="catalog-empty" hidden>Hakuna madarasa yaliyopatikana.</div></div></section></main><div class="catalog-modal" id="catalogModal" hidden><form class="catalog-form" id="catalogForm"><h2>Ongeza Darasa</h2><div id="catalogAlert" class="catalog-alert" hidden></div><div class="catalog-field"><label for="formId">Form</label><select id="formId" name="form_id" required><option value="">Inapakia forms...</option></select></div><div class="catalog-field"><label for="academicYearId">Academic Year</label><select id="academicYearId" name="academic_year_id" required><option value="">Inapakia miaka...</option></select></div><div class="catalog-field"><label for="className">Jina la Darasa</label><input id="className" name="class_name" required placeholder="Mfano: FORM 1A"></div><div class="catalog-field"><label for="capacity">Capacity</label><input id="capacity" name="capacity" type="number" min="1" placeholder="Hiari"></div><div class="catalog-form-actions"><button class="catalog-button secondary" id="cancelCatalogModal" type="button">Ghairi</button><button class="catalog-button primary" type="submit">Hifadhi Darasa</button></div></form></div><script src="../../js/api.js"></script><script src="../../js/auth.js"></script><script src="../../js/admin/catalog.js?v=20260928-1"></script><script>document.addEventListener('DOMContentLoaded', async () => { try { const r = await MsongolaAPI.get('/admin-catalog/classes/options'); const f = document.getElementById('formId'); const y = document.getElementById('academicYearId'); f.innerHTML = '<option value="">Chagua form</option>' + (r.data?.forms || []).map(x => `<option value="${x.id}">${x.form_name}</option>`).join(''); y.innerHTML = '<option value="">Chagua mwaka</option>' + (r.data?.years || []).map(x => `<option value="${x.id}">${x.year_label}</option>`).join(''); } catch (e) { console.error(e); } });</script></body></html>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Madarasa | Admin | Msongola Result System</title>
+	<link rel="stylesheet" href="../../css/style.css">
+	<link rel="stylesheet" href="../../css/admin-dashboard.css?v=20260929-1">
+	<link rel="stylesheet" href="../../css/admin-catalog.css?v=20260929-4">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="app-page admin-page catalog-page" data-catalog="classes">
+	<div class="sidebar-overlay" id="sidebarOverlay"></div>
+	<aside class="app-sidebar" id="sidebar">
+		<div class="sidebar-brand"><a href="dashboard.html" class="sidebar-brand-link"><span class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span><span class="sidebar-brand-text"><strong>MSONGOLA</strong><small>SECONDARY SCHOOL</small></span></a><button type="button" class="sidebar-close" id="sidebarClose" aria-label="Funga menu"><i class="fa-solid fa-xmark"></i></button></div>
+		<div class="sidebar-section-label">ADMINISTRATION</div>
+		<nav class="sidebar-nav" aria-label="Main navigation">
+			<a href="dashboard.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span class="sidebar-nav-text">Dashboard</span></a>
+			<a href="users.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-users"></i></span><span class="sidebar-nav-text">Watumiaji</span></a>
+			<a href="teachers.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="sidebar-nav-text">Walimu</span></a>
+			<a href="classes.html" class="sidebar-nav-item active" aria-current="page"><span class="sidebar-nav-icon"><i class="fa-solid fa-school"></i></span><span class="sidebar-nav-text">Madarasa</span></a>
+			<a href="assignments.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-user-check"></i></span><span class="sidebar-nav-text">Assignments</span></a>
+			<a href="class-teachers.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-person-chalkboard"></i></span><span class="sidebar-nav-text">Waratibu wa Darasa</span></a>
+			<a href="form-coordinators.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-people-roof"></i></span><span class="sidebar-nav-text">Waratibu wa Form</span></a>
+			<a href="subjects.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-book-open"></i></span><span class="sidebar-nav-text">Masomo</span></a>
+			<a href="school-settings.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-school"></i></span><span class="sidebar-nav-text">Mipangilio ya Shule</span></a>
+			<a href="audit-logs.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span><span class="sidebar-nav-text">Audit Logs</span></a>
+			<a href="profile.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-user-circle"></i></span><span class="sidebar-nav-text">Wasifu Wangu</span></a>
+		</nav>
+		<div class="sidebar-footer"><div class="sidebar-system-status"><span class="status-dot"></span><div><strong>Mfumo uko hewani</strong><small>Msongola Result System</small></div></div><button type="button" class="sidebar-logout" data-logout="true"><i class="fa-solid fa-right-from-bracket"></i><span>Toka kwenye mfumo</span></button></div>
+	</aside>
+
+	<div class="app-shell">
+		<header class="app-topbar"><div class="topbar-left"><button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Fungua menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button><div class="topbar-page-title"><span>MSONGOLA SECONDARY SCHOOL</span><strong>Madarasa</strong></div></div></header>
+		<main class="app-main">
+			<section class="catalog-shell">
+				<header class="catalog-header"><div><h1><i class="fa-solid fa-school"></i> Madarasa</h1><p>Simamia madarasa kwa form na mwaka wa masomo.</p></div><div class="catalog-actions"><button class="catalog-button primary" id="openCatalogModal" type="button"><i class="fa-solid fa-plus"></i> Ongeza Darasa</button></div></header>
+				<section class="catalog-panel"><div class="catalog-toolbar"><input id="catalogSearch" type="search" placeholder="Tafuta darasa, form au mwaka..."><strong>Class Directory</strong></div><div id="catalogError" class="catalog-error" hidden></div><div class="catalog-table-wrap"><table class="catalog-table" id="catalogTable"><thead><tr><th>#</th><th>Darasa</th><th>Form</th><th>Academic Year</th><th>Capacity</th><th>Status</th></tr></thead><tbody id="catalogList"></tbody></table><div id="catalogEmpty" class="catalog-empty" hidden>Hakuna madarasa yaliyopatikana.</div></div></section>
+			</section>
+		</main>
+	</div>
+
+	<div class="catalog-modal" id="catalogModal" hidden><form class="catalog-form" id="catalogForm"><h2>Ongeza Darasa</h2><div id="catalogAlert" class="catalog-alert" hidden></div><div class="catalog-field"><label for="classFormId">Form</label><select id="classFormId" name="form_id" required><option value="">Inapakia forms...</option></select></div><div class="catalog-field"><label for="classYearId">Academic Year</label><select id="classYearId" name="academic_year_id" required><option value="">Inapakia miaka...</option></select></div><div class="catalog-field"><label for="className">Jina la Darasa</label><input id="className" name="class_name" required placeholder="Mfano: FORM 1A"></div><div class="catalog-field"><label for="capacity">Capacity</label><input id="capacity" name="capacity" type="number" min="1" placeholder="Hiari"></div><div class="catalog-form-actions"><button class="catalog-button secondary" id="cancelCatalogModal" type="button">Ghairi</button><button class="catalog-button primary" type="submit" disabled>Hifadhi Darasa</button></div></form></div>
+	<script src="../../js/api.js"></script>
+	<script src="../../js/auth.js"></script>
+	<script src="../../js/admin/catalog.js?v=20260929-4"></script>
+</body>
+</html>

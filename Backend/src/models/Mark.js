@@ -5,10 +5,11 @@ async function getEntryContext(userId, assignmentId, examinationId) {
 	try {
 		const [assignments] = await connection.execute(`
 			SELECT ta.id, ta.teacher_id, ta.class_id, ta.subject_id, ta.academic_year_id,
-				   c.class_name, s.subject_name, ay.year_label AS academic_year
+				   c.class_name, f.form_name, s.subject_name, ay.year_label AS academic_year
 			FROM teacher_assignments ta
 			INNER JOIN teachers t ON t.id = ta.teacher_id
 			INNER JOIN classes c ON c.id = ta.class_id
+			INNER JOIN forms f ON f.id = c.form_id
 			INNER JOIN subjects s ON s.id = ta.subject_id
 			INNER JOIN academic_years ay ON ay.id = ta.academic_year_id
 			WHERE ta.id = ? AND t.user_id = ? AND ta.status = 'ACTIVE'
@@ -43,7 +44,7 @@ async function getEntryContext(userId, assignmentId, examinationId) {
 			students = studentRows;
 
 			const [markRows] = await connection.execute(`
-				SELECT student_id, marks, status
+				SELECT student_id, mark AS marks, status
 				FROM marks
 				WHERE teacher_assignment_id = ? AND examination_id = ?
 			`, [assignmentId, selectedExamId]);
@@ -112,9 +113,9 @@ async function saveDraftMarks(userId, assignmentId, examinationId, entries) {
 				throw new Error("Alama lazima ziwe kati ya 0 na 100.");
 			}
 			await connection.execute(`
-				INSERT INTO marks (student_id, subject_id, examination_id, teacher_assignment_id, marks, status)
+				INSERT INTO marks (student_id, subject_id, examination_id, teacher_assignment_id, mark, status)
 				VALUES (?, ?, ?, ?, ?, 'DRAFT')
-				ON DUPLICATE KEY UPDATE marks = VALUES(marks), status = 'DRAFT'
+				ON DUPLICATE KEY UPDATE mark = VALUES(mark), status = 'DRAFT'
 			`, [Number(entry.student_id), assignment.subject_id, examinationId, assignmentId, score]);
 		}
 		await connection.commit();

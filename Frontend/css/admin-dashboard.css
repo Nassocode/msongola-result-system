@@ -430,6 +430,7 @@
     position: fixed;
     inset: 0;
     z-index: 990;
+    display: block;
 
     background: rgba(7,29,53,.50);
 
@@ -456,6 +457,47 @@
 .admin-page .app-shell {
     min-height: 100vh;
     margin-left: var(--sidebar-width);
+}
+
+.admin-page .main-content {
+    min-height: 100vh;
+    margin-left: 0;
+}
+
+.admin-page .app-sidebar .sidebar-link {
+    min-height: 49px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+    padding: 0 13px;
+    border-radius: 12px;
+    color: rgba(255,255,255,.70);
+    font-size: 13px;
+    font-weight: 600;
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+
+.admin-page .app-sidebar .sidebar-link:hover {
+    background: rgba(255,255,255,.075);
+    color: #fff;
+    transform: translateX(2px);
+}
+
+.admin-page .app-sidebar .sidebar-link.active {
+    background: linear-gradient(135deg, rgba(15,133,134,.95), rgba(11,108,109,.95));
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(15,133,134,.18);
+}
+
+.admin-page .app-sidebar .sidebar-link > i,
+.admin-page .app-sidebar .sidebar-link-icon {
+    width: 22px;
+    flex: 0 0 22px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-size: 15px;
 }
 
 
@@ -1450,6 +1492,11 @@
 .admin-page .quick-action-icon.users {
     background: #eaf1fb;
     color: #2467a8;
+}
+
+.admin-page .quick-action-icon.teachers {
+    background: #e8f7f7;
+    color: #0f8586;
 }
 
 .admin-page .quick-action-icon.school {

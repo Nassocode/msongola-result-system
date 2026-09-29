@@ -135,6 +135,18 @@ async function findClassByName(className, academicYear) {
     return rows[0] || null;
 }
 
+async function findClassById(classId, academicYear) {
+    const [rows] = await pool.execute(`
+        SELECT c.id, c.class_name, c.status, f.form_name, ay.year_label
+        FROM classes c
+        INNER JOIN forms f ON f.id = c.form_id
+        INNER JOIN academic_years ay ON ay.id = c.academic_year_id
+        WHERE c.id = ? AND ay.year_label = ? AND c.status = 'ACTIVE'
+        LIMIT 1
+    `, [classId, String(academicYear || "").trim()]);
+    return rows[0] || null;
+}
+
 async function createStudent(data) {
     const sql = `
         INSERT INTO students (
@@ -206,6 +218,7 @@ module.exports = {
     getStudentById,
     getStudentByAdmissionNumber,
     findClassByName,
+    findClassById,
     createStudent,
     updateStudent,
     updateStudentStatus,

@@ -7,13 +7,17 @@ const userService = require("../services/userService");
 // ============================================================
 async function createUser(req, res) {
     try {
-        const { username, password, role, status } = req.body;
+        const { username, password, role, status, teacher_number, first_name, middle_name, last_name } = req.body;
 
         const user = await userService.createUser({
             username,
             password,
             role,
-            status
+            status,
+            teacher_number,
+            first_name,
+            middle_name,
+            last_name
         });
 
         return res.status(201).json({
@@ -179,6 +183,21 @@ async function changeUserPassword(req, res) {
     }
 }
 
+async function changeOwnPassword(req, res) {
+    try {
+        await userService.changeOwnPassword(req.user.id, req.body || {});
+        return res.status(200).json({
+            success: true,
+            message: "Password yako imebadilishwa successfully."
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message || "Imeshindikana kubadilisha password."
+        });
+    }
+}
+
 
 // ============================================================
 // EXPORT
@@ -189,5 +208,6 @@ module.exports = {
     getUserById,
     updateUser,
     changeUserStatus,
-    changeUserPassword
+    changeUserPassword,
+    changeOwnPassword
 };

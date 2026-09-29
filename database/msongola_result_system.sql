@@ -366,7 +366,7 @@ CREATE TABLE teacher_assignments (
 -- 11. CLASS TEACHER ASSIGNMENTS
 -- ============================================================
 
-CREATE TABLE class_teacher_assignments (
+CREATE TABLE class_teachers (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
     teacher_id BIGINT UNSIGNED NOT NULL,
@@ -406,6 +406,56 @@ CREATE TABLE class_teacher_assignments (
     CONSTRAINT uq_class_teacher_year
         UNIQUE (
             class_id,
+            academic_year_id
+        )
+);
+
+
+-- ============================================================
+-- 11A. FORM COORDINATOR ASSIGNMENTS
+-- One coordinator oversees every class section in a form/year.
+-- ============================================================
+
+CREATE TABLE form_coordinators (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    teacher_id BIGINT UNSIGNED NOT NULL,
+
+    form_id BIGINT UNSIGNED NOT NULL,
+
+    academic_year_id BIGINT UNSIGNED NOT NULL,
+
+    status ENUM(
+        'ACTIVE',
+        'INACTIVE'
+    ) NOT NULL DEFAULT 'ACTIVE',
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_form_coordinator_teacher
+        FOREIGN KEY (teacher_id)
+        REFERENCES teachers(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_form_coordinator_form
+        FOREIGN KEY (form_id)
+        REFERENCES forms(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_form_coordinator_year
+        FOREIGN KEY (academic_year_id)
+        REFERENCES academic_years(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT uq_form_coordinator_year
+        UNIQUE (
+            form_id,
             academic_year_id
         )
 );

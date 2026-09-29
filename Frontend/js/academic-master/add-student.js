@@ -131,7 +131,7 @@
             gender: gender.value,
             date_of_birth: dateOfBirth.value || null,
             academic_year: academicYear.value,
-            class_name: studentClass.value,
+            class_id: Number(studentClass.value),
             admission_date: admissionDate.value || null,
             status: studentStatus.value || "ACTIVE"
         };
@@ -148,8 +148,8 @@
         }
 
         const options = [{ value: "", label: "Chagua darasa" }, ...items.map((item) => ({
-            value: item.class_name,
-            label: `${item.form_name || "Form"} - ${item.class_name}`
+            value: item.id,
+            label: `${item.form_name || "Form"} - ${item.class_name} (${item.academic_year})`
         }))];
 
         studentClass.innerHTML = options.map((item) => `
@@ -189,7 +189,7 @@
             document.getElementById("gender").value = student.gender || "";
             document.getElementById("dateOfBirth").value = student.date_of_birth ? String(student.date_of_birth).slice(0, 10) : "";
             document.getElementById("academicYear").value = student.academic_year || "";
-            document.getElementById("studentClass").value = student.class_name || "";
+            document.getElementById("studentClass").value = student.class_id || "";
             document.getElementById("admissionDate").value = student.admission_date ? String(student.admission_date).slice(0, 10) : "";
             document.getElementById("studentStatus").value = student.status || "ACTIVE";
             document.title = "Hariri Mwanafunzi | Msongola Result System";

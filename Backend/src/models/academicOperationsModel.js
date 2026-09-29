@@ -1,4 +1,5 @@
 const pool = require("../config/database");
+const notificationModel = require("./notificationModel");
 
 async function getExaminations() {
     const [rows] = await pool.execute(`
@@ -59,7 +60,14 @@ async function getClassTeachers() {
 
 async function getClassTeacherOptions() {
     const [teachers] = await pool.execute("SELECT id, teacher_number, CONCAT_WS(' ', first_name, middle_name, last_name) AS teacher_name FROM teachers WHERE status = 'ACTIVE' ORDER BY first_name, last_name");
-    const [classes] = await pool.execute("SELECT id, class_name, academic_year_id FROM classes WHERE status = 'ACTIVE' ORDER BY class_name");
+    const [classes] = await pool.execute(`
+        SELECT c.id, c.class_name, c.academic_year_id, f.form_name, ay.year_label AS academic_year
+        FROM classes c
+        INNER JOIN forms f ON f.id = c.form_id
+        INNER JOIN academic_years ay ON ay.id = c.academic_year_id
+        WHERE c.status = 'ACTIVE'
+        ORDER BY ay.id DESC, f.form_name ASC, c.class_name ASC
+    `);
     const [years] = await pool.execute("SELECT id, year_label FROM academic_years WHERE status IN ('ACTIVE','INACTIVE') ORDER BY id DESC");
     return { teachers, classes, years };
 }
@@ -104,33 +112,76 @@ async function createClassTeacher(data) {
 }
 
 async function getSubmissions() {
-    const [rows] = await pool.execute(`
-        SELECT ms.id, ms.status, ms.submitted_at, ms.reviewed_at, ms.review_comment,
+    const [submissions] = await pool.execute(`
+        SELECT ms.id, ms.teacher_assignment_id, ms.examination_id,
+               ms.status, ms.submitted_at, ms.reviewed_at, ms.review_comment,
                e.exam_name, e.term, ay.year_label AS academic_year,
-               c.class_name, s.subject_name,
-               t.teacher_number, CONCAT_WS(' ', t.first_name, t.middle_name, t.last_name) AS teacher_name,
-               COUNT(m.id) AS marks_count
+               c.id AS class_id, c.class_name, f.form_name, s.subject_name,
+               t.teacher_number,
+               CONCAT_WS(' ', t.first_name, t.middle_name, t.last_name) AS teacher_name
         FROM mark_submissions ms
         INNER JOIN teacher_assignments ta ON ta.id = ms.teacher_assignment_id
         INNER JOIN teachers t ON t.id = ta.teacher_id
         INNER JOIN classes c ON c.id = ta.class_id
+        INNER JOIN forms f ON f.id = c.form_id
         INNER JOIN subjects s ON s.id = ta.subject_id
         INNER JOIN academic_years ay ON ay.id = ta.academic_year_id
         INNER JOIN examinations e ON e.id = ms.examination_id
-        LEFT JOIN marks m ON m.teacher_assignment_id = ta.id AND m.examination_id = e.id
-        GROUP BY ms.id, ms.status, ms.submitted_at, ms.reviewed_at, ms.review_comment,
-                 e.exam_name, e.term, ay.year_label, c.class_name, s.subject_name,
-                 t.teacher_number, t.first_name, t.middle_name, t.last_name
-        ORDER BY ms.updated_at DESC
+        WHERE ms.id = (
+            SELECT MAX(latest_submission.id)
+            FROM mark_submissions latest_submission
+            WHERE latest_submission.teacher_assignment_id = ms.teacher_assignment_id
+              AND latest_submission.examination_id = ms.examination_id
+        )
+        ORDER BY ay.id DESC, f.form_name, c.class_name, e.id DESC, s.subject_name
     `);
-    return rows;
+
+    const [marks] = await pool.execute(`
+        SELECT m.teacher_assignment_id, m.examination_id, m.student_id,
+               st.admission_number,
+               CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
+               m.mark, m.status AS mark_status
+        FROM marks m
+        INNER JOIN students st ON st.id = m.student_id
+        WHERE m.id = (
+            SELECT MAX(latest_mark.id)
+            FROM marks latest_mark
+            WHERE latest_mark.teacher_assignment_id = m.teacher_assignment_id
+              AND latest_mark.examination_id = m.examination_id
+              AND latest_mark.student_id = m.student_id
+        )
+    `);
+
+    const marksBySubmission = new Map();
+    for (const mark of marks) {
+        const key = `${mark.teacher_assignment_id}:${mark.examination_id}`;
+        if (!marksBySubmission.has(key)) marksBySubmission.set(key, []);
+        marksBySubmission.get(key).push(mark);
+    }
+
+    return submissions.map((submission) => {
+        const key = `${submission.teacher_assignment_id}:${submission.examination_id}`;
+        const students = marksBySubmission.get(key) || [];
+        return { ...submission, students, marks_count: students.length };
+    });
 }
 
 async function reviewSubmission(id, reviewerId, status, comment) {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
-        const [rows] = await connection.execute("SELECT teacher_assignment_id, examination_id, status FROM mark_submissions WHERE id = ? FOR UPDATE", [id]);
+        const [rows] = await connection.execute(`
+            SELECT ms.teacher_assignment_id, ms.examination_id, ms.status,
+                   t.user_id AS teacher_user_id, c.class_name, s.subject_name, e.exam_name
+            FROM mark_submissions ms
+            INNER JOIN teacher_assignments ta ON ta.id = ms.teacher_assignment_id
+            INNER JOIN teachers t ON t.id = ta.teacher_id
+            INNER JOIN classes c ON c.id = ta.class_id
+            INNER JOIN subjects s ON s.id = ta.subject_id
+            INNER JOIN examinations e ON e.id = ms.examination_id
+            WHERE ms.id = ?
+            FOR UPDATE
+        `, [id]);
         const submission = rows[0];
         if (!submission) throw new Error("Submission haijapatikana.");
         if (submission.status !== "SUBMITTED") throw new Error("Ni submissions zilizotumwa tu zinaweza kukaguliwa.");
@@ -143,6 +194,16 @@ async function reviewSubmission(id, reviewerId, status, comment) {
             UPDATE marks SET status = ?
             WHERE teacher_assignment_id = ? AND examination_id = ? AND status = 'SUBMITTED'
         `, [status, submission.teacher_assignment_id, submission.examination_id]);
+        if (status === "RETURNED") {
+            await notificationModel.createForUser(submission.teacher_user_id, {
+                senderUserId: reviewerId,
+                title: "Alama zimerudishwa kwa marekebisho",
+                message: `Alama za ${submission.subject_name} - ${submission.class_name} (${submission.exam_name}) zimerudishwa. Sababu: ${comment}`,
+                type: "MARKS_RETURNED",
+                referenceType: "MARK_SUBMISSION",
+                referenceId: Number(id)
+            }, connection);
+        }
         await connection.commit();
         return { id: Number(id), status };
     } catch (error) {
