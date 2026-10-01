@@ -195,7 +195,7 @@ CREATE TABLE classes (
 
     class_name VARCHAR(50) NOT NULL,
 
-    capacity INT UNSIGNED NULL,
+    capacity INT UNSIGNED NULL DEFAULT 150,
 
     status ENUM(
         'ACTIVE',

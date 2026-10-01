@@ -116,7 +116,8 @@ async function getSubmissions() {
         SELECT ms.id, ms.teacher_assignment_id, ms.examination_id,
                ms.status, ms.submitted_at, ms.reviewed_at, ms.review_comment,
                e.exam_name, e.term, ay.year_label AS academic_year,
-               c.id AS class_id, c.class_name, f.form_name, s.subject_name,
+               c.id AS class_id, c.academic_year_id, c.form_id, c.class_name, f.form_name,
+               s.id AS subject_id, s.subject_name,
                t.teacher_number,
                CONCAT_WS(' ', t.first_name, t.middle_name, t.last_name) AS teacher_name
         FROM mark_submissions ms
@@ -152,6 +153,39 @@ async function getSubmissions() {
         )
     `);
 
+    const [assignedSubjects] = await pool.execute(`
+        SELECT DISTINCT ta.class_id, ta.academic_year_id,
+               subject.id AS subject_id, subject.subject_name
+        FROM teacher_assignments ta
+        INNER JOIN subjects subject ON subject.id = ta.subject_id
+        WHERE ta.status = 'ACTIVE'
+        ORDER BY subject.subject_name
+    `);
+
+    const [classStudents] = await pool.execute(`
+         SELECT st.id AS student_id, st.admission_number,
+             CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
+             st.class_id, c.academic_year_id
+         FROM students st
+         INNER JOIN classes c ON c.id = st.class_id
+         WHERE st.status = 'ACTIVE'
+         ORDER BY st.last_name, st.first_name, st.middle_name
+    `);
+
+    const subjectsByClass = new Map();
+    for (const subject of assignedSubjects) {
+        const key = `${subject.class_id}:${subject.academic_year_id}`;
+        if (!subjectsByClass.has(key)) subjectsByClass.set(key, []);
+        subjectsByClass.get(key).push({ id: subject.subject_id, name: subject.subject_name });
+    }
+
+    const studentsByClass = new Map();
+    for (const student of classStudents) {
+        const key = `${student.class_id}:${student.academic_year_id}`;
+        if (!studentsByClass.has(key)) studentsByClass.set(key, []);
+        studentsByClass.get(key).push(student);
+    }
+
     const marksBySubmission = new Map();
     for (const mark of marks) {
         const key = `${mark.teacher_assignment_id}:${mark.examination_id}`;
@@ -162,7 +196,14 @@ async function getSubmissions() {
     return submissions.map((submission) => {
         const key = `${submission.teacher_assignment_id}:${submission.examination_id}`;
         const students = marksBySubmission.get(key) || [];
-        return { ...submission, students, marks_count: students.length };
+        const classKey = `${submission.class_id}:${submission.academic_year_id}`;
+        return {
+            ...submission,
+            students,
+            assigned_subjects: subjectsByClass.get(classKey) || [],
+            class_students: studentsByClass.get(classKey) || [],
+            marks_count: students.length
+        };
     });
 }
 

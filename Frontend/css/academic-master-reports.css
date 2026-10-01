@@ -231,6 +231,12 @@ color: #94a3b8;
 cursor: not-allowed;
 }
 
+.student-filter-hint {
+color: #64748b;
+font-size: 11px;
+line-height: 1.4;
+}
+
 .filter-actions {
 display: flex;
 align-items: center;
@@ -614,6 +620,42 @@ text-transform: uppercase;
 min-height: 35px;
 }
 
+.official-results-table {
+min-width: max-content;
+}
+
+.official-results-table th.subject-column {
+min-width: 74px;
+text-align: center;
+}
+
+.official-results-table td.mark-matrix-cell {
+min-width: 54px;
+text-align: center;
+white-space: nowrap;
+}
+
+.mark-matrix-cell strong,
+.mark-matrix-cell small {
+display: block;
+}
+
+.mark-matrix-cell strong {
+color: #172033;
+font-size: 11px;
+}
+
+.mark-matrix-cell small {
+margin-top: 2px;
+color: #64748b;
+font-size: 8px;
+font-weight: 700;
+}
+
+.mark-matrix-cell.mark-missing {
+color: #94a3b8;
+}
+
 .official-results-table tbody tr:nth-child(even) {
 background: #fafafa;
 }
@@ -818,7 +860,6 @@ RESPONSIVE
 
 @media (max-width: 1200px) {
 
-```
 .report-type-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -850,13 +891,11 @@ RESPONSIVE
 .result-summary-item:nth-child(3) {
     border-right: 0;
 }
-```
 
 }
 
 @media (max-width: 768px) {
 
-```
 .reports-intro {
     padding: 22px;
 }
@@ -950,13 +989,11 @@ RESPONSIVE
     grid-template-columns: 1fr;
     gap: 25px;
 }
-```
 
 }
 
 @media (max-width: 480px) {
 
-```
 .reports-intro {
     padding: 18px;
 }
@@ -994,7 +1031,6 @@ RESPONSIVE
 .school-heading h2 {
     font-size: 12px;
 }
-```
 
 }
 
@@ -1004,12 +1040,986 @@ PRINT
 
 @media print {
 
-```
 @page {
-    size: A4 portrait;
+    size: A4 landscape;
     margin: 12mm;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        color: #52606d;
+        font-size: 8pt;
+    }
 }
 
+.reports-page {
+    max-width: 1480px;
+    padding-top: 22px;
+    padding-bottom: 30px;
+}
+
+.reports-page .reports-intro {
+    align-items: center;
+    min-height: 110px;
+    margin-bottom: 16px;
+    padding: 20px 24px;
+    border-color: #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(16, 42, 67, 0.035);
+}
+
+.reports-page .reports-kicker {
+    color: #0f718f;
+    letter-spacing: 1px;
+}
+
+.reports-page .reports-intro h2 {
+    color: #102a43;
+    font-size: 24px;
+}
+
+.reports-page .reports-intro p {
+    color: #627d98;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.reports-page .reports-intro-icon {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+    border-radius: 10px;
+    background: #eaf5f7;
+    color: #0f718f;
+    font-size: 19px;
+}
+
+.reports-page .report-type-panel,
+.reports-page .report-filter-panel,
+.reports-page .report-preview-panel {
+    margin-bottom: 16px;
+    border-radius: 11px;
+    box-shadow: 0 3px 14px rgba(16, 42, 67, 0.04);
+}
+
+.reports-page .report-type-grid {
+    display: flex;
+    gap: 0;
+    margin: 14px 18px 18px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #d5e0e8;
+    border-radius: 9px;
+}
+
+.reports-page .report-type-card {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 62px;
+    padding: 10px 12px;
+    border: 0;
+    border-right: 1px solid #d5e0e8;
+    border-radius: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.reports-page .report-type-card:last-child {
+    border-right: 0;
+}
+
+.reports-page .report-type-card:hover {
+    transform: none;
+    border-color: #9bbbc6;
+    box-shadow: none;
+}
+
+.reports-page .report-type-card.active {
+    background: #f1f8fa;
+    box-shadow: inset 0 -3px #168aad;
+}
+
+.reports-page .report-type-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    border-radius: 8px;
+    background: #eef3f6;
+    color: #52606d;
+}
+
+.reports-page .report-type-card.active .report-type-icon {
+    background: #168aad;
+    color: #fff;
+}
+
+.reports-page .report-type-check,
+.reports-page .report-type-card.active .report-type-check {
+    color: #0f718f;
+}
+
+.reports-page .report-security-badge {
+    border-color: #d1e9dd;
+    border-radius: 7px;
+    background: #f3faf6;
+    color: #18734f;
+}
+
+.reports-page .report-filters-grid {
+    gap: 14px;
+    padding: 4px 20px 0;
+}
+
+.reports-page .form-group label {
+    color: #334e68;
+    font-size: 11px;
+}
+
+.reports-page .form-group select {
+    min-height: 41px;
+    border-color: #d5e0e8;
+    border-radius: 8px;
+    color: #243b53;
+    font-size: 12px;
+}
+
+.reports-page .form-group select:focus,
+.reports-page .report-remarks textarea:focus {
+    border-color: #168aad;
+    box-shadow: 0 0 0 3px rgba(22, 138, 173, 0.12);
+}
+
+.reports-page .filter-actions {
+    margin: 16px 20px 0;
+    padding: 14px 0 18px;
+}
+
+.reports-page .btn {
+    min-height: 38px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.reports-page .btn-primary {
+    background: #0f718f;
+    color: #fff;
+}
+
+.reports-page .btn-primary:hover {
+    background: #0b5f78;
+}
+
+.reports-page .btn-outline:hover,
+.reports-page .btn-secondary:hover {
+    border-color: #a9c9d2;
+    background: #f4fafb;
+    color: #0f718f;
+}
+
+.reports-page .report-summary-grid[hidden] {
+    display: none;
+}
+
+.reports-page .report-summary-grid {
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.reports-page .report-summary-card {
+    gap: 11px;
+    padding: 13px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(16, 42, 67, 0.035);
+}
+
+.reports-page .report-summary-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+    border-radius: 8px;
+    background: #eef5f7;
+    color: #0f718f;
+}
+
+.reports-page .report-summary-card span {
+    letter-spacing: 0.3px;
+}
+
+.reports-page .report-summary-card strong {
+    color: #102a43;
+    font-size: 19px;
+}
+
+.reports-page .report-preview-panel {
+    margin-bottom: 0;
+}
+
+.reports-page .report-preview-toolbar {
+    min-height: 68px;
+    padding: 12px 18px;
+}
+
+.reports-page .report-toolbar-actions {
+    gap: 7px;
+}
+
+.reports-page .report-toolbar-actions .btn {
+    padding: 0 12px;
+}
+
+.reports-page .report-toolbar-actions .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.reports-page .report-matrix-search {
+    position: relative;
+    width: min(270px, 100%);
+    margin-left: auto;
+}
+
+.reports-page .report-matrix-search i {
+    position: absolute;
+    top: 50%;
+    left: 11px;
+    color: #829ab1;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.reports-page .report-matrix-search input {
+    width: 100%;
+    min-height: 37px;
+    padding: 7px 10px 7px 32px;
+    border: 1px solid #d5e0e8;
+    border-radius: 8px;
+    background: #fbfcfd;
+    color: #243b53;
+    font: inherit;
+    font-size: 11px;
+}
+
+.reports-page .report-matrix-search input:focus {
+    outline: 3px solid rgba(22, 138, 173, 0.12);
+    border-color: #168aad;
+}
+
+.reports-page .report-matrix-search input:disabled {
+    background: #f4f7f9;
+    cursor: not-allowed;
+}
+
+.reports-page .report-empty {
+    min-height: 230px;
+    padding: 30px 20px;
+}
+
+.reports-page .report-empty-icon {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: #eef5f7;
+    color: #0f718f;
+    font-size: 21px;
+}
+
+.reports-page .report-empty h3 {
+    color: #102a43;
+    font-size: 15px;
+}
+
+.reports-page .report-empty p {
+    color: #627d98;
+    font-size: 12px;
+}
+
+.reports-page .report-no-matches {
+    padding: 15px;
+    color: #627d98;
+    font-size: 12px;
+    text-align: center;
+}
+
+.reports-page .report-no-matches[hidden] {
+    display: none;
+}
+
+.reports-page .official-report {
+    max-width: none;
+    padding: 26px;
+}
+
+.reports-page .school-contact {
+    margin: 4px 0;
+    color: #52606d;
+    font-size: 10px;
+}
+
+.reports-page .school-contact[hidden] {
+    display: none;
+}
+
+.reports-page .report-remarks textarea {
+    min-height: 70px;
+    border-color: #d5e0e8;
+    border-radius: 7px;
+}
+
+.reports-page .official-report-footer {
+    margin-top: 32px;
+}
+
+.reports-page .class-report-view .official-result-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reports-page .student-report-view .official-result-summary {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.reports-page .official-results-table th {
+    background: #edf3f6;
+    color: #334e68;
+}
+
+.reports-page .official-results-table th.subject-column {
+    min-width: 78px;
+    white-space: normal;
+}
+
+.reports-page .official-results-table tbody tr:hover {
+    background: #f3fafb;
+}
+
+.reports-page .report-bottom-actions {
+    display: none;
+}
+
+.reports-page .report-alert {
+    border-color: #f1d1d4;
+    background: #fff7f7;
+    color: #a71930;
+}
+
+.reports-page .class-students-panel {
+    margin-bottom: 22px;
+    border: 1px solid #dce6f2;
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(16, 42, 67, 0.07);
+}
+
+.reports-page .class-students-panel[hidden] {
+    display: none;
+}
+
+.reports-page .class-roster-header {
+    min-height: 76px;
+    padding: 16px 20px;
+    background: linear-gradient(110deg, #f4f8ff, #ffffff 72%);
+}
+
+.reports-page .class-roster-count {
+    padding: 7px 11px;
+    border: 1px solid #d8e4f5;
+    border-radius: 999px;
+    background: #edf4ff;
+    color: #24518a;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.reports-page .class-roster-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e6edf2;
+    background: #fbfdff;
+}
+
+.reports-page .class-roster-context {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #526985;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.reports-page .class-roster-context i {
+    color: #3575bd;
+}
+
+.reports-page .class-roster-search {
+    position: relative;
+    flex: 1 1 220px;
+    max-width: 340px;
+    min-width: 170px;
+}
+
+.reports-page .class-roster-search i {
+    position: absolute;
+    top: 50%;
+    left: 13px;
+    color: #8295ad;
+    font-size: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.reports-page .class-roster-search input {
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid #d9e3ef;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #17324d;
+    font: inherit;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.reports-page .class-roster-search input:focus {
+    border-color: #4381c2;
+    box-shadow: 0 0 0 3px rgba(53, 117, 189, 0.12);
+}
+
+.reports-page .class-roster-search input:disabled {
+    background: #f3f6fa;
+    cursor: not-allowed;
+}
+
+.reports-page .class-roster-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reports-page .class-roster-toolbar > div,
+.reports-page .class-roster-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.reports-page .class-roster-table-wrap {
+    max-height: 460px;
+    overflow: auto;
+    border: 0;
+    border-radius: 0 0 18px 18px;
+}
+
+.reports-page .class-roster-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.reports-page .class-roster-table th,
+.reports-page .class-roster-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #e8eef2;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.reports-page .class-roster-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f1f6fc;
+    color: #465b75;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.reports-page .class-roster-table tbody tr:hover {
+    background: #f4f8ff;
+}
+
+.reports-page .class-roster-table td:first-child {
+    color: #73849a;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-page .class-roster-table td strong {
+    color: #183554;
+    font-weight: 700;
+}
+
+.reports-page .class-roster-actions .btn {
+    min-height: 34px;
+    padding: 0 11px;
+    font-size: 10px;
+}
+
+.reports-page .class-roster-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 130px;
+    padding: 24px;
+    color: #627d98;
+    font-size: 12px;
+    text-align: center;
+}
+
+.reports-page .class-roster-empty i {
+    color: #8298b2;
+    font-size: 18px;
+}
+
+.reports-page .class-roster-empty[hidden] {
+    display: none;
+}
+
+.reports-page .student-results-detail-row > td {
+    padding: 0;
+    background: #f5f8fc;
+}
+
+.reports-page .student-results-detail {
+    display: grid;
+    gap: 14px;
+    padding: 20px 22px 22px;
+    border-left: 3px solid #3575bd;
+}
+
+.reports-page .student-detail-profile {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px;
+    border: 1px solid #dce6f2;
+    border-radius: 13px;
+    background: #ffffff;
+}
+
+.reports-page .student-detail-avatar {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #e9f1ff;
+    color: #24518a;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.reports-page .student-detail-heading {
+    min-width: 170px;
+    margin-right: auto;
+}
+
+.reports-page .student-detail-heading > span,
+.reports-page .student-breakdown-heading > div > span {
+    display: block;
+    margin-bottom: 4px;
+    color: #3575bd;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.reports-page .student-detail-heading h4,
+.reports-page .student-breakdown-heading h4 {
+    margin: 0;
+    color: #17324d;
+    font-size: 14px;
+}
+
+.reports-page .student-detail-heading small {
+    display: block;
+    margin-top: 4px;
+    color: #627d98;
+    font-size: 10px;
+}
+
+.reports-page .student-detail-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 0;
+}
+
+.reports-page .student-detail-facts > div {
+    display: grid;
+    gap: 3px;
+}
+
+.reports-page .student-detail-facts dt,
+.reports-page .student-results-overview span {
+    color: #73849a;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.reports-page .student-detail-facts dd {
+    margin: 0;
+    color: #243b53;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.reports-page .student-results-overview {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: hidden;
+    border: 1px solid #dce6f2;
+    border-radius: 13px;
+    background: #ffffff;
+}
+
+.reports-page .student-results-overview > div {
+    display: grid;
+    gap: 5px;
+    padding: 12px 15px;
+    border-right: 1px solid #e6edf5;
+}
+
+.reports-page .student-results-overview > div:last-child {
+    border-right: 0;
+}
+
+.reports-page .student-results-overview strong {
+    color: #17324d;
+    font-size: 17px;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-page .student-subject-breakdown {
+    min-width: 0;
+}
+
+.reports-page .student-breakdown-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+}
+
+.reports-page .student-breakdown-heading > small {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #eaf1fb;
+    color: #395a80;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.reports-page .student-results-table-wrap {
+    border-color: #dce6f2;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.reports-page .student-results-table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.reports-page .student-results-table th,
+.reports-page .student-results-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e8eef5;
+    text-align: left;
+}
+
+.reports-page .student-results-table th {
+    background: #f1f6fc;
+    color: #526985;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.reports-page .student-results-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.reports-page .student-results-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.reports-page .student-subject-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reports-page .student-subject-name > span {
+    min-width: 34px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background: #eef3fa;
+    color: #526985;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.reports-page .student-subject-name strong {
+    color: #243b53;
+}
+
+.reports-page .student-mark-value {
+    color: #17324d;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.reports-page .student-grade-badge {
+    display: inline-flex;
+    min-width: 28px;
+    justify-content: center;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: #eaf1fb;
+    color: #24518a;
+    font-weight: 800;
+}
+
+.report-analysis-panel {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #d9e3e8;
+}
+
+.report-analysis-panel h3 {
+    margin: 0 0 12px;
+    color: #17324d;
+    font-size: 13px;
+}
+
+.report-analysis-panel[hidden],
+.report-analysis-panel [hidden] {
+    display: none !important;
+}
+
+.performance-metrics,
+.division-counts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.performance-metrics > div,
+.division-counts > div {
+    display: grid;
+    gap: 5px;
+    padding: 10px 12px;
+    border: 1px solid #d9e3e8;
+    border-radius: 7px;
+    background: #f7fafb;
+}
+
+.performance-metrics span,
+.division-counts span {
+    color: #627d98;
+    font-size: 10px;
+}
+
+.performance-metrics strong,
+.division-counts strong {
+    color: #17324d;
+    font-size: 15px;
+}
+
+.grade-distribution {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.grade-distribution span {
+    padding: 6px 9px;
+    border: 1px solid #d9e3e8;
+    border-radius: 6px;
+    color: #17324d;
+    font-size: 10px;
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.analysis-table th,
+.analysis-table td {
+    padding: 8px;
+    border: 1px solid #d9e3e8;
+    text-align: left;
+}
+
+.analysis-table th {
+    background: #edf3f6;
+    color: #334e68;
+}
+
+.reports-page .report-type-card:focus-visible,
+.reports-page .btn:focus-visible {
+    outline: 3px solid rgba(22, 138, 173, 0.24);
+    outline-offset: 2px;
+}
+
+@media (max-width: 1024px) {
+    .reports-page .report-type-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 14px 18px 18px;
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .reports-page .report-type-card {
+        flex: initial;
+        border: 1px solid #d5e0e8;
+        border-radius: 8px;
+    }
+
+    .reports-page .report-type-card:last-child {
+        border-right: 1px solid #d5e0e8;
+    }
+}
+
+@media (max-width: 768px) {
+    .reports-page .reports-intro {
+        padding: 18px;
+    }
+
+    .reports-page .report-filters-grid {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .reports-page .filter-actions {
+        margin-right: 16px;
+        margin-left: 16px;
+    }
+
+    .reports-page .report-preview-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reports-page .report-matrix-search {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .reports-page .report-toolbar-actions {
+        width: 100%;
+    }
+
+    .reports-page .report-toolbar-actions .btn {
+        flex: 1;
+    }
+
+    .reports-page .official-report {
+        padding: 16px;
+    }
+
+    .reports-page .class-roster-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reports-page .class-roster-toolbar > div {
+        width: 100%;
+    }
+
+    .reports-page .class-roster-context {
+        white-space: normal;
+    }
+
+    .reports-page .class-roster-search {
+        width: 100%;
+        max-width: none;
+    }
+
+    .reports-page .class-roster-toolbar-actions {
+        flex-wrap: wrap;
+    }
+
+    .reports-page .class-roster-toolbar .btn {
+        flex: 1;
+    }
+
+    .reports-page .student-results-detail {
+        padding: 14px 12px 16px;
+    }
+
+    .reports-page .student-detail-profile {
+        flex-wrap: wrap;
+    }
+
+    .reports-page .student-detail-heading {
+        flex: 1 1 170px;
+        margin-right: 0;
+    }
+
+    .reports-page .student-detail-facts {
+        flex: 1 1 100%;
+        padding-top: 10px;
+        border-top: 1px solid #e6edf5;
+    }
+
+    .reports-page .student-results-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reports-page .student-results-overview > div:nth-child(2n) {
+        border-right: 0;
+    }
+
+    .reports-page .student-results-overview > div:nth-child(-n + 2) {
+        border-bottom: 1px solid #e6edf5;
+    }
+}
+
+@media (max-width: 480px) {
+    .reports-page .report-type-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        padding-right: 12px;
+        padding-left: 12px;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .reports-page .report-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .reports-page .report-summary-card {
+        padding: 11px;
+    }
+
+    .reports-page .report-summary-icon {
+        display: none;
+    }
+}
+
+@media print {
 body {
     background: #ffffff !important;
 }
@@ -1081,6 +2091,458 @@ body {
 .official-results-table td {
     padding: 6px 5px;
 }
-```
 
+body * {
+    visibility: hidden !important;
+}
+
+#officialReport,
+#officialReport * {
+    visibility: visible !important;
+}
+
+#officialReport {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+}
+
+.official-report[hidden] {
+    display: none !important;
+}
+
+.report-analysis-panel,
+.performance-metrics > div,
+.division-counts > div {
+    break-inside: avoid;
+}
+
+}
+
+@media screen {
+.reports-page .class-students-panel {
+    border: 1px solid #d7dfeb;
+    border-top: 4px solid #c89b3c;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 16px 36px rgba(16, 42, 67, 0.1);
+}
+
+.reports-page .class-roster-header {
+    min-height: 78px;
+    padding: 17px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(110deg, #0b1f33, #173b5b);
+}
+
+.reports-page .class-roster-header .panel-title-icon {
+    background: rgba(200, 155, 60, 0.16);
+    color: #e6c56a;
+}
+
+.reports-page .class-roster-header .panel-kicker {
+    color: #e6c56a;
+}
+
+.reports-page .class-roster-header .panel-title h3 {
+    color: #ffffff;
+}
+
+.reports-page .class-roster-count {
+    border-color: rgba(230, 197, 106, 0.44);
+    background: rgba(200, 155, 60, 0.14);
+    color: #f4d985;
+}
+
+.reports-page .class-roster-toolbar {
+    padding: 14px 20px;
+    border-bottom-color: #e8e4d8;
+    background: #f8f7f2;
+}
+
+.reports-page .class-roster-context {
+    color: #42566d;
+}
+
+.reports-page .class-roster-context i {
+    color: #b1842d;
+}
+
+.reports-page .class-roster-search input {
+    border-color: #d7dce4;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.reports-page .class-roster-search input:focus {
+    border-color: #c89b3c;
+    box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.16);
+}
+
+.reports-page .class-roster-toolbar-actions .btn-primary {
+    background: #102a43;
+    box-shadow: 0 5px 12px rgba(16, 42, 67, 0.16);
+}
+
+.reports-page .class-roster-toolbar-actions .btn-primary:hover {
+    background: #0b1f33;
+}
+
+.reports-page .class-roster-table th {
+    border-bottom: 2px solid #c89b3c;
+    background: #edf1f5;
+    color: #263e58;
+}
+
+.reports-page .class-roster-table tbody tr:nth-child(even) {
+    background: #fbfaf7;
+}
+
+.reports-page .class-roster-table tbody tr:hover {
+    background: #f5f0df;
+}
+
+.reports-page .class-roster-table td strong {
+    color: #102a43;
+}
+
+.reports-page .class-roster-actions .btn-secondary {
+    border-color: #d6c28c;
+    color: #735713;
+}
+
+.reports-page .class-roster-actions .btn-secondary:hover {
+    background: #fbf7e9;
+}
+
+.reports-page .student-results-detail-row > td {
+    background: #f4f2eb;
+}
+
+.reports-page .student-results-detail {
+    gap: 12px;
+    border-left: 4px solid #c89b3c;
+    background: #f4f2eb;
+}
+
+.reports-page .student-detail-profile {
+    border-color: #203e5a;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #102a43, #1a3b59);
+}
+
+.reports-page .student-detail-avatar {
+    border-radius: 10px;
+    background: #e6c56a;
+    color: #102a43;
+}
+
+.reports-page .student-detail-heading > span,
+.reports-page .student-breakdown-heading > div > span {
+    color: #c89b3c;
+}
+
+.reports-page .student-detail-heading h4,
+.reports-page .student-detail-heading small,
+.reports-page .student-detail-facts dd {
+    color: #ffffff;
+}
+
+.reports-page .student-detail-facts dt {
+    color: #e6c56a;
+}
+
+.reports-page .student-results-overview {
+    gap: 8px;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+}
+
+.reports-page .student-results-overview > div {
+    border: 1px solid #e4dfd0;
+    border-top: 2px solid #c89b3c;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.reports-page .student-results-overview > div:last-child {
+    border-right: 1px solid #e4dfd0;
+}
+
+.reports-page .student-results-overview span {
+    color: #64748b;
+}
+
+.reports-page .student-results-overview strong {
+    color: #102a43;
+}
+
+.reports-page .student-breakdown-heading h4 {
+    color: #102a43;
+}
+
+.reports-page .student-breakdown-heading > small {
+    background: #eee8d6;
+    color: #705919;
+}
+
+.reports-page .student-results-table-wrap {
+    border-color: #ded9ca;
+    border-radius: 10px;
+}
+
+.reports-page .student-results-table th {
+    border-bottom: 2px solid #c89b3c;
+    background: #102a43;
+    color: #ffffff;
+}
+
+.reports-page .student-results-table tbody tr:nth-child(even) {
+    background: #fbfaf7;
+}
+
+.reports-page .student-results-table tbody tr:hover {
+    background: #f5f0df;
+}
+
+.reports-page .student-subject-name > span {
+    background: #f4eedc;
+    color: #705919;
+}
+
+.reports-page .student-grade-badge {
+    background: #eaf7ee;
+    color: #1d7546;
+}
+
+.reports-page .class-roster-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(350px, 0.9fr);
+    align-items: stretch;
+}
+
+.reports-page .class-roster-table-wrap {
+    max-height: 540px;
+    border-right: 1px solid #e4dfd0;
+    border-radius: 0;
+}
+
+.reports-page .class-roster-table {
+    min-width: 600px;
+}
+
+.reports-page .class-roster-table tbody tr.is-selected {
+    background: #f3edda;
+    box-shadow: inset 3px 0 #c89b3c;
+}
+
+.reports-page .roster-student-identity {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 150px;
+}
+
+.reports-page .roster-student-avatar {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #e9edf2;
+    color: #183554;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.reports-page .roster-gender-tag {
+    display: inline-grid;
+    min-width: 28px;
+    min-height: 24px;
+    place-items: center;
+    border-radius: 6px;
+    background: #f1eee5;
+    color: #52606d;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.reports-page .class-roster-actions .btn {
+    gap: 6px;
+    padding: 0 9px;
+}
+
+.reports-page .class-student-detail-pane {
+    min-width: 0;
+    max-height: 540px;
+    overflow: auto;
+    background: #f8f7f2;
+}
+
+.reports-page .class-student-detail-empty,
+.reports-page .class-student-detail-loading {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 34px 28px;
+    color: #617085;
+    text-align: center;
+}
+
+.reports-page .class-student-detail-empty > span {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 13px;
+    border-radius: 12px;
+    background: #eee8d6;
+    color: #8d6e25;
+}
+
+.reports-page .class-student-detail-empty h4 {
+    margin: 0 0 7px;
+    color: #102a43;
+    font-size: 15px;
+}
+
+.reports-page .class-student-detail-empty p {
+    max-width: 270px;
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.reports-page .class-student-detail-loading {
+    flex-direction: row;
+    gap: 10px;
+    min-height: 220px;
+    color: #52606d;
+    font-size: 12px;
+}
+
+.reports-page .class-student-detail-loading i {
+    color: #9a7726;
+}
+
+.reports-page .student-results-detail {
+    padding: 16px;
+    border: 0;
+    background: transparent;
+}
+
+.reports-page .student-detail-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.reports-page .student-detail-topline > div {
+    display: grid;
+    gap: 3px;
+}
+
+.reports-page .student-detail-topline > div > span {
+    color: #9a7726;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.reports-page .student-detail-topline > div > strong {
+    color: #102a43;
+    font-size: 14px;
+}
+
+.reports-page .student-detail-close {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d8d4c8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #52606d;
+    cursor: pointer;
+}
+
+.reports-page .student-detail-close:hover {
+    border-color: #c89b3c;
+    color: #705919;
+}
+
+.reports-page .student-detail-profile {
+    gap: 10px;
+    padding: 12px;
+}
+
+.reports-page .student-detail-heading {
+    min-width: 120px;
+}
+
+.reports-page .student-detail-heading h4 {
+    font-size: 13px;
+}
+
+.reports-page .student-detail-facts {
+    flex: 1 1 100%;
+    gap: 8px 14px;
+    padding-top: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.reports-page .student-results-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.reports-page .student-results-overview > div {
+    min-width: 0;
+    padding: 10px;
+}
+
+.reports-page .student-results-overview span {
+    font-size: 8px;
+}
+
+.reports-page .student-results-overview strong {
+    font-size: 15px;
+}
+
+.reports-page .student-results-table {
+    min-width: 470px;
+    font-size: 10px;
+}
+
+.reports-page .student-results-table th,
+.reports-page .student-results-table td {
+    padding: 8px;
+}
+
+@media (max-width: 1100px) {
+    .reports-page .class-roster-workspace {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .reports-page .class-roster-table-wrap {
+        max-height: 390px;
+        border-right: 0;
+        border-bottom: 1px solid #e4dfd0;
+    }
+
+    .reports-page .class-student-detail-pane {
+        max-height: none;
+        min-height: 320px;
+    }
+}
 }

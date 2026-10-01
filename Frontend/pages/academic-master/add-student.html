@@ -24,6 +24,7 @@
         href="../../css/academic-master-add-student.css"
     >
 
+<link rel="stylesheet" href="../../css/designer-credit.css">
 </head>
 
 
@@ -289,7 +290,7 @@
                 </span>
 
                 <span class="nav-label">
-                    Wasifu
+                    Wasifu wangu
                 </span>
 
             </a>
@@ -330,7 +331,7 @@
                 <i class="fa-solid fa-right-from-bracket"></i>
 
                 <span>
-                    Toka kwenye mfumo
+                    Log out
                 </span>
 
             </button>
@@ -529,10 +530,6 @@
 
                                     Admission Number
 
-                                    <span class="required">
-                                        *
-                                    </span>
-
                                 </label>
 
 
@@ -544,22 +541,17 @@
                                         type="text"
                                         id="admissionNumber"
                                         name="admissionNumber"
-                                        placeholder="Mfano: MGS001"
+                                        placeholder="Itatolewa na mfumo"
                                         maxlength="30"
                                         autocomplete="off"
-                                        required
+                                        readonly
                                     >
 
                                 </div>
 
                                 <small>
-                                    Academic Master anaingiza namba ya mwanafunzi.
+                                    Namba ya mwanafunzi itatolewa moja kwa moja na mfumo.
                                 </small>
-
-                                <div
-                                    class="field-error"
-                                    id="admissionNumberError"
-                                ></div>
 
                             </div>
 
@@ -758,7 +750,7 @@
                             </h2>
 
                             <p>
-                                Weka mwanafunzi katika Form na darasa husika.
+                                Weka mwanafunzi katika kidato na darasa husika.
                             </p>
 
                         </div>
@@ -777,7 +769,7 @@
 
                                 <label for="academicYear">
 
-                                    Academic Year
+                                    Mwaka wa masomo
 
                                     <span class="required">
                                         *
@@ -825,8 +817,7 @@
 
                                 <label for="studentForm">
 
-                                    Form
-
+                                    Kidato
                                     <span class="required">
                                         *
                                     </span>
@@ -845,7 +836,8 @@
                                     >
 
                                         <option value="">
-                                            Chagua Form
+                                            Chagua kidato
+
                                         </option>
 
                                         <option value="FORM_1">
@@ -1259,6 +1251,11 @@
 <!-- Page Script -->
 <script src="../../js/academic-master/add-student.js?v=20260928-3"></script>
 
+<footer class="designer-credit" aria-label="Designer contact">
+    <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+    <a href="tel:+255616975125">Phone Number: +255 616 975 125</a>
+    <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
+</footer>
 </body>
 
 </html>

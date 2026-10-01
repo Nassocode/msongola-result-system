@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 // =====================================================
 // ROUTES
@@ -36,6 +37,15 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+
+app.use(
+    "/uploads/logo",
+    express.static(path.join(__dirname, "../../uploads/logo"), {
+        dotfiles: "deny",
+        index: false,
+        fallthrough: true
+    })
+);
 
 app.use(
     express.urlencoded({

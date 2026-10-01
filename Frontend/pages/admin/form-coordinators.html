@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../css/admin-dashboard.css?v=20260929-2">
     <link rel="stylesheet" href="../../css/admin-catalog.css?v=20260929-7">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../../css/designer-credit.css">
 </head>
 <body class="app-page admin-page catalog-page" data-catalog="formCoordinators" data-role="ADMIN">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -51,19 +52,19 @@
                 <header class="catalog-header">
                     <div>
                         <h1><i class="fa-solid fa-people-roof"></i> Waratibu wa Form</h1>
-                        <p>Mratibu mmoja husimamia madarasa yote ya Form katika mwaka husika; jukumu hili si assignment ya kufundisha somo.</p>
+                        <p>Mratibu mmoja husimamia madarasa yote ya kidato katika mwaka husika; jukumu hili si kuteuliwa  kufundisha somo.</p>
                     </div>
                     <div class="catalog-actions"><button class="catalog-button primary" id="openCatalogModal" type="button"><i class="fa-solid fa-plus"></i> Weka Mratibu</button></div>
                 </header>
                 <section class="catalog-panel">
-                    <div class="catalog-toolbar"><input id="catalogSearch" type="search" placeholder="Tafuta form, mwalimu au mwaka..."><strong>Form coordinators</strong></div>
+                    <div class="catalog-toolbar"><input id="catalogSearch" type="search" placeholder="Tafuta kwa kidato, mwalimu au mwaka..."><strong>Msimamizi wa kidato</strong></div>
                     <div id="catalogError" class="catalog-error" hidden></div>
                     <div class="catalog-table-wrap">
                         <table class="catalog-table" id="catalogTable">
                             <thead><tr><th>#</th><th>Form</th><th>Mratibu</th><th>Namba ya Mwalimu</th><th>Mwaka</th><th>Status</th></tr></thead>
                             <tbody id="catalogList"></tbody>
                         </table>
-                        <div id="catalogEmpty" class="catalog-empty" hidden>Hakuna waratibu wa Form waliopewa bado.</div>
+                        <div id="catalogEmpty" class="catalog-empty" hidden>Hakuna waratibu waliocteuliwa kwa kipindi hiki.</div>
                     </div>
                 </section>
             </section>
@@ -71,12 +72,12 @@
     </div>
     <div class="catalog-modal" id="catalogModal" hidden>
         <form class="catalog-form" id="catalogForm">
-            <h2>Weka Mratibu wa Form</h2>
-            <p class="form-coordinator-note">Hii inahusu form nzima, pamoja na madarasa yake yote. Haitoi somo kwa mwalimu.</p>
+            <h2>Weka Mratibu wa kidato</h2>
+            <p class="form-coordinator-note">Hii inahusu kidato kizima, pamoja na madarasa yake yote.</p>
             <div id="catalogAlert" class="catalog-alert" hidden></div>
             <div class="catalog-field"><label for="coordinatorTeacher">Mwalimu</label><select id="coordinatorTeacher" name="teacher_id" required></select></div>
-            <div class="catalog-field"><label for="coordinatorForm">Form</label><select id="coordinatorForm" name="form_id" required></select></div>
-            <div class="catalog-field"><label for="coordinatorYear">Academic Year</label><select id="coordinatorYear" name="academic_year_id" required></select></div>
+            <div class="catalog-field"><label for="coordinatorForm">Kidato</label><select id="coordinatorForm" name="form_id" required></select></div>
+            <div class="catalog-field"><label for="coordinatorYear">Mwaka wa masomo</label><select id="coordinatorYear" name="academic_year_id" required></select></div>
             <div class="catalog-form-actions">
                 <button class="catalog-button secondary" id="cancelCatalogModal" type="button">Ghairi</button>
                 <button class="catalog-button primary" type="submit">Hifadhi Mratibu</button>
@@ -86,5 +87,10 @@
     <script src="../../js/api.js"></script>
     <script src="../../js/auth.js"></script>
     <script src="../../js/admin/catalog.js?v=20260929-7"></script>
+<footer class="designer-credit" aria-label="Designer contact">
+    <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+    <a href="tel:+255616975125">Phone Number: +255 616 975 125</a>
+    <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
+</footer>
 </body>
 </html>

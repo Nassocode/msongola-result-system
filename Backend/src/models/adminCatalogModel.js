@@ -1,4 +1,8 @@
 const pool = require("../config/database");
+const {
+    createTemporaryIdentifier,
+    createTeacherNumber
+} = require("../utils/generatedIdentifiers");
 
 async function getTeachers() {
     const [rows] = await pool.execute(`
@@ -35,22 +39,49 @@ async function getTeacherUserOptions() {
 }
 
 async function createTeacher(data) {
-    const [result] = await pool.execute(`
-        INSERT INTO teachers
-            (user_id, teacher_number, first_name, middle_name, last_name, gender, phone, email, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
-        data.user_id,
-        data.teacher_number,
-        data.first_name,
-        data.middle_name || null,
-        data.last_name,
-        data.gender || null,
-        data.phone || null,
-        data.email || null,
-        data.status || "ACTIVE"
-    ]);
-    return result.insertId;
+    for (let attempt = 0; attempt < 10; attempt += 1) {
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+            const [result] = await connection.execute(`
+                INSERT INTO teachers
+                    (user_id, teacher_number, first_name, middle_name, last_name, gender, phone, email, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                data.user_id,
+                createTemporaryIdentifier(),
+                data.first_name,
+                data.middle_name || null,
+                data.last_name,
+                data.gender || null,
+                data.phone || null,
+                data.email || null,
+                data.status || "ACTIVE"
+            ]);
+            const teacherNumber = createTeacherNumber(result.insertId);
+
+            try {
+                await connection.execute(
+                    "UPDATE teachers SET teacher_number = ? WHERE id = ?",
+                    [teacherNumber, result.insertId]
+                );
+            } catch (error) {
+                if (error.code !== "ER_DUP_ENTRY" || attempt === 9) throw error;
+                await connection.rollback();
+                continue;
+            }
+
+            await connection.commit();
+            return { id: result.insertId, teacher_number: teacherNumber };
+        } catch (error) {
+            await connection.rollback().catch(() => {});
+            throw error;
+        } finally {
+            connection.release();
+        }
+    }
+
+    throw new Error("Imeshindikana kutengeneza Teacher Number ya kipekee.");
 }
 
 async function getSubjects() {
@@ -191,7 +222,7 @@ async function createClass(data) {
     const [result] = await pool.execute(`
         INSERT INTO classes (form_id, academic_year_id, class_name, capacity, status)
         VALUES (?, ?, ?, ?, ?)
-    `, [data.form_id, data.academic_year_id, data.class_name, data.capacity || null, data.status || "ACTIVE"]);
+    `, [data.form_id, data.academic_year_id, data.class_name, data.capacity ?? 150, data.status || "ACTIVE"]);
     return result.insertId;
 }
 

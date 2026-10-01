@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wasifu Wangu | Subject Teacher | Msongola Result System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/admin-dashboard.css?v=20260929-3" />
+    <link rel="stylesheet" href="../css/teacher-credit.css?v=1" />
+    <style>
+        :root {
+            --navy: #0b294b;
+            --navy-2: #133a60;
+            --teal: #168aad;
+            --teal-soft: rgba(22, 138, 173, 0.12);
+            --muted: #627d98;
+            --line: #dfe7ee;
+            --bg: #edf3f9;
+            --card: #ffffff;
+            --success: #198754;
+            --warning: #f59e0b;
+            --danger: #d92d20;
+            --shadow: 0 18px 38px rgba(11, 41, 75, 0.10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: radial-gradient(circle at top left, rgba(22,138,173,0.12), transparent 22%), linear-gradient(180deg, #f4f8fc 0%, var(--bg) 100%);
+            color: var(--navy);
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button, input { font: inherit; }
+
+        .app-shell { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 270px;
+            background: linear-gradient(180deg, #091f39 0%, #102d4d 100%);
+            color: #ebf2ff;
+            padding: 22px 16px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 12px 0 28px rgba(11, 41, 75, 0.14);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 8px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+
+        .sidebar-brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--teal), var(--navy));
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-brand-text strong {
+            font-size: 18px;
+            letter-spacing: 0.08em;
+        }
+
+        .sidebar-brand-text small {
+            color: rgba(235,242,255,0.72);
+            letter-spacing: 0.12em;
+            font-size: 9px;
+        }
+
+        .sidebar-close {
+            border: 0;
+            color: #fff;
+            background: rgba(255,255,255,0.07);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: none;
+            cursor: pointer;
+        }
+
+        .sidebar-section-label {
+            margin: 8px 8px 4px;
+            color: rgba(235,242,255,0.6);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: auto;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 12px;
+            color: rgba(235,242,255,0.88);
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .sidebar-nav-item:hover,
+        .sidebar-nav-item.active {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        .sidebar-nav-icon { width: 18px; text-align: center; }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 3px 2px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(22,138,173,0.36), rgba(255,255,255,0.12));
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .sidebar-user-info strong { display: block; font-size: 14px; }
+        .sidebar-user-info span { color: rgba(234,242,255,0.7); font-size: 12px; }
+
+        .sidebar-system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 12px;
+            color: rgba(235,242,255,0.8);
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 0 5px rgba(52,211,153,0.15);
+        }
+
+        .sidebar-system-status strong { display: block; font-size: 12px; }
+        .sidebar-system-status small { display: block; color: rgba(235,242,255,0.7); margin-top: 2px; }
+
+        .sidebar-logout {
+            width: 100%;
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .main-panel {
+            flex: 1;
+            padding: 28px 28px 32px;
+        }
+
+        .app-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .sidebar-toggle {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            color: var(--navy);
+            display: none;
+        }
+
+        .topbar-page-title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .topbar-page-title span {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .topbar-page-title strong {
+            font-size: 30px;
+            color: var(--navy);
+        }
+
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+        .profile-shell {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .profile-card,
+        .profile-panel,
+        .profile-security-card,
+        .profile-highlight {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+        }
+
+        .profile-hero {
+            background: linear-gradient(135deg, #102a43, #173f5f);
+            border-radius: 22px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            color: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(16, 42, 67, 0.16);
+        }
+
+        .profile-avatar-large {
+            width: 88px;
+            height: 88px;
+            border-radius: 24px;
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .profile-role {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 0.13em;
+            font-weight: 800;
+            color: #9fd8ff;
+            text-transform: uppercase;
+        }
+
+        .profile-hero h2 {
+            margin: 8px 0 6px;
+            font-size: 28px;
+        }
+
+        .profile-hero p {
+            margin: 0;
+            color: #d8e5ef;
+            max-width: 620px;
+        }
+
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            background: rgba(255,255,255,0.1);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .profile-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(22,138,173,0.12);
+            color: #0c5d75;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .profile-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .profile-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .profile-card-icon.blue { background: #edf4ff; color: var(--teal); }
+        .profile-card-icon.purple { background: #f4efff; color: #6f5ef5; }
+        .profile-card-icon.gold { background: #fff9e8; color: #d99a16; }
+
+        .profile-card-header h3 {
+            margin: 0 0 3px;
+            font-size: 18px;
+            color: var(--navy);
+        }
+
+        .profile-card-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .profile-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .profile-list-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .profile-list-item:last-child { border-bottom: none; }
+
+        .profile-list-item span {
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .profile-list-item strong {
+            color: var(--navy);
+            font-size: 14px;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .security-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 12px;
+            border: 1px solid #edf1f5;
+            border-radius: 14px;
+            background: #f9fbfd;
+        }
+
+        .security-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .security-item-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(22,138,173,0.1);
+            color: var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .security-item-content strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--navy);
+        }
+
+        .security-item-content span {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .security-btn,
+        .primary-btn,
+        .secondary-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .security-btn {
+            background: rgba(22,138,173,0.1);
+            color: var(--navy);
+            border: 1px solid rgba(22,138,173,0.14);
+        }
+
+        .security-btn.danger {
+            background: rgba(217,45,32,0.08);
+            color: var(--danger);
+            border-color: rgba(217,45,32,0.12);
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--teal), var(--navy-2));
+            color: #fff;
+        }
+
+        .secondary-btn {
+            background: #edf3f9;
+            color: var(--navy);
+        }
+
+        .profile-feedback {
+            margin: 0 0 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #eff9fb;
+            border: 1px solid #d7edf5;
+            color: #0f5269;
+            font-size: 13px;
+        }
+
+        .profile-feedback.error {
+            background: #fff3f3;
+            border-color: #f2c9cc;
+            color: #a71930;
+        }
+
+        .profile-feedback[hidden] { display: none; }
+
+        .profile-highlight {
+            display: grid;
+            gap: 12px;
+        }
+
+        .responsibility-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .responsibility-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 12px;
+            border-radius: 14px;
+            border: 1px solid #edf1f5;
+            background: #fafbfd;
+        }
+
+        .responsibility-item i {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--teal);
+            background: rgba(22,138,173,0.10);
+            flex-shrink: 0;
+        }
+
+        .responsibility-item strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--navy);
+        }
+
+        .responsibility-item span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .password-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 41, 75, 0.52);
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            z-index: 50;
+        }
+
+        .password-modal-overlay[hidden] { display: none; }
+
+        .password-modal {
+            width: min(100%, 520px);
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(11, 41, 75, 0.2);
+            padding: 24px 22px 18px;
+        }
+
+        .password-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .password-modal-tag {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--teal);
+            font-weight: 800;
+        }
+
+        .password-modal-header h3 {
+            margin: 6px 0 0;
+            color: var(--navy);
+            font-size: 22px;
+        }
+
+        .password-modal-close {
+            border: 0;
+            background: #edf3f9;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--navy);
+        }
+
+        .password-modal-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .password-modal-form label {
+            display: grid;
+            gap: 7px;
+            color: var(--navy);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .password-modal-form input {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: #fff;
+        }
+
+        .password-message {
+            display: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            border: 1px solid transparent;
+        }
+
+        .password-message.success {
+            display: block;
+            background: #eaf8f1;
+            border-color: #cfeedd;
+            color: #18734f;
+        }
+
+        .password-message.error {
+            display: block;
+            background: #fff0f2;
+            border-color: #f7d1d8;
+            color: #a71930;
+        }
+
+        .password-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 980px) {
+            .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 30; transform: translateX(-100%); transition: transform 0.2s ease; }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            .sidebar-close { display: inline-flex; align-items: center; justify-content: center; }
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(11, 41, 75, 0.42);
+                z-index: 20;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s ease;
+            }
+            .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+            .profile-shell { grid-template-columns: 1fr; }
+            .responsibility-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 560px) {
+            .main-panel { padding: 18px 16px 28px; }
+            .app-topbar { flex-direction: column; align-items: flex-start; }
+            .topbar-page-title strong { font-size: 24px; }
+            .profile-hero { flex-direction: column; align-items: flex-start; }
+            .password-modal-actions { flex-direction: column-reverse; }
+            .password-modal-actions button { width: 100%; }
+        }
+    </style>
+    <link rel="stylesheet" href="../css/admin-profile.css?v=3" />
+<link rel="stylesheet" href="../css/designer-credit.css">
+</head>
+<body class="app-page admin-page teacher-page teacher-dashboard-page" data-role="SUBJECT_TEACHER">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="app-shell">
+        <aside class="sidebar app-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <a href="dashboard.html" class="sidebar-brand-link">
+                    <span class="sidebar-brand-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+                    <span class="sidebar-brand-text"><strong>MSONGOLA</strong><small>SECONDARY SCHOOL</small></span>
+                </a>
+                <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Funga menu"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="sidebar-section-label">SUBJECT TEACHER</div>
+            <nav class="sidebar-nav" aria-label="Subject teacher navigation">
+                <a href="dashboard.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-chart-pie"></i></span><span class="sidebar-nav-text">Dashboard</span></a>
+                <a href="marks-entry.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-pen-to-square"></i></span><span class="sidebar-nav-text">Ingiza Alama</span></a>
+                <a href="my-classes.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-users"></i></span><span class="sidebar-nav-text">Madarasa Yangu</span></a>
+                <a href="notifications.html" class="sidebar-nav-item"><span class="sidebar-nav-icon"><i class="fa-solid fa-bell"></i></span><span class="sidebar-nav-text">Arifa</span></a>
+                <a href="profile.html" class="sidebar-nav-item active" aria-current="page"><span class="sidebar-nav-icon"><i class="fa-solid fa-user-circle"></i></span><span class="sidebar-nav-text">Wasifu Wangu</span></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar" id="sidebarAvatar">T</div>
+                    <div class="sidebar-user-info">
+                        <strong id="sidebarUsername">Teacher</strong>
+                        <span>Subject Teacher</span>
+                    </div>
+                </div>
+                <div class="sidebar-system-status"><span class="status-dot"></span><div><strong>Mfumo uko hewani</strong><small>Msongola Result System</small></div></div>
+                <button id="logoutBtn" class="sidebar-logout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Toka kwenye mfumo</span></button>
+            </div>
+        </aside>
+
+        <header class="app-topbar">
+                <div class="topbar-left">
+                    <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Fungua menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+                    <div class="topbar-page-title">
+                        <span>MSONGOLA SECONDARY SCHOOL</span>
+                        <strong>Wasifu Wangu</strong>
+                    </div>
+                </div>
+        </header>
+
+        <main class="app-main profile-content">
+            <div class="profile-breadcrumb">
+                <a href="dashboard.html">Dashboard</a>
+                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                <span>Wasifu Wangu</span>
+            </div>
+
+            <div class="profile-feedback" id="profileMessage" role="status" aria-live="polite" hidden></div>
+
+            <section class="profile-hero">
+                <div class="profile-avatar-large">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+
+                <div class="profile-hero-info">
+                    <span class="profile-role" id="profileRole">SUBJECT TEACHER</span>
+                    <h2 id="profileUsername">Mwalimu</h2>
+                    <p>Taarifa za akaunti yako ya Subject Teacher kwenye mfumo.</p>
+                    <div class="profile-status"><span class="status-dot"></span><span id="profileStatusLabel">Akaunti active</span></div>
+                </div>
+            </section>
+
+            <div class="profile-grid">
+                <section class="profile-card">
+                    <div class="profile-card-header">
+                        <div class="profile-card-icon blue"><i class="fa-solid fa-id-card"></i></div>
+                        <div>
+                            <h3>Taarifa za Akaunti</h3>
+                            <p>Taarifa za msingi za akaunti yako.</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-list">
+                        <div class="profile-info-item"><span>Username</span><strong id="accountUsername">-</strong></div>
+                        <div class="profile-info-item"><span>Role</span><strong id="accountRole">SUBJECT TEACHER</strong></div>
+                        <div class="profile-info-item"><span>Teacher Number</span><strong id="accountTeacherNumber">-</strong></div>
+                        <div class="profile-info-item"><span>Account Status</span><strong class="active-text" id="accountStatus">ACTIVE</strong></div>
+                        <div class="profile-info-item"><span>Teacher ID</span><strong id="accountTeacherId">-</strong></div>
+                        <div class="profile-info-item"><span>Account Created</span><strong id="accountCreated">-</strong></div>
+                        <div class="profile-info-item"><span>Last Updated</span><strong id="accountUpdated">-</strong></div>
+                    </div>
+                </section>
+
+                <section class="profile-card">
+                    <div class="profile-card-header">
+                        <div class="profile-card-icon purple"><i class="fa-solid fa-key"></i></div>
+                        <div>
+                            <h3>Badilisha Password</h3>
+                            <p>Weka password mpya kwa akaunti yako.</p>
+                        </div>
+                    </div>
+
+                    <div class="security-list">
+                        <div class="security-item">
+                            <div class="security-item-icon"><i class="fa-solid fa-key"></i></div>
+                            <div class="security-item-content">
+                                <strong>Password ya akaunti</strong>
+                                <span>Badilisha password inayotumika kuingia kwenye akaunti yako.</span>
+                            </div>
+                            <button type="button" class="security-btn" id="changePasswordBtn">Badilisha Password</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+
+    <div class="password-modal-overlay" id="passwordModal" hidden>
+        <div class="password-modal">
+            <div class="password-modal-header">
+                <div>
+                    <span class="password-modal-tag">Password</span>
+                    <h3>Badilisha Password</h3>
+                </div>
+                <button type="button" class="password-modal-close" id="closePasswordModal" aria-label="Funga"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="changePasswordForm" class="password-modal-form">
+                <div id="passwordMessage" class="password-message" role="alert"></div>
+
+                <label>
+                    Password ya sasa
+                    <input type="password" id="currentPassword" name="current_password" autocomplete="current-password" required />
+                </label>
+
+                <label>
+                    Password mpya
+                    <input type="password" id="newPassword" name="new_password" minlength="8" autocomplete="new-password" required />
+                </label>
+
+                <label>
+                    Thibitisha password mpya
+                    <input type="password" id="confirmPassword" name="confirm_password" minlength="8" autocomplete="new-password" required />
+                </label>
+
+                <div class="password-modal-actions">
+                    <button type="button" class="secondary-btn" id="cancelPasswordBtn">Ghairi</button>
+                    <button type="submit" class="primary-btn">Hifadhi Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/teacher/profile.js?v=20260930-2"></script>
+<footer class="designer-credit" aria-label="Designer contact">
+    <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+    <a href="tel:+255616975125">Phone Number: +255 616 975 125</a>
+    <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
+</footer>
+</body>
+</html>

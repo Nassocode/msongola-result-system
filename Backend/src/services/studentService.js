@@ -44,7 +44,6 @@ async function getStudentById(id) {
 }
 
 async function createStudent(data) {
-    const admissionNumber = String(data.admission_number || "").trim();
     const firstName = String(data.first_name || "").trim();
     const lastName = String(data.last_name || "").trim();
     const gender = String(data.gender || "").trim().toUpperCase();
@@ -52,10 +51,6 @@ async function createStudent(data) {
     const className = String(data.class_name || "").trim();
     const classId = Number(data.class_id);
     const status = String(data.status || "ACTIVE").trim().toUpperCase();
-
-    if (!admissionNumber) {
-        throw new Error("Admission Number inahitajika");
-    }
 
     if (!firstName) {
         throw new Error("Jina la kwanza linahitajika");
@@ -81,11 +76,6 @@ async function createStudent(data) {
         throw new Error("Status ya mwanafunzi sio sahihi");
     }
 
-    const existingStudent = await studentModel.getStudentByAdmissionNumber(admissionNumber);
-    if (existingStudent) {
-        throw new Error("Admission Number hii tayari ipo");
-    }
-
     const matchedClass = Number.isInteger(classId) && classId > 0
         ? await studentModel.findClassById(classId, academicYear)
         : await studentModel.findClassByName(className, academicYear);
@@ -94,7 +84,6 @@ async function createStudent(data) {
     }
 
     const studentId = await studentModel.createStudent({
-        admission_number: admissionNumber,
         first_name: firstName,
         middle_name: data.middle_name || null,
         last_name: lastName,
@@ -115,7 +104,6 @@ async function updateStudent(id, data) {
     const current = await studentModel.getStudentById(studentId);
     if (!current) throw new Error("Mwanafunzi hakupatikana");
 
-    const admissionNumber = String(data.admission_number || "").trim().toUpperCase();
     const firstName = String(data.first_name || "").trim();
     const lastName = String(data.last_name || "").trim();
     const gender = String(data.gender || "").trim().toUpperCase();
@@ -124,19 +112,17 @@ async function updateStudent(id, data) {
     const classId = Number(data.class_id);
     const status = String(data.status || "ACTIVE").trim().toUpperCase();
 
-    if (!admissionNumber || !firstName || !lastName || !academicYear || (!className && !(Number.isInteger(classId) && classId > 0))) throw new Error("Jaza taarifa zote zinazohitajika.");
+    if (!firstName || !lastName || !academicYear || (!className && !(Number.isInteger(classId) && classId > 0))) throw new Error("Jaza taarifa zote zinazohitajika.");
     if (!["MALE", "FEMALE"].includes(gender)) throw new Error("Jinsia sio sahihi");
     if (!["ACTIVE", "INACTIVE", "GRADUATED", "TRANSFERRED"].includes(status)) throw new Error("Status ya mwanafunzi sio sahihi");
 
-    const duplicate = await studentModel.getStudentByAdmissionNumber(admissionNumber, studentId);
-    if (duplicate) throw new Error("Admission Number hii tayari inatumika.");
     const matchedClass = Number.isInteger(classId) && classId > 0
         ? await studentModel.findClassById(classId, academicYear)
         : await studentModel.findClassByName(className, academicYear);
     if (!matchedClass) throw new Error("Darasa halijapatikana kwa mwaka uliochaguliwa.");
 
     await studentModel.updateStudent(studentId, {
-        admission_number: admissionNumber,
+        admission_number: current.admission_number,
         first_name: firstName,
         middle_name: String(data.middle_name || "").trim() || null,
         last_name: lastName,

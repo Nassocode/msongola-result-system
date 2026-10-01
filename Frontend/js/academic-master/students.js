@@ -1321,7 +1321,6 @@
             const formData = new FormData(addStudentForm);
 
             const student = {
-                admission_number: String(formData.get("admissionNumber") || "").trim().toUpperCase(),
                 first_name: String(formData.get("firstName") || "").trim(),
                 middle_name: String(formData.get("middleName") || "").trim(),
                 last_name: String(formData.get("lastName") || "").trim(),
@@ -1333,7 +1332,7 @@
                 status: String(formData.get("studentStatus") || "ACTIVE").trim() || "ACTIVE"
             };
 
-            if (!student.admission_number || !student.first_name || !student.last_name || !student.gender || !student.academic_year || !student.class_name) {
+            if (!student.first_name || !student.last_name || !student.gender || !student.academic_year || !student.class_name) {
                 showError("Tafadhali jaza sehemu zote zenye alama *.");
                 return;
             }
@@ -1342,7 +1341,7 @@
                 const createdStudent = await createStudentRecord(student);
                 addStudentForm.reset();
                 await loadStudents();
-                showSuccess("Mwanafunzi amesajiliwa kwa mafanikio.");
+                showSuccess(`Mwanafunzi amesajiliwa kwa mafanikio.${createdStudent?.admission_number ? ` Admission Number: ${createdStudent.admission_number}.` : ""}`);
                 closeModal(addStudentModal);
                 if (createdStudent) {
                     viewStudent(createdStudent.id);

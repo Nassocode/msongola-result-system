@@ -12,6 +12,12 @@
 
     const API_BASE_URL = "http://localhost:5000/api";
     const DEFAULT_TIMEOUT = 10000;
+    const API_SCRIPT_URL = document.currentScript?.src || window.location.href;
+    const API_ORIGIN = new URL(API_BASE_URL).origin;
+    const SCHOOL_LOGO_PATH = "/uploads/logo/school-logo.png";
+    const SCHOOL_LOGO_URL = new URL(SCHOOL_LOGO_PATH, API_ORIGIN).href;
+    let activeSchoolLogoURL = SCHOOL_LOGO_URL;
+    let schoolBrandObserver = null;
 
     /* =====================================================
        STORAGE KEYS
@@ -372,12 +378,111 @@
         }
     }
 
+    function decorateSchoolLogo(container, logoUrl) {
+        if (!container || container.dataset.schoolLogoReady === "true") return;
+        container.dataset.schoolLogoReady = "true";
+        container.classList.add("school-logo-container");
+
+        const image = document.createElement("img");
+        image.className = "school-brand-image";
+        image.src = logoUrl;
+        image.alt = "Msongola Secondary School logo";
+        image.decoding = "async";
+        image.addEventListener("load", () => container.classList.add("has-school-logo"), { once: true });
+        image.addEventListener("error", () => {
+            const localLogoUrl = new URL("../../uploads/logo/school-logo.png", API_SCRIPT_URL).href;
+            if (!image.dataset.localFallbackAttempted && image.src !== localLogoUrl) {
+                image.dataset.localFallbackAttempted = "true";
+                image.src = localLogoUrl;
+                return;
+            }
+            image.remove();
+            container.classList.remove("has-school-logo");
+        });
+        container.prepend(image);
+    }
+
+    function applySchoolLogos(logoUrl) {
+        const stylesheetUrl = new URL("../css/school-brand.css", API_SCRIPT_URL).href;
+        if (!document.querySelector("link[data-school-brand-styles]")) {
+            const stylesheet = document.createElement("link");
+            stylesheet.rel = "stylesheet";
+            stylesheet.href = stylesheetUrl;
+            stylesheet.dataset.schoolBrandStyles = "true";
+            document.head.appendChild(stylesheet);
+        }
+
+        document.querySelectorAll(
+            ".sidebar-brand-icon, .brand-mark, .brand-logo, .auth-logo-mark, .school-logo, .logo-placeholder, .preview-logo, .loading-card .logo"
+        ).forEach((container) => decorateSchoolLogo(container, logoUrl));
+
+        document.querySelectorAll(".sidebar-brand-text, .brand-text").forEach((container) => {
+            if (container.classList.contains("brand-text")) {
+                const subtitle = container.querySelector("span");
+                if (subtitle && subtitle.textContent.toLowerCase().includes("result system")) {
+                    subtitle.textContent = "SECONDARY SCHOOL";
+                }
+            }
+            if (container.querySelector(".school-brand-system-name")) return;
+            const tagline = document.createElement("span");
+            tagline.className = "school-brand-system-name";
+            tagline.textContent = "Results Management System";
+            container.appendChild(tagline);
+        });
+
+        document.querySelectorAll(".auth-logo, .auth-mobile-logo").forEach((container) => {
+            if (container.querySelector(".school-brand-system-name")) return;
+            const details = [...container.children].find((child) => !child.classList.contains("auth-logo-mark"));
+            if (!details || details.textContent.toLowerCase().includes("results management system")) return;
+            const tagline = document.createElement("span");
+            tagline.className = "school-brand-system-name";
+            tagline.textContent = "Results Management System";
+            details.appendChild(tagline);
+        });
+
+        if (!schoolBrandObserver && document.body) {
+            schoolBrandObserver = new MutationObserver(() => applySchoolLogos(activeSchoolLogoURL));
+            schoolBrandObserver.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    async function loadSchoolBranding() {
+        let logoUrl = SCHOOL_LOGO_URL;
+        let settings = {};
+
+        try {
+            const response = await get("/school-settings/branding", { auth: false, timeout: 3500 });
+            settings = response?.data || {};
+            const storedPath = String(settings.logo_path || SCHOOL_LOGO_PATH);
+            const candidate = new URL(storedPath, API_ORIGIN);
+            if (candidate.pathname === SCHOOL_LOGO_PATH) logoUrl = candidate.href;
+        } catch (error) {
+            console.warn("School branding settings unavailable; using the official logo path.");
+        }
+
+        activeSchoolLogoURL = logoUrl;
+        applySchoolLogos(logoUrl);
+        document.querySelectorAll("[data-school-name]").forEach((element) => {
+            if (settings.school_name) element.textContent = settings.school_name;
+        });
+        document.querySelectorAll("[data-school-branding-field]").forEach((element) => {
+            const field = element.dataset.schoolBrandingField;
+            element.textContent = settings[field] || "-";
+        });
+        document.querySelectorAll("[data-school-logo-path]").forEach((element) => {
+            element.textContent = SCHOOL_LOGO_PATH.replace(/^\//, "");
+        });
+        return { ...settings, logo_path: SCHOOL_LOGO_PATH, logo_url: logoUrl };
+    }
+
     /* =====================================================
        PUBLIC API
        ===================================================== */
 
     window.MsongolaAPI = {
         API_BASE_URL,
+        SCHOOL_LOGO_PATH,
+        SCHOOL_LOGO_URL,
 
         TOKEN_KEY,
         USER_KEY,
@@ -399,8 +504,11 @@
         getCurrentUser,
 
         checkServer,
+        loadSchoolBranding,
 
         ApiError
     };
+
+    loadSchoolBranding();
 
 })();

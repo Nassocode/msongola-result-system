@@ -28,7 +28,9 @@ async function getReportOptions() {
     const classesQuery =
         "SELECT c.id, c.form_id, c.academic_year_id, " +
         "c.class_name, c.capacity, c.status, " +
-        "f.form_name, ay.year_label " +
+        "f.form_name, ay.year_label, " +
+        "(SELECT COUNT(*) FROM students active_student " +
+        "WHERE active_student.class_id = c.id AND active_student.status = 'ACTIVE') AS student_count " +
         "FROM classes c " +
         "INNER JOIN forms f ON f.id = c.form_id " +
         "INNER JOIN academic_years ay " +
@@ -37,29 +39,21 @@ async function getReportOptions() {
         "ORDER BY ay.year_label DESC, " +
         "f.form_name ASC, c.class_name ASC";
 
-    const studentsQuery =
-        "SELECT s.id, s.admission_number, s.first_name, " +
-        "s.middle_name, s.last_name, s.gender, s.class_id, " +
-        "c.class_name, c.form_id, c.academic_year_id, " +
-        "f.form_name, ay.year_label " +
-        "FROM students s " +
-        "INNER JOIN classes c ON c.id = s.class_id " +
-        "INNER JOIN forms f ON f.id = c.form_id " +
-        "INNER JOIN academic_years ay ON ay.id = c.academic_year_id " +
-        "WHERE s.status = 'ACTIVE' " +
-        "ORDER BY s.first_name ASC, s.middle_name ASC, s.last_name ASC";
-
     const subjectsQuery =
-        "SELECT id, subject_code, subject_name, status " +
-        "FROM subjects " +
-        "WHERE status = 'ACTIVE' " +
-        "ORDER BY subject_name ASC";
+        "SELECT DISTINCT c.id AS class_id, c.academic_year_id, c.form_id, " +
+        "s.id, fs.subject_order, fs.is_compulsory, s.subject_code, s.subject_name " +
+        "FROM teacher_assignments ta " +
+        "INNER JOIN classes c ON c.id = ta.class_id " +
+        "INNER JOIN subjects s ON s.id = ta.subject_id " +
+        "LEFT JOIN form_subjects fs ON fs.form_id = c.form_id " +
+        "AND fs.subject_id = s.id AND fs.status = 'ACTIVE' " +
+        "WHERE ta.status = 'ACTIVE' AND c.status = 'ACTIVE' AND s.status = 'ACTIVE' " +
+        "ORDER BY c.id, fs.subject_order, s.subject_name";
 
     const [academicYearsResult] = await db.query(academicYearsQuery);
     const [examinationsResult] = await db.query(examinationsQuery);
     const [formsResult] = await db.query(formsQuery);
     const [classesResult] = await db.query(classesQuery);
-    const [studentsResult] = await db.query(studentsQuery);
     const [subjectsResult] = await db.query(subjectsQuery);
 
     return {
@@ -67,9 +61,35 @@ async function getReportOptions() {
         examinations: examinationsResult,
         forms: formsResult,
         classes: classesResult,
-        students: studentsResult,
         subjects: subjectsResult
     };
+}
+
+function requiredReportId(value, label) {
+    const id = Number(value);
+    if (!Number.isInteger(id) || id < 1) {
+        throw new Error(`${label} si sahihi.`);
+    }
+    return id;
+}
+
+async function getStudentsForClass(filters = {}) {
+    const classId = requiredReportId(filters.class_id, "Darasa");
+    const academicYearId = requiredReportId(filters.academic_year_id, "Academic Year");
+    const formId = requiredReportId(filters.form_id, "Form");
+    const classInfo = await getClassInformation(classId);
+
+    if (!classInfo || classInfo.status !== "ACTIVE") throw new Error("Darasa halijapatikana.");
+    if (Number(classInfo.academic_year_id) !== academicYearId) throw new Error("Darasa halilingani na Academic Year uliyochagua.");
+    if (Number(classInfo.form_id) !== formId) throw new Error("Darasa halilingani na Form uliyochagua.");
+
+    const [rows] = await db.query(`
+        SELECT id, admission_number, first_name, middle_name, last_name, gender, class_id
+        FROM students
+        WHERE class_id = ? AND status = 'ACTIVE'
+        ORDER BY last_name, first_name, middle_name, id
+    `, [classId]);
+    return rows;
 }
 
 async function getSchoolInformation() {
@@ -82,7 +102,7 @@ async function getSchoolInformation() {
         "FROM school_settings ss " +
         "LEFT JOIN users u ON u.id = ss.academic_master_user_id " +
         "WHERE ss.status = 'ACTIVE' " +
-        "ORDER BY ss.id ASC LIMIT 1";
+        "ORDER BY ss.id DESC LIMIT 1";
 
     const [rows] = await db.query(query);
 
@@ -91,8 +111,8 @@ async function getSchoolInformation() {
             school_name: "MSONGOLA SECONDARY SCHOOL",
             po_box: "P.O BOX 104727",
             motto: "EDUCATION IS LIGHT",
-            head_of_school: "NASSORO SHEKULAMBA",
-            academic_master: "Mwalimu KIIZA",
+            head_of_school: "Not configured",
+            academic_master: "Not configured",
             phone: "",
             email: "",
             logo_path: ""
@@ -105,8 +125,8 @@ async function getSchoolInformation() {
         school_name: school.school_name || "MSONGOLA SECONDARY SCHOOL",
         po_box: school.po_box || "P.O BOX 104727",
         motto: school.motto || "EDUCATION IS LIGHT",
-        head_of_school: school.head_of_school || "NASSORO SHEKULAMBA",
-        academic_master: school.academic_master_username || "Mwalimu KIIZA",
+        head_of_school: school.head_of_school || "Not configured",
+        academic_master: school.academic_master_username || "Not configured",
         phone: school.phone || "",
         email: school.email || "",
         logo_path: school.logo_path || ""
@@ -141,9 +161,32 @@ async function getClassInformation(classId) {
     return rows.length ? rows[0] : null;
 }
 
+function normalizeReportFilters(input = {}) {
+    const reportType = String(input.report_type || "").trim().toLowerCase();
+    if (!["student", "class", "subject", "summary"].includes(reportType)) {
+        throw new Error("Aina ya ripoti si sahihi.");
+    }
+
+    const filters = {
+        report_type: reportType,
+        academic_year_id: requiredReportId(input.academic_year_id, "Academic Year"),
+        examination_id: requiredReportId(input.examination_id, "Examination"),
+        form_id: requiredReportId(input.form_id, "Form"),
+        class_id: requiredReportId(input.class_id, "Darasa"),
+        student_id: input.student_id ? requiredReportId(input.student_id, "Mwanafunzi") : null,
+        subject_id: input.subject_id ? requiredReportId(input.subject_id, "Somo") : null,
+        preview_only: input.preview_only === true || input.preview_only === "true"
+    };
+
+    if (reportType === "student" && !filters.student_id) throw new Error("Chagua mwanafunzi kwa ripoti ya mwanafunzi.");
+    if (reportType !== "student" && filters.student_id) throw new Error("Ripoti hii haikubali student_id.");
+    if (reportType !== "subject" && filters.subject_id) throw new Error("Ripoti hii haikubali subject_id.");
+    return filters;
+}
+
 async function getStudentInformation(studentId) {
     const query =
-        "SELECT s.id, s.admission_number, s.first_name, s.middle_name, s.last_name, " +
+        "SELECT s.id, s.admission_number, s.first_name, s.middle_name, s.last_name, s.gender, " +
         "s.class_id, s.status, c.class_name, c.form_id, c.academic_year_id, " +
         "f.form_name, ay.year_label " +
         "FROM students s " +
@@ -195,6 +238,7 @@ async function getClassTeacher(classId, academicYearId) {
 async function getApprovedMarks(filters) {
     const conditions = [
         "m.status = 'APPROVED'",
+        "s.status = 'ACTIVE'",
         "m.examination_id = ?",
         "m.id = (SELECT MAX(latest_mark.id) FROM marks latest_mark " +
             "WHERE latest_mark.teacher_assignment_id = m.teacher_assignment_id " +
@@ -328,23 +372,36 @@ function calculateGrade(mark) {
     return "F";
 }
 
+function calculateOverallRemark(average) {
+    const value = Number(average);
+    if (!Number.isFinite(value)) return "Overall average is not available.";
+    if (value >= 75) return "Excellent performance";
+    if (value >= 65) return "Very good performance";
+    if (value >= 45) return "Good performance";
+    if (value >= 30) return "Satisfactory performance";
+    return "Needs improvement";
+}
+
 function calculatePoints(grade) {
     const points = { A: 1, B: 2, C: 3, D: 4, F: 5 };
     return points[grade] || 5;
 }
 
-function calculateDivision(totalPoints) {
+function calculateDivision(totalPoints, subjectCount = 7) {
+    if (Number(subjectCount) < 7) return "N/A";
+
     const points = Number(totalPoints);
 
     if (points >= 7 && points <= 17) return "I";
     if (points >= 18 && points <= 21) return "II";
     if (points >= 22 && points <= 25) return "III";
     if (points >= 26 && points <= 32) return "IV";
+    if (points >= 33 && points <= 35) return "0";
     return "N/A";
 }
 
 function divisionOrder(division) {
-    const order = { I: 1, II: 2, III: 3, IV: 4, "N/A": 5 };
+    const order = { I: 1, II: 2, III: 3, IV: 4, "0": 5, "N/A": 6 };
     return order[division] || 5;
 }
 
@@ -407,8 +464,14 @@ function buildStudentResults(marks) {
         student.average_marks = subjectCount > 0
             ? Number((student.total_marks / subjectCount).toFixed(2))
             : 0;
-        student.total_points = Number(student.total_points);
-        student.division = calculateDivision(student.total_points);
+        student.overall_remark = calculateOverallRemark(student.average_marks);
+        const bestSeven = [...student.subjects]
+            .sort((left, right) => left.points - right.points || right.marks - left.marks)
+            .slice(0, 7);
+        student.division_subject_count = bestSeven.length;
+        student.division_subjects = bestSeven.map((subject) => subject.subject_name);
+        student.total_points = bestSeven.reduce((total, subject) => total + Number(subject.points), 0);
+        student.division = calculateDivision(student.total_points, bestSeven.length);
     }
 
     return students;
@@ -416,26 +479,17 @@ function buildStudentResults(marks) {
 
 function calculatePositions(students) {
     const sorted = [...students].sort((a, b) => {
-        const divisionA = divisionOrder(a.division);
-        const divisionB = divisionOrder(b.division);
-
-        if (divisionA !== divisionB) {
-            return divisionA - divisionB;
-        }
-
-        if (a.total_points !== b.total_points) {
-            return a.total_points - b.total_points;
-        }
-
-        return a.student_id - b.student_id;
+        const averageA = Number(a.average_marks) || 0;
+        const averageB = Number(b.average_marks) || 0;
+        return averageB - averageA || Number(a.student_id) - Number(b.student_id);
     });
 
-    let previousDivision = null;
-    let previousPoints = null;
+    let previousAverage = null;
     let previousPosition = 0;
 
     sorted.forEach((student, index) => {
-        const sameResult = student.division === previousDivision && student.total_points === previousPoints;
+        const average = Number(student.average_marks) || 0;
+        const sameResult = average === previousAverage;
 
         if (sameResult) {
             student.position = previousPosition;
@@ -444,73 +498,102 @@ function calculatePositions(students) {
             previousPosition = student.position;
         }
 
-        previousDivision = student.division;
-        previousPoints = student.total_points;
+        previousAverage = average;
     });
 
     return sorted;
 }
 
 async function generateReport(filters = {}) {
-    if (!filters.examination_id) {
-        throw new Error("Examination ID inahitajika.");
-    }
-
-    if (!filters.student_id && !filters.class_id) {
-        throw new Error("Class ID au Student ID inahitajika.");
-    }
-
+    filters = normalizeReportFilters(filters);
     const examination = await getExamination(filters.examination_id);
     if (!examination) {
         throw new Error("Examination haijapatikana.");
     }
+    if (!['OPEN', 'CLOSED'].includes(examination.status)) {
+        throw new Error("Ripoti haiwezi kutengenezwa kwa examination ambayo haijafunguliwa.");
+    }
+    if (Number(examination.academic_year_id) !== filters.academic_year_id) {
+        throw new Error("Examination haifanani na Academic Year uliyochagua.");
+    }
 
-    let classInfo = null;
+    const classInfo = await getClassInformation(filters.class_id);
+    if (!classInfo || classInfo.status !== "ACTIVE") throw new Error("Darasa halijapatikana.");
+    if (Number(classInfo.academic_year_id) !== filters.academic_year_id) {
+        throw new Error("Darasa halifanani na Academic Year uliyochagua.");
+    }
+    if (Number(classInfo.form_id) !== filters.form_id) {
+        throw new Error("Darasa halifanani na Form uliyochagua.");
+    }
 
-    if (filters.class_id) {
-        classInfo = await getClassInformation(filters.class_id);
-        if (!classInfo) {
-            throw new Error("Class haijapatikana.");
-        }
-    } else if (filters.student_id) {
-        const studentInfo = await getStudentInformation(filters.student_id);
-        if (!studentInfo) {
+    let studentInfo = null;
+    if (filters.student_id) {
+        studentInfo = await getStudentInformation(filters.student_id);
+        if (!studentInfo || studentInfo.status !== "ACTIVE") {
             throw new Error("Mwanafunzi haijapatikana.");
         }
-
-        classInfo = {
-            id: studentInfo.class_id,
-            form_id: studentInfo.form_id,
-            academic_year_id: studentInfo.academic_year_id,
-            class_name: studentInfo.class_name,
-            form_name: studentInfo.form_name,
-            year_label: studentInfo.year_label
-        };
+        if (Number(studentInfo.class_id) !== Number(classInfo.id)) {
+            throw new Error("Mwanafunzi hayupo kwenye darasa ulilochagua.");
+        }
     }
 
-    if (classInfo && filters.academic_year_id && Number(filters.academic_year_id) !== Number(classInfo.academic_year_id)) {
-        throw new Error("Academic Year uliyochagua haiendani na class uliyochagua.");
+    if (filters.report_type === "subject") {
+                const subjectCondition = filters.subject_id ? "AND ta.subject_id = ?" : "";
+                const assignmentParams = [classInfo.id, classInfo.academic_year_id];
+                if (filters.subject_id) assignmentParams.push(filters.subject_id);
+        const [assignments] = await db.query(`
+            SELECT ta.id
+            FROM teacher_assignments ta
+            INNER JOIN subjects s ON s.id = ta.subject_id
+            WHERE ta.class_id = ? AND ta.academic_year_id = ?
+                            ${subjectCondition} AND ta.status = 'ACTIVE' AND s.status = 'ACTIVE'
+            LIMIT 1
+                `, assignmentParams);
+                if (!assignments.length) throw new Error("Hakuna masomo yaliyopangiwa darasa ulilochagua.");
     }
 
-    if (classInfo && Number(examination.academic_year_id) !== Number(classInfo.academic_year_id)) {
-        throw new Error("Examination na class lazima viwe vya Academic Year moja.");
-    }
+    const marks = await getApprovedMarks(filters);
+    if (!marks.length) throw new Error("No approved results are available for the selected criteria.");
 
-    if (classInfo && filters.form_id && Number(filters.form_id) !== Number(classInfo.form_id)) {
-        throw new Error("Form uliyochagua haiendani na class uliyochagua.");
-    }
-
-    const isClassReport = !filters.student_id && filters.report_type !== "student" && filters.report_type !== "subject";
-    if (classInfo && isClassReport) {
+    if (["class", "student"].includes(filters.report_type) && !filters.preview_only) {
         await validateClassReportReadiness(classInfo, filters.examination_id);
     }
 
     const school = await getSchoolInformation();
-    const classTeacher = classInfo
-        ? await getClassTeacher(classInfo.id, classInfo.academic_year_id)
-        : { teacher_id: null, teacher_number: "", full_name: "Not Assigned" };
-    const marks = await getApprovedMarks(filters);
+    const classTeacher = await getClassTeacher(classInfo.id, classInfo.academic_year_id);
     const students = calculatePositions(buildStudentResults(marks));
+
+    if (filters.report_type !== "student" && filters.report_type !== "subject") {
+        for (const student of students) {
+            student.class_size = students.length;
+            student.class_position = student.position;
+        }
+    }
+
+    if (filters.report_type === "student") {
+        const classMarks = await getApprovedMarks({
+            ...filters,
+            class_id: classInfo.id,
+            student_id: null,
+            subject_id: null,
+            report_type: "class"
+        });
+        const classStudents = calculatePositions(buildStudentResults(classMarks));
+        const classRank = classStudents.find((student) => Number(student.student_id) === Number(filters.student_id));
+        if (!classRank) {
+            throw new Error("Hakuna matokeo yaliyoidhinishwa ya mwanafunzi huyu kwenye darasa na mtihani uliochaguliwa.");
+        }
+        if (classRank && students[0]) {
+            const [[roster]] = await db.query(
+                "SELECT COUNT(*) AS student_count FROM students WHERE class_id = ? AND status = 'ACTIVE'",
+                [classInfo.id]
+            );
+            const classIsComplete = Number(roster.student_count) === classStudents.length;
+            students[0].position = classIsComplete ? classRank.position : null;
+            students[0].class_position = students[0].position;
+            students[0].class_size = Number(roster.student_count);
+        }
+    }
     const subjectMap = new Map();
 
     for (const mark of marks) {
@@ -533,17 +616,36 @@ async function generateReport(filters = {}) {
 
     const subjectSummary = Array.from(subjectMap.values());
     for (const subject of subjectSummary) {
+        const subjectMarks = marks
+            .filter((mark) => Number(mark.subject_id) === subject.subject_id)
+            .map((mark) => Number(mark.mark));
+        const gradeDistribution = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+        marks.filter((mark) => Number(mark.subject_id) === subject.subject_id).forEach((mark) => {
+            const grade = mark.grade || calculateGrade(mark.mark);
+            if (gradeDistribution[grade] !== undefined) gradeDistribution[grade] += 1;
+        });
         subject.average_marks = subject.students > 0
             ? Number((subject.total_marks / subject.students).toFixed(2))
             : 0;
+        subject.highest_mark = subjectMarks.length ? Math.max(...subjectMarks) : null;
+        subject.lowest_mark = subjectMarks.length ? Math.min(...subjectMarks) : null;
+        subject.grade_distribution = gradeDistribution;
         subject.total_marks = Number(subject.total_marks.toFixed(2));
     }
 
+    const [[roster]] = await db.query(
+        "SELECT COUNT(*) AS total_students FROM students WHERE class_id = ? AND status = 'ACTIVE'",
+        [classInfo.id]
+    );
     const totalMarks = students.reduce((total, student) => total + Number(student.total_marks), 0);
     const totalPoints = students.reduce((total, student) => total + Number(student.total_points), 0);
     const overallAverage = students.length > 0
         ? Number((students.reduce((total, student) => total + Number(student.average_marks), 0) / students.length).toFixed(2))
         : 0;
+    const divisionCounts = { I: 0, II: 0, III: 0, IV: 0, "0": 0 };
+    students.forEach((student) => {
+        if (Object.hasOwn(divisionCounts, student.division)) divisionCounts[student.division] += 1;
+    });
 
     return {
         school,
@@ -556,40 +658,51 @@ async function generateReport(filters = {}) {
             academic_year_id: examination.academic_year_id,
             year_label: examination.year_label
         },
-        class: classInfo ? {
+        academic_year: { id: classInfo.academic_year_id, year_label: classInfo.year_label },
+        form: { id: classInfo.form_id, form_name: classInfo.form_name },
+        academic_master: { name: school.academic_master },
+        head_of_school: { name: school.head_of_school },
+        class: {
             id: classInfo.id,
             name: classInfo.class_name,
             form_id: classInfo.form_id,
             form_name: classInfo.form_name,
             academic_year_id: classInfo.academic_year_id,
             year_label: classInfo.year_label
-        } : null,
+        },
         class_teacher: classTeacher,
         students,
         subject_summary: subjectSummary,
+        subject_performance: filters.report_type === "subject" ? subjectSummary : null,
         summary: {
-            students: students.length,
+            students: Number(roster.total_students),
+            total_students: Number(roster.total_students),
+            approved_students: new Set(marks.map((mark) => Number(mark.student_id))).size,
             average: overallAverage,
             total_points: totalPoints,
             total_marks: Number(totalMarks.toFixed(2)),
-            approved: students.length
+            approved: new Set(marks.map((mark) => Number(mark.student_id))).size,
+            division_counts: divisionCounts
         },
-        report_type: filters.report_type || (filters.student_id ? "student" : "class")
+        report_type: filters.report_type
     };
 }
 
 module.exports = {
     getReportOptions,
+    getStudentsForClass,
     getSchoolInformation,
     getExamination,
     getClassInformation,
     getClassTeacher,
     getApprovedMarks,
     calculateGrade,
+    calculateOverallRemark,
     calculatePoints,
     calculateDivision,
     divisionOrder,
     buildStudentResults,
     calculatePositions,
+    normalizeReportFilters,
     generateReport
 };

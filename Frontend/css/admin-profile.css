@@ -29,6 +29,10 @@ body {
     display: contents;
 }
 
+.admin-page .app-shell {
+    display: block;
+}
+
 .admin-page .app-main.profile-content {
     padding: 28px 30px;
 }

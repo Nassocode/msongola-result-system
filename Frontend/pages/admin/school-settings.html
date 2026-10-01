@@ -48,6 +48,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     >
 
+<link rel="stylesheet" href="../../css/designer-credit.css">
 </head>
 
 
@@ -115,7 +116,7 @@
         <a href="classes.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-school"></i><span>Madarasa</span></a>
         <a href="assignments.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-user-check"></i><span>Assignments</span></a>
         <a href="class-teachers.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-person-chalkboard"></i><span>Waratibu wa Darasa</span></a>
-        <a href="form-coordinators.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-people-roof"></i><span>Waratibu wa Form</span></a>
+        <a href="form-coordinators.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-people-roof"></i><span>Waratibu wa Vidato</span></a>
         <a href="subjects.html" class="sidebar-link sidebar-nav-item"><i class="fa-solid fa-book-open"></i><span>Masomo</span></a>
 
         <a
@@ -173,7 +174,7 @@
             <i class="fa-solid fa-right-from-bracket"></i>
 
             <span>
-                Toka
+                Log out
             </span>
 
         </button>
@@ -438,7 +439,7 @@
 
                         <label for="schoolMottoInput">
 
-                            Motto ya Shule
+                            Motto wa Shule
 
                             <span>
                                 *
@@ -472,7 +473,7 @@
 
                         <label for="headOfSchoolInput">
 
-                            Head of School
+                            Mkuu wa Shule
 
                             <span>
                                 *
@@ -652,12 +653,11 @@
                 <div>
 
                     <h2>
-                        Logo ya Shule
+                        School Branding
                     </h2>
 
                     <p>
-                        Sehemu hii imeandaliwa kwa ajili ya
-                        kuongeza logo ya shule baadaye.
+                        Current school identity and official logo.
                     </p>
 
                 </div>
@@ -667,7 +667,7 @@
 
             <div class="logo-upload-area">
 
-                <div class="logo-placeholder">
+                <div class="logo-placeholder" aria-label="Current school logo">
 
                     <i class="fa-solid fa-school"></i>
 
@@ -680,33 +680,15 @@
 
                 <div class="logo-upload-info">
 
-                    <h3>
-                        Logo ya Msongola Secondary School
-                    </h3>
+                    <h3>Current School Logo</h3>
 
-                    <p>
-                        Unaweza kuongeza logo ya shule
-                        baadaye. Logo itaonekana kwenye
-                        dashboard, report cards na documents.
-                    </p>
-
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        disabled
-                    >
-
-                        <i class="fa-solid fa-upload"></i>
-
-                        Upload Logo
-
-                    </button>
-
-                    <small>
-                        Kipengele hiki kitawezeshwa kwenye
-                        hatua inayofuata.
-                    </small>
+                    <div class="school-branding-details">
+                        <div><span>School Name</span><strong data-school-branding-field="school_name">MSONGOLA SECONDARY SCHOOL</strong></div>
+                        <div><span>Address</span><strong data-school-branding-field="po_box">P.O BOX 104727</strong></div>
+                        <div><span>Phone</span><strong data-school-branding-field="phone">-</strong></div>
+                        <div><span>Email</span><strong data-school-branding-field="email">-</strong></div>
+                        <div class="school-logo-source"><span>Official logo source</span><code data-school-logo-path></code></div>
+                    </div>
 
                 </div>
 
@@ -817,6 +799,11 @@
 <script src="../../js/admin/school-settings.js"></script>
 
 
+<footer class="designer-credit" aria-label="Designer contact">
+    <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+    <a href="tel:+255616975125">Phone Number: +255 616 975 125</a>
+    <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
+</footer>
 </body>
 
 </html>

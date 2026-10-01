@@ -69,19 +69,12 @@
     function validateForm() {
         clearMessage();
 
-        const admission = admissionNumber?.value.trim();
         const first = firstName?.value.trim();
         const last = lastName?.value.trim();
         const selectedGender = gender?.value;
         const selectedYear = academicYear?.value;
         const selectedClass = studentClass?.value;
         const selectedStatus = studentStatus?.value;
-
-        if (!admission) {
-            showMessage("Tafadhali weka Admission Number ya mwanafunzi.");
-            admissionNumber?.focus();
-            return false;
-        }
 
         if (!first) {
             showMessage("Tafadhali weka jina la kwanza.");
@@ -123,15 +116,18 @@
     }
 
     function collectStudentData() {
+        const rawClassValue = String(studentClass?.value || "").trim();
+        const parsedClassId = Number(rawClassValue);
+
         return {
-            admission_number: admissionNumber.value.trim().toUpperCase(),
             first_name: firstName.value.trim(),
             middle_name: middleName.value.trim(),
             last_name: lastName.value.trim(),
             gender: gender.value,
             date_of_birth: dateOfBirth.value || null,
             academic_year: academicYear.value,
-            class_id: Number(studentClass.value),
+            class_id: Number.isInteger(parsedClassId) && parsedClassId > 0 ? parsedClassId : null,
+            class_name: Number.isInteger(parsedClassId) && parsedClassId > 0 ? "" : rawClassValue,
             admission_date: admissionDate.value || null,
             status: studentStatus.value || "ACTIVE"
         };
@@ -148,8 +144,8 @@
         }
 
         const options = [{ value: "", label: "Chagua darasa" }, ...items.map((item) => ({
-            value: item.id,
-            label: `${item.form_name || "Form"} - ${item.class_name} (${item.academic_year})`
+            value: item.id ?? item.class_id ?? item.class_name ?? "",
+            label: `${item.form_name || "Form"} - ${item.class_name || item.name || "Darasa"} (${item.academic_year || item.year_label || ""})`.replace(/\s\(\)/g, "")
         }))];
 
         studentClass.innerHTML = options.map((item) => `
@@ -215,12 +211,6 @@
         });
     }
 
-    if (admissionNumber) {
-        admissionNumber.addEventListener("input", () => {
-            admissionNumber.value = admissionNumber.value.trim().toUpperCase();
-        });
-    }
-
     if (studentClass && state.classOptions.length === 0) {
         studentClass.innerHTML = '<option value="">Inapakia darasa...</option>';
     }
@@ -274,7 +264,10 @@
                     throw new Error(response?.message || "Imeshindikana kuhifadhi mwanafunzi.");
                 }
 
-                showMessage(editStudentId ? "Mabadiliko ya mwanafunzi yamehifadhiwa." : "Mwanafunzi amehifadhiwa kwa mafanikio.", "success");
+                const successMessage = editStudentId
+                    ? "Mabadiliko ya mwanafunzi yamehifadhiwa."
+                    : `Mwanafunzi amehifadhiwa kwa mafanikio. Admission Number: ${response.data?.admission_number || "itaonekana kwenye orodha ya wanafunzi."}`;
+                showMessage(successMessage, "success");
                 saveButton.innerHTML = `
                     <i class="fa-solid fa-check"></i>
                     Imehifadhiwa

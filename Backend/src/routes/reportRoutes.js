@@ -2,14 +2,19 @@
 "use strict";
 
 const express = require("express");
+const { protect, authorize } = require("../middlewares/authMiddleware");
 
 const {
     getReportOptions,
     getReportDetails,
+    getReportStudents,
+    exportReportExcel,
+    exportReportPdf,
     reportHealth
 } = require("../controllers/reportController");
 
 const router = express.Router();
+router.use(protect, authorize("ACADEMIC_MASTER"));
 
 
 // =========================================================
@@ -49,6 +54,8 @@ router.get(
     getReportOptions
 );
 
+router.get("/students", getReportStudents);
+
 
 // =========================================================
 // GENERATE REPORT
@@ -77,6 +84,9 @@ router.get(
     "/details",
     getReportDetails
 );
+
+router.post("/exports/excel", exportReportExcel);
+router.post("/exports/pdf", exportReportPdf);
 
 
 // =========================================================

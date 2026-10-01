@@ -74,3 +74,110 @@ body.academic-ops { margin:0; min-height:100vh; background:radial-gradient(circl
 @media(max-width:720px) { .ops-shell{padding:20px 13px}.ops-header{align-items:flex-start;flex-direction:column;padding:23px 20px}.ops-header h1{font-size:25px}.ops-toolbar{align-items:stretch;flex-direction:column}.ops-toolbar input,.ops-toolbar select{width:100%}.ops-fields{grid-template-columns:1fr}.ops-field.full{grid-column:auto}.ops-form-actions{flex-direction:column-reverse}.ops-form-actions .ops-button{width:100%} }
 @media(max-width:620px) { .ops-class-list{padding:12px}.ops-class-group>summary{gap:9px;padding:11px}.ops-class-count{max-width:112px;font-size:11px}.ops-class-submission-head{flex-direction:column}.ops-submission-controls{justify-content:flex-start}.ops-class-details{padding:0 12px 6px} }
 @media print { body.academic-ops{background:white}.ops-shell{max-width:none;padding:0}.ops-header{min-height:0;padding:0;background:white;color:#102a43;box-shadow:none}.ops-header p{color:#52606d}.ops-actions,.ops-toolbar,.ops-row-actions{display:none!important}.ops-panel{border:0;box-shadow:none}.ops-table th,.ops-table td{padding:7px}.ops-table{min-width:0} }
+
+.ops-class-list { gap: 12px; }
+.ops-class-group { border-radius: 12px; box-shadow: 0 4px 16px rgba(16,42,67,.045); }
+.ops-class-group > summary { min-height: 78px; }
+.ops-class-group[open] > summary { border-bottom: 1px solid #e6edf2; }
+.ops-class-count { padding: 5px 9px; border-radius: 999px; background: #f1f6f8; color: #52606d; font-weight: 700; }
+.ops-class-details { padding: 12px 16px 16px; }
+.ops-exam-group { margin: 0 0 12px; overflow: hidden; border: 1px solid #e3eaf0; border-radius: 10px; background: #fff; }
+.ops-exam-group:last-child { margin-bottom: 0; }
+.ops-exam-group > summary { min-height: 64px; padding: 12px 15px; display: flex; align-items: center; gap: 14px; cursor: pointer; list-style: none; background: #f8fbfc; }
+.ops-exam-group > summary::-webkit-details-marker { display: none; }
+.ops-exam-group[open] > summary { border-bottom: 1px solid #e6edf2; background: #f1f8fa; }
+.ops-exam-title { display: grid; gap: 3px; min-width: 0; }
+.ops-exam-title strong { color: #102a43; font-size: 14px; }
+.ops-exam-title small { color: #627d98; font-size: 11px; }
+.ops-exam-state { margin-left: auto; color: #627d98; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.ops-exam-content { padding: 18px; }
+.ops-student-matrix-heading,.ops-review-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
+.ops-student-matrix-heading h3,.ops-review-list-heading h3 { margin: 0; color: #102a43; font-size: 15px; }
+.ops-student-matrix-heading p { margin: 4px 0 0; color: #627d98; font-size: 12px; }
+.ops-approved-note,.ops-pending-note { display: inline-flex; align-items: center; gap: 7px; color: #18734f; font-size: 11px; font-weight: 700; }
+.ops-pending-note { color: #9a6307; }
+.ops-student-table-wrap { margin-top: 0; border: 1px solid #e3eaf0; border-radius: 9px; }
+.ops-student-matrix { min-width: 760px; }
+.ops-student-matrix th { position: sticky; top: 0; z-index: 1; background: #f4f8fa; }
+.ops-student-matrix td:first-child,.ops-student-matrix th:first-child { min-width: 190px; }
+.ops-student-matrix td:nth-child(2),.ops-student-matrix th:nth-child(2) { min-width: 130px; }
+.ops-student-matrix td { white-space: nowrap; }
+.ops-mark-status { display: block; margin-top: 3px; color: #829ab1; font-size: 9px; text-transform: uppercase; }
+.ops-mark-missing { color: #a0aec0; }
+.ops-student-report { min-height: 32px; padding: 0 10px; white-space: nowrap; }
+.ops-report-pending { color: #9a6307; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.ops-subject-review-list { margin-top: 20px; }
+.ops-review-list-heading { margin-bottom: 0; padding-bottom: 8px; border-bottom: 1px solid #e6edf2; }
+.ops-review-list-heading span { color: #627d98; font-size: 11px; }
+.ops-subject-review { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 2px; border-bottom: 1px solid #edf1f4; }
+.ops-subject-review:last-child { border-bottom: 0; }
+.ops-subject-review > div:first-child { display: grid; gap: 4px; min-width: 0; }
+.ops-subject-review > div:first-child > strong { color: #102a43; font-size: 13px; }
+.ops-subject-review > div:first-child > small { color: #627d98; font-size: 11px; }
+.ops-subject-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.ops-review-list-heading + .ops-subject-review { margin-top: 2px; }
+.ops-subject-review .ops-row-actions { align-items: center; }
+.ops-subject-review .ops-button { min-height: 34px; }
+.ops-subject-review .ops-button:disabled { opacity: .6; cursor: wait; }
+.ops-class-group summary:focus-visible,.ops-exam-group summary:focus-visible,.ops-button:focus-visible { outline: 3px solid rgba(22,138,173,.25); outline-offset: 2px; }
+@media(max-width:720px) {
+	.ops-class-details { padding: 9px; }
+	.ops-exam-content { padding: 12px; }
+	.ops-class-count { max-width: 140px; white-space: normal; }
+	.ops-subject-review { align-items: flex-start; flex-direction: column; }
+	.ops-subject-actions { justify-content: flex-start; }
+	.ops-student-matrix-heading { align-items: flex-start; flex-direction: column; }
+}
+@media print {
+	.ops-exam-group > summary { background: white; }
+	.ops-class-group,.ops-exam-group { break-inside: avoid; box-shadow: none; }
+	.ops-student-report,.ops-report-pending { display: none; }
+}
+
+.submissions-page { background: #f4f7fa; color: #102a43; }
+.submissions-page .ops-shell { max-width: none; padding: 0; }
+.submissions-page .ops-header { min-height: 0; margin: 0 0 14px; padding: 0; color: #102a43; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.submissions-page .ops-header h1 { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.submissions-page .ops-header p { max-width: 760px; margin: 0; color: #627d98; font-size: 13px; }
+.submissions-page .ops-actions { display: none; }
+.submissions-page .ops-panel { border-color: #e1e8ee; border-radius: 12px; box-shadow: 0 5px 18px rgba(16,42,67,.045); }
+.submissions-page .ops-toolbar { min-height: 72px; justify-content: flex-start; padding: 14px 18px; background: #fff; }
+.submissions-page .ops-search-field { position: relative; display: block; width: min(440px, 100%); }
+.submissions-page .ops-search-field i { position: absolute; top: 50%; left: 12px; color: #829ab1; transform: translateY(-50%); pointer-events: none; }
+.submissions-page .ops-toolbar .ops-search-field input { width: 100%; padding-left: 36px; border-color: #d5e0e8; border-radius: 8px; background: #fbfcfd; }
+.submissions-page .ops-toolbar select { width: min(210px, 100%); border-color: #d5e0e8; border-radius: 8px; background: #fff; color: #334e68; }
+.submissions-page .ops-count { margin-left: auto; color: #52606d; font-size: 11px; }
+.submissions-page .ops-class-list { gap: 10px; padding: 14px; }
+.submissions-page .ops-class-group { border-color: #dfe7ee; border-radius: 10px; box-shadow: none; }
+.submissions-page .ops-class-group > summary { min-height: 66px; padding: 11px 14px; }
+.submissions-page .ops-class-group[open] > summary { background: #f8fbfc; }
+.submissions-page .ops-class-mark { background: #eef5f7; color: #0f718f; }
+.submissions-page .ops-class-title strong { font-size: 14px; }
+.submissions-page .ops-class-count { max-width: 280px; padding: 4px 8px; background: #f4f7f9; font-size: 10px; }
+.submissions-page .ops-class-details { padding: 12px; }
+.submissions-page .ops-exam-group { border-color: #e3eaf0; border-radius: 9px; }
+.submissions-page .ops-exam-group > summary { min-height: 56px; padding: 10px 13px; }
+.submissions-page .ops-exam-group[open] > summary { background: #f7fafb; }
+.submissions-page .ops-exam-title strong { font-size: 13px; }
+.submissions-page .ops-exam-state { font-size: 10px; }
+.submissions-page .ops-exam-content { padding: 15px; }
+.submissions-page .ops-student-matrix-heading h3,.submissions-page .ops-review-list-heading h3 { font-size: 14px; }
+.submissions-page .ops-student-table-wrap { border-color: #e1e8ee; border-radius: 8px; }
+.submissions-page .ops-student-matrix th { color: #52606d; background: #f6f8fa; }
+.submissions-page .ops-subject-review { padding: 12px 2px; }
+.submissions-page .ops-subject-review .ops-row-actions .ops-button { min-height: 32px; padding: 0 10px; font-size: 11px; }
+.submissions-page .ops-subject-review .ops-button:not(.danger) { background: #0f718f; }
+.submissions-page .ops-subject-review .ops-button:not(.danger):hover { background: #0b5f78; }
+.submissions-page .ops-subject-review .ops-button.danger { background: #fff; color: #b42335; border-color: #e8c7cc; }
+.submissions-page .ops-subject-review .ops-button.danger:hover { background: #fff5f6; }
+.submissions-page .ops-student-report { color: #0f718f; border-color: #cddfe5; background: #f6fbfc; }
+.submissions-page .ops-student-report:hover { border-color: #0f718f; background: #eef7f9; }
+@media(max-width:720px) {
+	.submissions-page .ops-header { margin-bottom: 12px; }
+	.submissions-page .ops-toolbar { align-items: stretch; }
+	.submissions-page .ops-toolbar select { width: 100%; }
+	.submissions-page .ops-count { margin: 0; }
+	.submissions-page .ops-class-count { max-width: 120px; }
+	.submissions-page .ops-class-details { padding: 8px; }
+	.submissions-page .ops-exam-content { padding: 11px; }
+}

@@ -1,4 +1,8 @@
  const pool = require("../config/database");
+const {
+    createTemporaryIdentifier,
+    createTeacherNumber
+} = require("../utils/generatedIdentifiers");
 
 // FIND USER BY USERNAME
 async function findUserByUsername(username) {
@@ -67,7 +71,6 @@ async function createUserWithTeacher({
     username,
     passwordHash,
     status = "ACTIVE",
-    teacherNumber,
     firstName,
     middleName,
     lastName
@@ -80,13 +83,28 @@ async function createUserWithTeacher({
             VALUES (?, ?, 'SUBJECT_TEACHER', ?)
         `, [username, passwordHash, status]);
 
-        await connection.execute(`
+        let teacherNumber;
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+            const [teacherResult] = await connection.execute(`
             INSERT INTO teachers (user_id, teacher_number, first_name, middle_name, last_name, status)
             VALUES (?, ?, ?, ?, ?, ?)
-        `, [userResult.insertId, teacherNumber, firstName, middleName || null, lastName, status]);
+            `, [userResult.insertId, createTemporaryIdentifier(), firstName, middleName || null, lastName, status]);
+            teacherNumber = createTeacherNumber(teacherResult.insertId);
+
+            try {
+                await connection.execute(
+                    "UPDATE teachers SET teacher_number = ? WHERE id = ?",
+                    [teacherNumber, teacherResult.insertId]
+                );
+                break;
+            } catch (error) {
+                if (error.code !== "ER_DUP_ENTRY" || attempt === 9) throw error;
+                await connection.execute("DELETE FROM teachers WHERE id = ?", [teacherResult.insertId]);
+            }
+        }
 
         await connection.commit();
-        return userResult.insertId;
+        return { userId: userResult.insertId, teacherNumber };
     } catch (error) {
         await connection.rollback();
         throw error;

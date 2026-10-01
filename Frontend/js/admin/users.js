@@ -124,9 +124,6 @@
         teacherProfileFields:
             $("#teacherProfileFields"),
 
-        createTeacherNumber:
-            $("#createTeacherNumber"),
-
         createTeacherFirstName:
             $("#createTeacherFirstName"),
 
@@ -1496,7 +1493,6 @@
             );
 
         const teacherProfile = {
-            teacher_number: String(elements.createTeacherNumber?.value || "").trim(),
             first_name: String(elements.createTeacherFirstName?.value || "").trim(),
             middle_name: String(elements.createTeacherMiddleName?.value || "").trim(),
             last_name: String(elements.createTeacherLastName?.value || "").trim()
@@ -1580,8 +1576,8 @@
             return;
         }
 
-        if (role === "SUBJECT_TEACHER" && (!teacherProfile.teacher_number || !teacherProfile.first_name || !teacherProfile.last_name)) {
-            showAlert(elements.createUserAlert, "Weka teacher number, jina la kwanza na jina la mwisho la Subject Teacher.");
+        if (role === "SUBJECT_TEACHER" && (!teacherProfile.first_name || !teacherProfile.last_name)) {
+            showAlert(elements.createUserAlert, "Weka jina la kwanza na jina la mwisho la Subject Teacher.");
             return;
         }
 
@@ -1619,13 +1615,16 @@
                 );
             }
 
+            const generatedTeacherNumber = response.data?.teacher_number;
 
             closeCreateUserModal();
 
 
             showToast(
                 "Imefanikiwa",
-                "Mtumiaji ameongezwa kikamilifu.",
+                role === "SUBJECT_TEACHER" && generatedTeacherNumber
+                    ? `Mwalimu ameongezwa. Teacher Number: ${generatedTeacherNumber}`
+                    : "Mtumiaji ameongezwa kikamilifu.",
                 "success"
             );
 
@@ -1658,7 +1657,7 @@
     function updateTeacherProfileFields() {
         const isSubjectTeacher = elements.createRole?.value === "SUBJECT_TEACHER";
         if (elements.teacherProfileFields) elements.teacherProfileFields.hidden = !isSubjectTeacher;
-        [elements.createTeacherNumber, elements.createTeacherFirstName, elements.createTeacherLastName].forEach((field) => {
+        [elements.createTeacherFirstName, elements.createTeacherLastName].forEach((field) => {
             if (field) field.required = isSubjectTeacher;
         });
     }

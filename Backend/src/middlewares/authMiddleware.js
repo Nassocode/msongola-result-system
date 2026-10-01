@@ -6,7 +6,6 @@ function protect(req, res, next) {
 
         // Chukua Authorization header
         const authHeader = req.headers.authorization;
-        console.log("AUTH HEADER:", authHeader);
 
         if (!authHeader) {
             return res.status(401).json({

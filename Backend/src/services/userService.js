@@ -67,15 +67,14 @@ async function createUser(data) {
     }
 
     const teacherProfile = {
-        teacherNumber: String(data.teacher_number || "").trim().toUpperCase(),
         firstName: String(data.first_name || "").trim(),
         middleName: String(data.middle_name || "").trim() || null,
         lastName: String(data.last_name || "").trim()
     };
 
     if (normalizedRole === "SUBJECT_TEACHER") {
-        if (!teacherProfile.teacherNumber || !teacherProfile.firstName || !teacherProfile.lastName) {
-            throw new Error("Teacher number, jina la kwanza na jina la mwisho vinahitajika kwa Subject Teacher.");
+        if (!teacherProfile.firstName || !teacherProfile.lastName) {
+            throw new Error("Jina la kwanza na jina la mwisho vinahitajika kwa Subject Teacher.");
         }
     }
 
@@ -94,21 +93,28 @@ async function createUser(data) {
         12
     );
 
-    const userId = normalizedRole === "SUBJECT_TEACHER"
-        ? await userModel.createUserWithTeacher({
+    let userId;
+    let teacherNumber;
+    if (normalizedRole === "SUBJECT_TEACHER") {
+        const teacher = await userModel.createUserWithTeacher({
             username: cleanUsername,
             passwordHash,
             status: normalizedStatus,
             ...teacherProfile
         })
-        : await userModel.createUser({
+        userId = teacher.userId;
+        teacherNumber = teacher.teacherNumber;
+    } else {
+        userId = await userModel.createUser({
             username: cleanUsername,
             passwordHash,
             role: normalizedRole,
             status: normalizedStatus
         });
+    }
 
-    return await userModel.findUserById(userId);
+    const user = await userModel.findUserById(userId);
+    return teacherNumber ? { ...user, teacher_number: teacherNumber } : user;
 }
 
 /*

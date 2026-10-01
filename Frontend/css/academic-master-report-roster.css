@@ -1,0 +1,488 @@
+/* Academic Master report roster workspace */
+
+@media screen {
+    .reports-page .class-students-panel {
+        border: 1px solid #d7dfeb;
+        border-top: 4px solid #c89b3c;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 16px 36px rgba(16, 42, 67, 0.1);
+    }
+
+    .reports-page .class-roster-header {
+        min-height: 78px;
+        padding: 17px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: linear-gradient(110deg, #0b1f33, #173b5b);
+    }
+
+    .reports-page .class-roster-header .panel-title-icon {
+        background: rgba(200, 155, 60, 0.16);
+        color: #e6c56a;
+    }
+
+    .reports-page .class-roster-header .panel-kicker {
+        color: #e6c56a;
+    }
+
+    .reports-page .class-roster-header .panel-title h3 {
+        color: #ffffff;
+    }
+
+    .reports-page .class-roster-count {
+        padding: 7px 11px;
+        border: 1px solid rgba(230, 197, 106, 0.44);
+        border-radius: 999px;
+        background: rgba(200, 155, 60, 0.14);
+        color: #f4d985;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .reports-page .class-roster-toolbar {
+        padding: 14px 20px;
+        border-bottom-color: #e8e4d8;
+        background: #f8f7f2;
+    }
+
+    .reports-page .class-roster-context {
+        color: #42566d;
+    }
+
+    .reports-page .class-roster-context i {
+        color: #b1842d;
+    }
+
+    .reports-page .class-roster-search input {
+        border-color: #d7dce4;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .reports-page .class-roster-search input:focus {
+        border-color: #c89b3c;
+        box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.16);
+    }
+
+    .reports-page .class-roster-toolbar-actions .btn-primary {
+        background: #102a43;
+        box-shadow: 0 5px 12px rgba(16, 42, 67, 0.16);
+    }
+
+    .reports-page .class-roster-toolbar-actions .btn-primary:hover {
+        background: #0b1f33;
+    }
+
+    .reports-page .class-roster-workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(350px, 0.9fr);
+        align-items: stretch;
+    }
+
+    .reports-page .class-roster-table-wrap {
+        max-height: 540px;
+        border-right: 1px solid #e4dfd0;
+        border-radius: 0;
+    }
+
+    .reports-page .class-roster-table {
+        min-width: 600px;
+    }
+
+    .reports-page .class-roster-table th {
+        border-bottom: 2px solid #c89b3c;
+        background: #edf1f5;
+        color: #263e58;
+    }
+
+    .reports-page .class-roster-table tbody tr:nth-child(even) {
+        background: #fbfaf7;
+    }
+
+    .reports-page .class-roster-table tbody tr:hover,
+    .reports-page .class-roster-table tbody tr.is-selected {
+        background: #f5f0df;
+    }
+
+    .reports-page .class-roster-table tbody tr.is-selected {
+        box-shadow: inset 3px 0 #c89b3c;
+    }
+
+    .reports-page .roster-student-identity {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 150px;
+    }
+
+    .reports-page .roster-student-avatar {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        display: grid;
+        place-items: center;
+        border-radius: 8px;
+        background: #e9edf2;
+        color: #183554;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    .reports-page .class-roster-table td strong {
+        color: #102a43;
+    }
+
+    .reports-page .roster-gender-tag {
+        display: inline-grid;
+        min-width: 28px;
+        min-height: 24px;
+        place-items: center;
+        border-radius: 6px;
+        background: #f1eee5;
+        color: #52606d;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .reports-page .class-roster-actions .btn {
+        gap: 6px;
+        padding: 0 9px;
+    }
+
+    .reports-page .class-roster-actions .btn-secondary {
+        border-color: #d6c28c;
+        color: #735713;
+    }
+
+    .reports-page .class-roster-actions .btn-secondary:hover {
+        background: #fbf7e9;
+    }
+
+    .reports-page .class-student-detail-pane {
+        min-width: 0;
+        max-height: 540px;
+        overflow: auto;
+        border-left: 1px solid #e4dfd0;
+        background: #f8f7f2;
+    }
+
+    .reports-page .class-student-detail-empty,
+    .reports-page .class-student-detail-loading {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 34px 28px;
+        color: #617085;
+        text-align: center;
+    }
+
+    .reports-page .class-student-detail-empty > span {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 13px;
+        border-radius: 12px;
+        background: #eee8d6;
+        color: #8d6e25;
+    }
+
+    .reports-page .class-student-detail-empty h4 {
+        margin: 0 0 7px;
+        color: #102a43;
+        font-size: 15px;
+    }
+
+    .reports-page .class-student-detail-empty p {
+        max-width: 270px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .reports-page .class-student-detail-loading {
+        flex-direction: row;
+        gap: 10px;
+        min-height: 220px;
+        color: #52606d;
+        font-size: 12px;
+    }
+
+    .reports-page .class-student-detail-loading i {
+        color: #9a7726;
+    }
+
+    .reports-page .student-results-detail {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+        border: 0;
+        background: transparent;
+    }
+
+    .reports-page .student-detail-topline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .reports-page .student-detail-topline > div {
+        display: grid;
+        gap: 3px;
+    }
+
+    .reports-page .student-detail-topline > div > span {
+        color: #9a7726;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+    }
+
+    .reports-page .student-detail-topline > div > strong {
+        color: #102a43;
+        font-size: 14px;
+    }
+
+    .reports-page .student-detail-close {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #d8d4c8;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #52606d;
+        cursor: pointer;
+    }
+
+    .reports-page .student-detail-close:hover {
+        border-color: #c89b3c;
+        color: #705919;
+    }
+
+    .reports-page .student-detail-profile {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #203e5a;
+        border-radius: 10px;
+        background: linear-gradient(110deg, #102a43, #1a3b59);
+    }
+
+    .reports-page .student-detail-avatar {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        background: #e6c56a;
+        color: #102a43;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .reports-page .student-detail-heading {
+        flex: 1 1 120px;
+        min-width: 0;
+    }
+
+    .reports-page .student-detail-heading > span,
+    .reports-page .student-breakdown-heading > div > span {
+        display: block;
+        margin-bottom: 4px;
+        color: #c89b3c;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+    }
+
+    .reports-page .student-detail-heading h4 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 13px;
+    }
+
+    .reports-page .student-detail-heading small {
+        display: block;
+        margin-top: 4px;
+        color: #ffffff;
+        font-size: 10px;
+    }
+
+    .reports-page .student-detail-facts {
+        display: flex;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        margin: 0;
+        padding-top: 9px;
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .reports-page .student-detail-facts > div {
+        display: grid;
+        gap: 3px;
+    }
+
+    .reports-page .student-detail-facts dt {
+        color: #e6c56a;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .reports-page .student-detail-facts dd {
+        margin: 0;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .reports-page .student-results-overview {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        border: 0;
+        background: transparent;
+    }
+
+    .reports-page .student-results-overview > div {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+        padding: 10px;
+        border: 1px solid #e4dfd0;
+        border-top: 2px solid #c89b3c;
+        border-radius: 8px;
+        background: #ffffff;
+    }
+
+    .reports-page .student-results-overview span {
+        color: #64748b;
+        font-size: 8px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .reports-page .student-results-overview strong {
+        color: #102a43;
+        font-size: 15px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .reports-page .student-breakdown-heading {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .reports-page .student-breakdown-heading h4 {
+        margin: 0;
+        color: #102a43;
+        font-size: 13px;
+    }
+
+    .reports-page .student-breakdown-heading > small {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: #eee8d6;
+        color: #705919;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .reports-page .student-results-table-wrap {
+        overflow: auto;
+        border: 1px solid #ded9ca;
+        border-radius: 10px;
+        background: #ffffff;
+    }
+
+    .reports-page .student-results-table {
+        width: 100%;
+        min-width: 470px;
+        border-collapse: collapse;
+        font-size: 10px;
+    }
+
+    .reports-page .student-results-table th,
+    .reports-page .student-results-table td {
+        padding: 8px;
+        border-bottom: 1px solid #e8e4d8;
+        text-align: left;
+    }
+
+    .reports-page .student-results-table th {
+        border-bottom: 2px solid #c89b3c;
+        background: #102a43;
+        color: #ffffff;
+        font-size: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .reports-page .student-results-table tbody tr:nth-child(even) {
+        background: #fbfaf7;
+    }
+
+    .reports-page .student-subject-name {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .reports-page .student-subject-name > span {
+        padding: 3px 5px;
+        border-radius: 5px;
+        background: #f4eedc;
+        color: #705919;
+        font-size: 8px;
+        font-weight: 800;
+    }
+
+    .reports-page .student-subject-name strong,
+    .reports-page .student-mark-value {
+        color: #102a43;
+        font-weight: 800;
+    }
+
+    .reports-page .student-grade-badge {
+        display: inline-grid;
+        min-width: 24px;
+        place-items: center;
+        padding: 3px 6px;
+        border-radius: 6px;
+        background: #eaf7ee;
+        color: #1d7546;
+        font-weight: 800;
+    }
+
+    @media (max-width: 1100px) {
+        .reports-page .class-roster-workspace {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .reports-page .class-roster-table-wrap {
+            max-height: 390px;
+            border-right: 0;
+            border-bottom: 1px solid #e4dfd0;
+        }
+
+        .reports-page .class-student-detail-pane {
+            max-height: none;
+            min-height: 320px;
+            border-left: 0;
+        }
+    }
+}

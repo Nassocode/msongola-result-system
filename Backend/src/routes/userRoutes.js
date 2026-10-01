@@ -27,7 +27,7 @@ router.get(
 router.patch(
     "/me/password",
     protect,
-    authorize("ADMIN"),
+    authorize("ADMIN", "ACADEMIC_MASTER", "SUBJECT_TEACHER"),
     userController.changeOwnPassword
 );
 

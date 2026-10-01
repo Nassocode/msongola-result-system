@@ -10,6 +10,39 @@ const schoolSettingsService =
 const auditLogService =
     require("../services/auditLogService");
 
+const OFFICIAL_LOGO_PATH = "/uploads/logo/school-logo.png";
+
+
+async function getPublicBranding(req, res) {
+    try {
+        const settings = await schoolSettingsService.getSchoolSettings();
+        return res.status(200).json({
+            success: true,
+            data: {
+                school_name: settings.school_name,
+                po_box: settings.po_box,
+                motto: settings.motto,
+                head_of_school: settings.head_of_school,
+                phone: settings.phone,
+                email: settings.email,
+                logo_path: OFFICIAL_LOGO_PATH
+            }
+        });
+    } catch (error) {
+        return res.status(200).json({
+            success: true,
+            data: {
+                school_name: "MSONGOLA SECONDARY SCHOOL",
+                po_box: "P.O BOX 104727",
+                motto: "EDUCATION IS LIGHT",
+                phone: "",
+                email: "",
+                logo_path: OFFICIAL_LOGO_PATH
+            }
+        });
+    }
+}
+
 
 /* =========================================================
    REQUEST INFORMATION HELPER
@@ -491,6 +524,8 @@ async function updateSchoolLogo(
    ========================================================= */
 
 module.exports = {
+
+    getPublicBranding,
 
     getSchoolSettings,
 

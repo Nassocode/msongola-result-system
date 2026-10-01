@@ -7,14 +7,13 @@ const userService = require("../services/userService");
 // ============================================================
 async function createUser(req, res) {
     try {
-        const { username, password, role, status, teacher_number, first_name, middle_name, last_name } = req.body;
+        const { username, password, role, status, first_name, middle_name, last_name } = req.body;
 
         const user = await userService.createUser({
             username,
             password,
             role,
             status,
-            teacher_number,
             first_name,
             middle_name,
             last_name

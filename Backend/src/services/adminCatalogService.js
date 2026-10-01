@@ -17,13 +17,21 @@ async function getTeacherUserOptions() {
 async function createTeacher(data) {
     const userId = Number(data.user_id);
     if (!Number.isInteger(userId)) throw new Error("Subject Teacher account inahitajika");
-    const teacherNumber = required(data.teacher_number, "Teacher number").toUpperCase();
     const firstName = required(data.first_name, "First name");
     const lastName = required(data.last_name, "Last name");
     const status = String(data.status || "ACTIVE").toUpperCase();
     if (!["ACTIVE", "INACTIVE"].includes(status)) throw new Error("Status sio sahihi");
-    const id = await catalogModel.createTeacher({ ...data, user_id: userId, teacher_number: teacherNumber, first_name: firstName, last_name: lastName, status });
-    return { id, user_id: userId, teacher_number: teacherNumber, first_name: firstName, last_name: lastName, status };
+    const teacher = await catalogModel.createTeacher({
+        user_id: userId,
+        first_name: firstName,
+        middle_name: data.middle_name,
+        last_name: lastName,
+        gender: data.gender,
+        phone: data.phone,
+        email: data.email,
+        status
+    });
+    return { ...teacher, user_id: userId, first_name: firstName, last_name: lastName, status };
 }
 
 async function getSubjects() {
@@ -52,7 +60,9 @@ async function createClass(data) {
     const yearId = Number(data.academic_year_id);
     if (!Number.isInteger(formId) || !Number.isInteger(yearId)) throw new Error("Form na academic year vinahitajika");
     const className = required(data.class_name, "Class name").toUpperCase();
-    const capacity = data.capacity === "" || data.capacity === undefined ? null : Number(data.capacity);
+    const capacity = data.capacity === "" || data.capacity === undefined || data.capacity === null
+        ? 150
+        : Number(data.capacity);
     if (capacity !== null && (!Number.isInteger(capacity) || capacity < 1)) throw new Error("Capacity sio sahihi");
     const status = String(data.status || "ACTIVE").toUpperCase();
     if (!["ACTIVE", "INACTIVE"].includes(status)) throw new Error("Status sio sahihi");

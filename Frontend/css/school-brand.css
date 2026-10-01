@@ -1,0 +1,64 @@
+.school-logo-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.school-brand-image {
+    position: absolute;
+    inset: 4px;
+    z-index: 2;
+    display: block;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    max-width: none;
+    object-fit: contain;
+    object-position: center;
+}
+
+.school-logo-container.has-school-logo > i,
+.school-logo-container.has-school-logo > svg,
+.school-logo-container.has-school-logo > span {
+    visibility: hidden;
+}
+
+.school-brand-system-name {
+    display: block;
+    margin-top: 2px;
+    color: rgba(98, 125, 152, 0.8);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.auth-logo .school-brand-system-name,
+.auth-mobile-logo .school-brand-system-name {
+    color: #64748b;
+}
+
+.brand-text .school-brand-system-name {
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.loading-card .school-logo-container.has-school-logo {
+    color: transparent;
+}
+
+.logo-placeholder.school-logo-container {
+    min-width: 128px;
+    min-height: 128px;
+}
+
+@media (max-width: 640px) {
+    .logo-placeholder.school-logo-container {
+        min-width: 96px;
+        min-height: 96px;
+    }
+}
+
+@media print {
+    .school-logo-container,
+    .school-brand-image {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}

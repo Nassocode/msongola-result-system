@@ -10,6 +10,11 @@ const {
 
 const router = express.Router();
 
+router.get(
+    "/branding",
+    schoolSettingsController.getPublicBranding
+);
+
 
 // =========================================================
 // GET ACTIVE SCHOOL SETTINGS
