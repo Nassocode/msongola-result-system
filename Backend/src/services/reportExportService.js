@@ -11,6 +11,9 @@ const COLORS = {
     border: "B8C7D1",
     white: "FFFFFF"
 };
+const PDF_COLORS = Object.fromEntries(
+    Object.entries(COLORS).map(([name, value]) => [name, `#${value}`])
+);
 
 function studentName(student) {
     return [student.first_name, student.middle_name, student.last_name]
@@ -111,24 +114,26 @@ async function createExcelBuffer(report) {
             return letters;
         })();
 
-    sheet.mergeCells(`B1:${lastColumn}1`);
-    sheet.getCell("B1").value = report.school?.school_name || "MSONGOLA SECONDARY SCHOOL";
-    sheet.getCell("B1").font = { bold: true, size: 16, color: { argb: `FF${COLORS.white}` } };
-    sheet.getCell("B1").alignment = { horizontal: "center", vertical: "middle" };
-    sheet.getCell("B1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: `FF${COLORS.ink}` } };
-    sheet.getRow(1).height = 28;
-    sheet.mergeCells(`B2:${lastColumn}2`);
-    sheet.getCell("B2").value = [report.school?.po_box, report.school?.motto].filter(Boolean).join(" | ");
-    sheet.getCell("B2").alignment = { horizontal: "center" };
-    sheet.getCell("B2").font = { italic: true, color: { argb: `FF${COLORS.ink}` } };
-    sheet.mergeCells(`B3:${lastColumn}3`);
-    sheet.getCell("B3").value = reportTitle(report);
-    sheet.getCell("B3").font = { bold: true, size: 13, color: { argb: `FF${COLORS.teal}` } };
-    sheet.getCell("B3").alignment = { horizontal: "center" };
+    sheet.mergeCells(`C1:${lastColumn}1`);
+    sheet.getCell("C1").value = report.school?.school_name || "MSONGOLA SECONDARY SCHOOL";
+    sheet.getCell("C1").font = { bold: true, size: 16, color: { argb: `FF${COLORS.white}` } };
+    sheet.getCell("C1").alignment = { horizontal: "center", vertical: "middle" };
+    sheet.getCell("C1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: `FF${COLORS.ink}` } };
+    sheet.getRow(1).height = 30;
+    sheet.mergeCells(`C2:${lastColumn}2`);
+    sheet.getCell("C2").value = [report.school?.po_box, report.school?.motto].filter(Boolean).join(" | ");
+    sheet.getCell("C2").alignment = { horizontal: "center", vertical: "middle" };
+    sheet.getCell("C2").font = { italic: true, color: { argb: `FF${COLORS.ink}` } };
+    sheet.getRow(2).height = 22;
+    sheet.mergeCells(`C3:${lastColumn}3`);
+    sheet.getCell("C3").value = reportTitle(report);
+    sheet.getCell("C3").font = { bold: true, size: 13, color: { argb: `FF${COLORS.teal}` } };
+    sheet.getCell("C3").alignment = { horizontal: "center", vertical: "middle" };
+    sheet.getRow(3).height = 22;
     const logoPath = getLogoPath(report);
     if (logoPath) {
         const imageId = workbook.addImage({ buffer: fs.readFileSync(logoPath), extension: "png" });
-        sheet.addImage(imageId, { tl: { col: 0, row: 0 }, ext: { width: 58, height: 58 } });
+        sheet.addImage(imageId, { tl: { col: 0, row: 0 }, ext: { width: 92, height: 92 } });
     }
 
     const detailsSheet = workbook.addWorksheet("Report Details");
@@ -285,11 +290,11 @@ function drawPdfTable(doc, columns, rows, startY) {
     let y = startY;
 
     const drawHeader = () => {
-        doc.font("Helvetica-Bold").fontSize(8).fillColor(COLORS.white);
+        doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_COLORS.white);
         let x = xStart;
         columns.forEach((column) => {
-            doc.rect(x, y, column.width, 24).fill(COLORS.ink).stroke(COLORS.border);
-            doc.fillColor(COLORS.white).text(column.title, x + 4, y + 7, { width: column.width - 8, height: 16, lineBreak: false, ellipsis: true });
+            doc.rect(x, y, column.width, 24).fill(PDF_COLORS.ink).stroke(PDF_COLORS.border);
+            doc.fillColor(PDF_COLORS.white).text(column.title, x + 4, y + 7, { width: column.width - 8, height: 16, lineBreak: false, ellipsis: true });
             x += column.width;
         });
         y += 24;
@@ -300,7 +305,7 @@ function drawPdfTable(doc, columns, rows, startY) {
     }
     drawHeader();
     rows.forEach((row, rowIndex) => {
-        doc.font("Helvetica").fontSize(8).fillColor(COLORS.ink);
+        doc.font("Helvetica").fontSize(8).fillColor(PDF_COLORS.ink);
         const height = Math.max(22, ...columns.map((column, index) => doc.heightOfString(String(row[index] ?? ""), { width: column.width - 8 }))) + 8;
         if (y + height > bottom) {
             doc.addPage();
@@ -309,9 +314,9 @@ function drawPdfTable(doc, columns, rows, startY) {
         }
         let x = xStart;
         columns.forEach((column, index) => {
-            if (rowIndex % 2 === 1) doc.rect(x, y, column.width, height).fill("F5F8FA");
-            doc.rect(x, y, column.width, height).stroke(COLORS.border);
-            doc.fillColor(COLORS.ink).text(String(row[index] ?? "-"), x + 4, y + 4, { width: column.width - 8, height: height - 8, ellipsis: true });
+            if (rowIndex % 2 === 1) doc.rect(x, y, column.width, height).fill("#F5F8FA");
+            doc.rect(x, y, column.width, height).stroke(PDF_COLORS.border);
+            doc.fillColor(PDF_COLORS.ink).text(String(row[index] ?? "-"), x + 4, y + 4, { width: column.width - 8, height: height - 8, ellipsis: true });
             x += column.width;
         });
         y += height;
@@ -330,20 +335,22 @@ async function createPdfBuffer(report) {
 
     const logoPath = getLogoPath(report);
     if (logoPath) {
-        try { doc.image(logoPath, doc.page.margins.left, 38, { fit: [54, 54] }); } catch (error) { console.warn("Report PDF logo could not be embedded:", error.message); }
+        try {
+            doc.image(logoPath, 42, 8, { fit: [136, 136], align: "center", valign: "center" });
+        } catch (error) { console.warn("Report PDF logo could not be embedded:", error.message); }
     }
     const school = report.school || {};
-    doc.font("Helvetica-Bold").fontSize(16).fillColor(COLORS.ink).text(school.school_name || "MSONGOLA SECONDARY SCHOOL", 104, 42, { width: 407, align: "center" });
-    doc.font("Helvetica").fontSize(9).text(school.po_box || "", { align: "center" });
-    doc.font("Helvetica-Bold").fontSize(9).text(school.motto || "", { align: "center" });
-    doc.moveTo(42, 112).lineTo(553, 112).lineWidth(1.4).stroke(COLORS.teal);
-    doc.moveDown(0.8);
-    doc.font("Helvetica-Bold").fontSize(12).fillColor(COLORS.ink).text(reportTitle(report), { align: "center" });
+    doc.font("Helvetica-Bold").fontSize(16).fillColor(PDF_COLORS.ink).text(school.school_name || "MSONGOLA SECONDARY SCHOOL", 190, 40, { width: 363, align: "left", ellipsis: true });
+    doc.font("Helvetica").fontSize(9).fillColor(PDF_COLORS.ink).text(school.po_box || "", 190, 68, { width: 363 });
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(PDF_COLORS.teal).text(school.motto || "", 190, 84, { width: 363 });
+    doc.moveTo(42, 152).lineTo(553, 152).lineWidth(1.4).stroke(PDF_COLORS.teal);
+    doc.font("Helvetica-Bold").fontSize(12).fillColor(PDF_COLORS.ink).text(reportTitle(report), 42, 164, { width: 511, align: "center" });
+    doc.y = 183;
     doc.moveDown(0.8);
 
     const metadata = reportMetadata(report);
     metadata.forEach(([label, value]) => {
-        doc.font("Helvetica-Bold").fontSize(8).fillColor(COLORS.ink).text(`${label}: `, { continued: true });
+        doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_COLORS.ink).text(`${label}: `, { continued: true });
         doc.font("Helvetica").text(String(value || "-"));
     });
     doc.moveDown(0.8);
@@ -353,7 +360,7 @@ async function createPdfBuffer(report) {
     if (report.report_type === "student") {
         const student = report.students?.[0] || {};
         y += 10;
-        doc.font("Helvetica-Bold").fontSize(9).fillColor(COLORS.ink).text(`Total Marks: ${student.total_marks}    Average: ${student.average_marks}    Total Points: ${student.total_points}    Division: ${student.division}    Position: ${student.class_position || student.position || "-"}`, 42, y, { width: 511 });
+        doc.font("Helvetica-Bold").fontSize(9).fillColor(PDF_COLORS.ink).text(`Total Marks: ${student.total_marks}    Average: ${student.average_marks}    Total Points: ${student.total_points}    Division: ${student.division}    Position: ${student.class_position || student.position || "-"}`, 42, y, { width: 511 });
     } else if (report.report_type === "subject") {
         const subjectRows = (report.subject_summary || []).map((subject) => [
             subject.subject_name,
@@ -370,7 +377,7 @@ async function createPdfBuffer(report) {
         ], subjectRows, y + 10);
     } else if (report.report_type === "summary") {
         y += 12;
-        doc.font("Helvetica-Bold").fontSize(9).fillColor(COLORS.ink).text("Subject performance and grade distributions are included in the summary table above.", 42, y, { width: 511 });
+        doc.font("Helvetica-Bold").fontSize(9).fillColor(PDF_COLORS.ink).text("Subject performance and grade distributions are included in the summary table above.", 42, y, { width: 511 });
     }
 
     const footerHeight = report.report_type === "student" ? 96 : 72;
@@ -384,16 +391,16 @@ async function createPdfBuffer(report) {
     const classTeacher = report.class_teacher?.full_name || "Not Assigned";
     const academicMaster = report.academic_master?.name || school.academic_master || "Not Assigned";
     const head = report.head_of_school?.name || school.head_of_school || "Not Assigned";
-    doc.font("Helvetica-Bold").fontSize(8).fillColor(COLORS.ink).text("CLASS TEACHER", 42, footerY);
+    doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_COLORS.ink).text("CLASS TEACHER", 42, footerY);
     doc.font("Helvetica").text(classTeacher, 42, footerY + 16, { width: blockWidth });
     doc.font("Helvetica-Bold").text("ACADEMIC MASTER", 217, footerY);
     doc.font("Helvetica").text(academicMaster, 217, footerY + 16, { width: blockWidth });
     doc.text("Signature: __________________", 217, footerY + 37, { width: blockWidth });
     doc.font("Helvetica-Bold").text("HEAD OF SCHOOL", 392, footerY);
     doc.font("Helvetica").text(head, 392, footerY + 16, { width: blockWidth });
-    doc.roundedRect(405, footerY + 36, 118, 34, 12).dash(3, { space: 2 }).stroke(COLORS.border).undash();
-    doc.font("Helvetica-Bold").fontSize(7).fillColor(COLORS.ink).text("OFFICIAL SCHOOL STAMP", 410, footerY + 49, { width: 108, align: "center" });
-    doc.font("Helvetica").fontSize(7).fillColor("64748B").text("Official report. Only approved marks are included.", 42, footerY + 82, { width: 511, align: "center" });
+    doc.roundedRect(405, footerY + 36, 118, 34, 12).dash(3, { space: 2 }).stroke(PDF_COLORS.border).undash();
+    doc.font("Helvetica-Bold").fontSize(7).fillColor(PDF_COLORS.ink).text("OFFICIAL SCHOOL STAMP", 410, footerY + 49, { width: 108, align: "center" });
+    doc.font("Helvetica").fontSize(7).fillColor("#64748B").text("Official report. Only approved marks are included.", 42, footerY + 82, { width: 511, align: "center" });
     doc.end();
     return output;
 }

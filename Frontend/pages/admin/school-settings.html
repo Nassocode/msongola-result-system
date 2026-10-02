@@ -32,7 +32,7 @@
 
     <link
         rel="stylesheet"
-        href="../../css/admin-school-settings.css"
+        href="../../css/admin-school-settings.css?v=school-contact-20261002"
     >
 
     <link
@@ -343,6 +343,52 @@
                     <div>
 
                         <h2>
+                    <!-- SCHOOL PHONE -->
+
+                    <div class="form-group">
+
+                        <label for="schoolPhoneInput">
+                            Simu ya Shule
+                        </label>
+
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-phone"></i>
+                            <input
+                                type="tel"
+                                id="schoolPhoneInput"
+                                name="phone"
+                                placeholder="Mfano: +255 700 000 000"
+                                maxlength="40"
+                                autocomplete="tel"
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- SCHOOL EMAIL -->
+
+                    <div class="form-group">
+
+                        <label for="schoolEmailInput">
+                            Barua Pepe ya Shule
+                        </label>
+
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-at"></i>
+                            <input
+                                type="email"
+                                id="schoolEmailInput"
+                                name="email"
+                                placeholder="Mfano: info@msongolasec.ac.tz"
+                                maxlength="254"
+                                autocomplete="email"
+                            >
+                        </div>
+
+                    </div>
+
+
                             Taarifa za Shule
                         </h2>
 
@@ -590,6 +636,18 @@
                     </div>
 
 
+                    <div class="preview-contact" hidden>
+                        <div class="preview-contact-item" id="previewSchoolPhoneRow" hidden>
+                            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                            <span class="preview-school-phone"></span>
+                        </div>
+                        <div class="preview-contact-item" id="previewSchoolEmailRow" hidden>
+                            <i class="fa-solid fa-at" aria-hidden="true"></i>
+                            <span class="preview-school-email"></span>
+                        </div>
+                    </div>
+
+
                     <div class="preview-divider"></div>
 
 
@@ -796,7 +854,7 @@
 
 <script src="../../js/app.js?v=20260929-2"></script>
 
-<script src="../../js/admin/school-settings.js"></script>
+<script src="../../js/admin/school-settings.js?v=school-contact-20261002"></script>
 
 
 <footer class="designer-credit" aria-label="Designer contact">

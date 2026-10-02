@@ -793,6 +793,8 @@ CREATE TABLE audit_logs (
 
     action VARCHAR(100) NOT NULL,
 
+    description TEXT NULL,
+
     module VARCHAR(100) NOT NULL,
 
     record_id BIGINT UNSIGNED NULL,

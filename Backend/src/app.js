@@ -18,6 +18,7 @@ const studentRoutes = require("./routes/studentRoutes");
 const teacherDashboardRoutes = require("./routes/teacherDashboardRoutes");
 const teacherMarksRoutes = require("./routes/teacherMarksRoutes");
 const adminCatalogRoutes = require("./routes/adminCatalogRoutes");
+const activityAuditMiddleware = require("./middlewares/activityAuditMiddleware");
 
 // Reports
 const reportRoutes = require("./routes/reportRoutes");
@@ -52,6 +53,8 @@ app.use(
         extended: true
     })
 );
+
+app.use(activityAuditMiddleware);
 
 
 // =====================================================

@@ -1,5 +1,14 @@
 
 const userService = require("../services/userService");
+const auditLogService = require("../services/auditLogService");
+
+function getRequestInfo(req) {
+    return {
+        user_id: req.user?.id || null,
+        ip_address: req.ip || req.socket?.remoteAddress || null,
+        user_agent: req.get("User-Agent") || null
+    };
+}
 
 // ============================================================
 // CREATE USER
@@ -18,6 +27,19 @@ async function createUser(req, res) {
             middle_name,
             last_name
         });
+
+        try {
+            await auditLogService.createAuditLog({
+                ...getRequestInfo(req),
+                action: "USER_CREATED",
+                module: "USER_MANAGEMENT",
+                description: `Mtumiaji ${username} ameundwa katika mfumo.`,
+                record_id: user?.id || null,
+                new_values: { username, role, status: status || "ACTIVE" }
+            });
+        } catch (auditError) {
+            console.error("User creation audit failed:", auditError.message);
+        }
 
         return res.status(201).json({
             success: true,
@@ -105,6 +127,19 @@ async function updateUser(req, res) {
             }
         );
 
+        try {
+            await auditLogService.createAuditLog({
+                ...getRequestInfo(req),
+                action: "USER_UPDATED",
+                module: "USER_MANAGEMENT",
+                description: `Taarifa za mtumiaji ${username} zilibadilishwa.`,
+                record_id: Number(id),
+                new_values: { username, role }
+            });
+        } catch (auditError) {
+            console.error("User update audit failed:", auditError.message);
+        }
+
         return res.status(200).json({
             success: true,
             message: "Taarifa za mtumiaji zimebadilishwa",
@@ -136,6 +171,19 @@ async function changeUserStatus(req, res) {
             status
         );
 
+        try {
+            await auditLogService.createAuditLog({
+                ...getRequestInfo(req),
+                action: "USER_STATUS_UPDATED",
+                module: "USER_MANAGEMENT",
+                description: `Status ya mtumiaji ${id} imebadilishwa kuwa ${status}.`,
+                record_id: Number(id),
+                new_values: { status }
+            });
+        } catch (auditError) {
+            console.error("User status audit failed:", auditError.message);
+        }
+
         return res.status(200).json({
             success: true,
             message: "Status ya mtumiaji imebadilishwa",
@@ -166,6 +214,19 @@ async function changeUserPassword(req, res) {
             id,
             password
         );
+
+        try {
+            await auditLogService.createAuditLog({
+                ...getRequestInfo(req),
+                action: "USER_PASSWORD_UPDATED",
+                module: "USER_MANAGEMENT",
+                description: `Password ya mtumiaji ${id} imebadilishwa.`,
+                record_id: Number(id),
+                new_values: { password_changed: true }
+            });
+        } catch (auditError) {
+            console.error("User password audit failed:", auditError.message);
+        }
 
         return res.status(200).json({
             success: true,

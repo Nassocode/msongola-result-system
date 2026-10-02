@@ -358,8 +358,11 @@ function normalizeOptions(data) {
             [],
 
         subjects:
-            source.subjects ||
-            []
+            (source.subjects || []).map((subject) => ({
+                ...subject,
+                id: subject.id ?? subject.subject_id,
+                subject_name: subject.subject_name ?? subject.name
+            }))
     };
 }
 
@@ -1258,6 +1261,7 @@ function renderSchoolInformation(report) {
     const school =
         report.school || {};
 
+    renderReportSchoolLogo(school);
 
     setText(
         "reportSchoolName",
@@ -1290,6 +1294,32 @@ function renderSchoolInformation(report) {
     }
 
 
+}
+
+
+function renderReportSchoolLogo(school) {
+    const container = $("reportSchoolLogo");
+    if (!container) return;
+
+    const fallbackUrl = resolveSchoolLogoUrl("uploads/logo/school-logo.png");
+    const logoUrl = resolveSchoolLogoUrl(school.logo_path || school.logo_url || "uploads/logo/school-logo.png");
+    const image = document.createElement("img");
+    image.src = logoUrl;
+    image.alt = `${school.school_name || "Msongola Secondary School"} logo`;
+    image.decoding = "async";
+    image.addEventListener("error", () => {
+        if (image.dataset.fallbackApplied !== "true" && image.src !== fallbackUrl) {
+            image.dataset.fallbackApplied = "true";
+            image.src = fallbackUrl;
+            return;
+        }
+
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-school";
+        icon.setAttribute("aria-hidden", "true");
+        container.replaceChildren(icon);
+    }, { once: true });
+    container.replaceChildren(image);
 }
 
 
@@ -1486,7 +1516,7 @@ function renderStudents(report) {
             reportRows.innerHTML = '<tr><td colspan="4" class="report-empty-cell">No approved results are available for the selected criteria.</td></tr>';
             return;
         }
-        const subjects = normalizeStudentSubjects(students[0]);
+        const subjects = getStudentClassSubjects(students[0], report.class?.form_id);
         reportRows.innerHTML = subjects.map((subject) => `
             <tr><td>${escapeHtml(subject.name)}</td><td>${escapeHtml(formatNumber(subject.marks, 2))}</td><td>${escapeHtml(subject.grade || "-")}</td><td>${escapeHtml(subject.points ?? "-")}</td></tr>
         `).join("");
@@ -1495,7 +1525,7 @@ function renderStudents(report) {
 
     if (state.reportType === "subject") {
         if (reportTableHead) reportTableHead.innerHTML = "<th>Student Name</th><th>Admission Number</th><th>Subject</th><th>Marks</th><th>Grade</th><th>Points</th>";
-        const subjectRows = students.flatMap((student) => normalizeStudentSubjects(student).map((subject) => ({ student, subject })));
+        const subjectRows = students.flatMap((student) => getStudentClassSubjects(student, report.class?.form_id).map((subject) => ({ student, subject })));
         if (reportResultCount) reportResultCount.textContent = `${students.length} approved students · ${subjectRows.length} approved subject results`;
         if (!students.length) {
             reportRows.innerHTML = '<tr><td colspan="6" class="report-empty-cell">No approved results are available for the selected criteria.</td></tr>';
@@ -1686,21 +1716,17 @@ function getReportSubjectColumns(students, formId = null) {
             });
         });
 
-    students.forEach((student) => {
-        normalizeStudentSubjects(student).forEach((subject) => {
-            const key = String(subject.id || subject.name);
-            if (!subjectMap.has(key)) {
-                subjectMap.set(key, {
-                    id: key,
-                    name: subject.name,
-                    code: subject.code || "",
-                    order: Number(subject.subject_order || 0)
-                });
-            }
-        });
-    });
-
     return [...subjectMap.values()].sort((left, right) => left.order - right.order || left.name.localeCompare(right.name));
+}
+
+function getStudentClassSubjects(student, formId = null) {
+    const catalog = getReportSubjectColumns([], formId);
+    const allowedKeys = new Set(catalog.flatMap((subject) => [subject.id, subject.code, subject.name]
+        .filter(Boolean)
+        .map(String)));
+    return normalizeStudentSubjects(student).filter((subject) =>
+        [subject.id, subject.code, subject.name].filter(Boolean).some((key) => allowedKeys.has(String(key)))
+    );
 }
 
 

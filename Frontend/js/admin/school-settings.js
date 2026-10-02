@@ -15,7 +15,9 @@
         school_name: "MSONGOLA SECONDARY SCHOOL",
         po_box: "P.O BOX 104727",
         motto: "Education is Light",
-        head_of_school: "NASSORO SHEKULAMBA"
+        head_of_school: "NASSORO SHEKULAMBA",
+        phone: "",
+        email: ""
     };
 
 
@@ -37,6 +39,12 @@
 
     const headOfSchoolInput =
         document.getElementById("headOfSchoolInput");
+
+    const schoolPhoneInput =
+        document.getElementById("schoolPhoneInput");
+
+    const schoolEmailInput =
+        document.getElementById("schoolEmailInput");
 
     const resetButton =
         document.getElementById(
@@ -60,6 +68,15 @@
         document.querySelector(
             ".preview-box"
         );
+
+    const previewContact =
+        document.querySelector(".preview-contact");
+
+    const previewSchoolPhone =
+        document.querySelector(".preview-school-phone");
+
+    const previewSchoolEmail =
+        document.querySelector(".preview-school-email");
 
     const previewMotto =
         document.querySelector(
@@ -204,7 +221,9 @@
                 response.data.school_name !== undefined ||
                 response.data.po_box !== undefined ||
                 response.data.motto !== undefined ||
-                response.data.head_of_school !== undefined
+                response.data.head_of_school !== undefined ||
+                response.data.phone !== undefined ||
+                response.data.email !== undefined
             ) {
                 return response.data;
             }
@@ -280,7 +299,13 @@
                 normalizeValue(
                     settings.head_of_school,
                     DEFAULT_SETTINGS.head_of_school
-                )
+                ),
+
+            phone:
+                normalizeValue(settings.phone),
+
+            email:
+                normalizeValue(settings.email)
         };
     }
 
@@ -305,6 +330,17 @@
                 schoolBoxInput.value.trim() ||
                 DEFAULT_SETTINGS.po_box;
         }
+
+        const phone = schoolPhoneInput.value.trim();
+        const email = schoolEmailInput.value.trim();
+
+        if (previewSchoolPhone) previewSchoolPhone.textContent = phone;
+        if (previewSchoolEmail) previewSchoolEmail.textContent = email;
+        const phoneRow = document.getElementById("previewSchoolPhoneRow");
+        const emailRow = document.getElementById("previewSchoolEmailRow");
+        if (phoneRow) phoneRow.hidden = !phone;
+        if (emailRow) emailRow.hidden = !email;
+        if (previewContact) previewContact.hidden = !phone && !email;
 
 
         if (previewMotto) {
@@ -346,6 +382,10 @@
         headOfSchoolInput.value =
             data.head_of_school;
 
+        schoolPhoneInput.value = data.phone;
+
+        schoolEmailInput.value = data.email;
+
 
         updatePreview();
     }
@@ -369,6 +409,9 @@
         const headOfSchool =
             headOfSchoolInput.value.trim();
 
+        const email =
+            schoolEmailInput.value.trim();
+
 
         /* Remove old error */
 
@@ -376,7 +419,9 @@
             schoolNameInput,
             schoolBoxInput,
             schoolMottoInput,
-            headOfSchoolInput
+            headOfSchoolInput,
+            schoolPhoneInput,
+            schoolEmailInput
         ].forEach((input) => {
 
             input.classList.remove(
@@ -453,6 +498,17 @@
                 "error"
             );
 
+            return false;
+        }
+
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            schoolEmailInput.classList.add("input-error");
+            schoolEmailInput.focus();
+            showToast(
+                "Taarifa haijakamilika",
+                "Barua pepe ya shule si sahihi.",
+                "error"
+            );
             return false;
         }
 
@@ -656,7 +712,13 @@
                 schoolMottoInput.value.trim(),
 
             head_of_school:
-                headOfSchoolInput.value.trim()
+                headOfSchoolInput.value.trim(),
+
+            phone:
+                schoolPhoneInput.value.trim(),
+
+            email:
+                schoolEmailInput.value.trim()
         };
 
 
@@ -813,7 +875,9 @@
             schoolNameInput,
             schoolBoxInput,
             schoolMottoInput,
-            headOfSchoolInput
+            headOfSchoolInput,
+            schoolPhoneInput,
+            schoolEmailInput
         ].forEach((input) => {
 
             input.classList.remove(
@@ -922,7 +986,11 @@
 
             schoolMottoInput,
 
-            headOfSchoolInput
+            headOfSchoolInput,
+
+            schoolPhoneInput,
+
+            schoolEmailInput
 
         ];
 

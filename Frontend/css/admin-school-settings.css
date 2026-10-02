@@ -708,6 +708,33 @@
     font-weight: 700;
 }
 
+.preview-contact {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
+    max-width: 100%;
+    margin-top: 9px;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.preview-contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.preview-contact-item i {
+    flex: 0 0 auto;
+    color: #0f766e;
+}
+
 
 /* divider */
 
