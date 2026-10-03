@@ -674,11 +674,7 @@ function renderClassStudents() {
 
     const students = state.options.students
         .filter((student) => String(student.class_id) === classId)
-        .sort((left, right) => {
-            const leftName = [left.last_name, left.first_name, left.middle_name].filter(Boolean).join(" ");
-            const rightName = [right.last_name, right.first_name, right.middle_name].filter(Boolean).join(" ");
-            return leftName.localeCompare(rightName);
-        });
+        .sort((left, right) => Number(left.id) - Number(right.id));
     const query = String(classRosterSearch?.value || "").trim().toLowerCase();
     const visibleStudents = students.filter((student) => {
         const name = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(" ");

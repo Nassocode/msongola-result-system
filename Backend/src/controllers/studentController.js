@@ -80,7 +80,10 @@ async function updateStudentStatus(req, res) {
 
 async function getClassOptions(req, res) {
     try {
-        const classes = await studentService.getClassOptions();
+        const classes = await studentService.getClassOptions(
+            req.query.academic_year,
+            req.query.form_number
+        );
 
         return res.status(200).json({
             success: true,
@@ -97,11 +100,31 @@ async function getClassOptions(req, res) {
     }
 }
 
+async function getClassSubjectOptions(req, res) {
+    try {
+        const result = await studentService.getClassSubjectOptions(
+            req.params.classId,
+            req.query.academic_stream,
+            req.query.islamic_studies,
+            req.query.science_subjects
+        );
+        return res.status(200).json({
+            success: true,
+            message: "Masomo ya mwanafunzi yamepatikana.",
+            data: result
+        });
+    } catch (error) {
+        console.error("Get student subject options error:", error.message);
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 module.exports = {
     getStudents,
     getStudentById,
     createStudent,
     updateStudent,
     updateStudentStatus,
-    getClassOptions
+    getClassOptions,
+    getClassSubjectOptions
 };

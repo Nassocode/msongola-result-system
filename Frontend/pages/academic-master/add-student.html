@@ -934,6 +934,47 @@
 
                             </div>
 
+                            <div class="form-group" id="academicStreamGroup" hidden>
+                                <label for="academicStream">
+                                    Mkondo wa masomo
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="select-wrapper">
+                                    <i class="fa-solid fa-book-open"></i>
+                                    <select id="academicStream" name="academicStream">
+                                        <option value="">Chagua mkondo</option>
+                                        <option value="ARTS">Arts</option>
+                                        <option value="SCIENCE">Science</option>
+                                    </select>
+                                </div>
+                                <small>Chagua mkondo wa Arts au Science kwa Form 1 hadi Form 4; masomo yanayotakiwa yataonyeshwa hapa.</small>
+                            </div>
+
+                            <div class="form-group" id="islamicStudiesGroup">
+                                <strong>Somo la dini</strong>
+                                <div class="input-wrapper">
+                                    <input type="checkbox" id="islamicStudies" name="islamicStudies" style="width:auto; min-height:0;">
+                                    <label for="islamicStudies" style="margin:0;">Mwanafunzi anasoma Islamic Knowledge</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="scienceSubjectsGroup" hidden>
+                                <strong>Masomo ya sayansi</strong>
+                                <div class="input-wrapper">
+                                    <input type="checkbox" id="physicsSubject" name="scienceSubjects" value="PHYSICS" style="width:auto; min-height:0;">
+                                    <label for="physicsSubject" style="margin:0;">Physics</label>
+                                </div>
+                                <div class="input-wrapper">
+                                    <input type="checkbox" id="chemistrySubject" name="scienceSubjects" value="CHEMISTRY" style="width:auto; min-height:0;">
+                                    <label for="chemistrySubject" style="margin:0;">Chemistry</label>
+                                </div>
+                                <small>Kwa mwanafunzi wa Science wa Form 3 au 4, chagua angalau somo moja.</small>
+                            </div>
+
+                            <div class="form-group" id="eligibleSubjectsGroup" hidden>
+                                <label>Masomo atakayosomea</label>
+                                <div id="eligibleSubjectsPreview" aria-live="polite"></div>
+                            </div>
 
                             <!-- Admission date -->
 
@@ -1249,7 +1290,7 @@
 <script src="../../js/app.js"></script>
 
 <!-- Page Script -->
-<script src="../../js/academic-master/add-student.js?v=20260928-3"></script>
+<script src="../../js/academic-master/add-student.js?v=20261003-4"></script>
 
 <footer class="designer-credit" aria-label="Designer contact">
     <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>

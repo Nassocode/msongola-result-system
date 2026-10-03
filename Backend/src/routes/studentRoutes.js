@@ -23,6 +23,13 @@ router.get(
 );
 
 router.get(
+    "/classes/:classId/subjects",
+    protect,
+    authorize("ACADEMIC_MASTER"),
+    studentController.getClassSubjectOptions
+);
+
+router.get(
     "/:id",
     protect,
     authorize("ACADEMIC_MASTER"),

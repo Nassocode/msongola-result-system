@@ -39,8 +39,9 @@
     }
 
     function setBusy(busy) {
-        elements.save.disabled = busy || !context?.students?.length || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
-        elements.submit.disabled = busy || !context?.students?.length || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
+        const eligibleCount = context?.students?.filter((student) => Boolean(Number(student.subject_eligible))).length || 0;
+        elements.save.disabled = busy || !eligibleCount || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
+        elements.submit.disabled = busy || !eligibleCount || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
         elements.assignment.disabled = busy;
         elements.examination.disabled = busy || !elements.examination.options.length;
         elements.refresh.disabled = busy || !elements.assignment.value || !elements.examination.value;
@@ -59,7 +60,11 @@
         elements.rows.innerHTML = data.students.map((student, index) => {
             const mark = saved.get(Number(student.id));
             const name = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(" ");
-            return `<tr><td>${index + 1}</td><td>${escapeHTML(student.admission_number)}</td><td><strong>${escapeHTML(name)}</strong></td><td><input class="mark-input" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-student-id="${student.id}" value="${mark ? escapeHTML(mark.marks) : ""}" ${locked ? "disabled" : ""} aria-label="Alama za ${escapeHTML(name)}"></td><td>${escapeHTML(mark?.status || "Haijaingizwa")}</td></tr>`;
+            const eligible = Boolean(Number(student.subject_eligible));
+            const markField = eligible
+                ? `<input class="mark-input" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-student-id="${student.id}" value="${mark ? escapeHTML(mark.marks) : ""}" ${locked ? "disabled" : ""} aria-label="Alama za ${escapeHTML(name)}">`
+                : '<span>Hasomi somo hili</span>';
+            return `<tr><td>${index + 1}</td><td>${escapeHTML(student.admission_number)}</td><td><strong>${escapeHTML(name)}</strong></td><td>${markField}</td><td>${eligible ? escapeHTML(mark?.status || "Haijaingizwa") : "Hastahili"}</td></tr>`;
         }).join("");
         elements.table.hidden = data.students.length === 0;
         elements.empty.hidden = data.students.length > 0;
@@ -67,11 +72,12 @@
         const classLabel = data.assignment.form_name
             ? `${data.assignment.form_name} - ${data.assignment.class_name}`
             : data.assignment.class_name;
-        elements.summary.textContent = `${data.students.length} wanafunzi katika ${classLabel}`;
+        const eligibleCount = data.students.filter((student) => Boolean(Number(student.subject_eligible))).length;
+        elements.summary.textContent = `${data.students.length} wanafunzi katika ${classLabel}; ${eligibleCount} wanasoma ${data.assignment.subject_name}`;
         elements.info.textContent = `${data.assignment.subject_name} · ${data.assignment.academic_year}`;
         elements.status.textContent = data.submission ? `Hali: ${data.submission.status}` : "Hali: Draft";
-        elements.save.disabled = locked || !data.students.length;
-        elements.submit.disabled = locked || !data.students.length;
+        elements.save.disabled = locked || eligibleCount === 0;
+        elements.submit.disabled = locked || eligibleCount === 0;
         elements.refresh.disabled = false;
     }
 
@@ -209,7 +215,8 @@
         if (!window.confirm("Una uhakika unataka kutuma alama hizi kwa mapitio? Baada ya kutuma hutaweza kuzibadilisha.")) return;
         try {
             const marks = collectMarks();
-            const missing = context.students.length - marks.length;
+            const eligibleStudents = context.students.filter((student) => Boolean(Number(student.subject_eligible)));
+            const missing = eligibleStudents.length - marks.length;
             if (missing > 0) throw new Error(`Jaza alama za wanafunzi wote. Bado ${missing} hazijaingizwa.`);
             setBusy(true);
             const saveResponse = await MsongolaAPI.put("/teacher/marks/draft", {

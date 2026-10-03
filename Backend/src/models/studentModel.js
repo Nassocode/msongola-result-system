@@ -56,15 +56,18 @@ async function getStudents() {
             s.date_of_birth,
             s.admission_date,
             s.status,
+            s.academic_stream,
+            s.islamic_studies,
             c.id AS class_id,
             c.class_name,
+            CAST(REPLACE(REPLACE(UPPER(f.form_name), 'FORM', ''), ' ', '') AS UNSIGNED) AS form_number,
             f.form_name,
             ay.year_label AS academic_year
         FROM students s
         LEFT JOIN classes c ON c.id = s.class_id
         LEFT JOIN forms f ON f.id = c.form_id
         LEFT JOIN academic_years ay ON ay.id = c.academic_year_id
-        ORDER BY s.created_at DESC
+        ORDER BY s.id ASC
     `;
 
     const [rows] = await pool.execute(sql);
@@ -79,6 +82,8 @@ async function getStudents() {
         date_of_birth: row.date_of_birth,
         admission_date: row.admission_date,
         status: row.status,
+        academic_stream: row.academic_stream,
+        islamic_studies: Boolean(row.islamic_studies),
         class_id: row.class_id ? Number(row.class_id) : null,
         class_name: row.class_name,
         form_number: row.form_number,
@@ -99,8 +104,11 @@ async function getStudentById(id) {
             s.date_of_birth,
             s.admission_date,
             s.status,
+            s.academic_stream,
+            s.islamic_studies,
             c.id AS class_id,
             c.class_name,
+            CAST(REPLACE(REPLACE(UPPER(f.form_name), 'FORM', ''), ' ', '') AS UNSIGNED) AS form_number,
             f.form_name,
             ay.year_label AS academic_year
         FROM students s
@@ -113,6 +121,67 @@ async function getStudentById(id) {
 
     const [rows] = await pool.execute(sql, [id]);
     return rows[0] || null;
+}
+
+async function getClassSubjectProfile(classId) {
+    const [classes] = await pool.execute(`
+        SELECT c.id, c.form_id, c.class_name,
+               CAST(REPLACE(REPLACE(UPPER(f.form_name), 'FORM', ''), ' ', '') AS UNSIGNED) AS form_number,
+               f.form_name
+        FROM classes c
+        INNER JOIN forms f ON f.id = c.form_id
+        WHERE c.id = ? AND c.status = 'ACTIVE'
+        LIMIT 1
+    `, [classId]);
+    if (!classes[0]) throw new Error("Darasa halijapatikana.");
+
+    const [formSubjects] = await pool.execute(`
+        SELECT s.id, s.subject_name
+        FROM form_subjects fs
+        INNER JOIN subjects s ON s.id = fs.subject_id
+        WHERE fs.form_id = ? AND fs.status = 'ACTIVE' AND s.status = 'ACTIVE'
+        ORDER BY s.subject_name
+    `, [classes[0].form_id]);
+    const [islamicSubjects] = await pool.execute(`
+        SELECT id, subject_name
+        FROM subjects
+        WHERE status = 'ACTIVE'
+          AND UPPER(TRIM(subject_name)) IN (
+              'ISLAMIC KNOWLEDGE',
+              'ELIMU YA DINI YA KIISLAMU (E.D.K)'
+          )
+    `);
+
+    const subjects = new Map();
+    for (const subject of [...formSubjects, ...islamicSubjects]) {
+        subjects.set(Number(subject.id), {
+            id: Number(subject.id),
+            subject_name: subject.subject_name
+        });
+    }
+    return { ...classes[0], subjects: [...subjects.values()] };
+}
+
+async function getStudentSubjectIds(studentId, classId) {
+    const [rows] = await pool.execute(`
+        SELECT subject_id
+        FROM student_subjects
+        WHERE student_id = ? AND class_id = ?
+        ORDER BY subject_id
+    `, [studentId, classId]);
+    return rows.map((row) => Number(row.subject_id));
+}
+
+async function getStudentScienceSubjects(studentId, classId) {
+    const [rows] = await pool.execute(`
+        SELECT UPPER(TRIM(s.subject_name)) AS subject_name
+        FROM student_subjects ss
+        INNER JOIN subjects s ON s.id = ss.subject_id
+        WHERE ss.student_id = ? AND ss.class_id = ?
+          AND UPPER(TRIM(s.subject_name)) IN ('PHYSICS', 'CHEMISTRY')
+        ORDER BY s.subject_name
+    `, [studentId, classId]);
+    return rows.map((row) => row.subject_name);
 }
 
 async function getStudentByAdmissionNumber(admissionNumber, excludeId = null) {
@@ -193,9 +262,11 @@ async function createStudent(data) {
             gender,
             date_of_birth,
             class_id,
+            academic_stream,
+            islamic_studies,
             admission_date,
             status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     for (let attempt = 0; attempt < 10; attempt += 1) {
@@ -211,6 +282,8 @@ async function createStudent(data) {
                 data.gender,
                 data.date_of_birth || null,
                 data.class_id,
+                data.academic_stream,
+                data.islamic_studies ? 1 : 0,
                 data.admission_date || null,
                 data.status || "ACTIVE"
             ]);
@@ -225,6 +298,13 @@ async function createStudent(data) {
                 if (error.code !== "ER_DUP_ENTRY" || attempt === 9) throw error;
                 await connection.rollback();
                 continue;
+            }
+
+            for (const subjectId of data.subject_ids) {
+                await connection.execute(`
+                    INSERT INTO student_subjects (student_id, class_id, subject_id)
+                    VALUES (?, ?, ?)
+                `, [result.insertId, data.class_id, subjectId]);
             }
 
             await connection.commit();
@@ -245,14 +325,48 @@ async function updateStudent(id, data) {
     try {
         await connection.beginTransaction();
         await ensureClassHasCapacity(connection, data.class_id, data.status, id);
+        const [existingSubjects] = await connection.execute(`
+            SELECT subject_id
+            FROM student_subjects
+            WHERE student_id = ? AND class_id = ?
+            FOR UPDATE
+        `, [id, data.class_id]);
+        const existingSubjectIds = existingSubjects.map((row) => Number(row.subject_id)).sort((a, b) => a - b);
+        const requestedSubjectIds = [...data.subject_ids].map(Number).sort((a, b) => a - b);
+        const enrollmentChanged = existingSubjectIds.length !== requestedSubjectIds.length ||
+            existingSubjectIds.some((subjectId, index) => subjectId !== requestedSubjectIds[index]);
+        if (existingSubjects.length && enrollmentChanged) {
+            const [[{ marks_count: marksCount }]] = await connection.execute(`
+                SELECT COUNT(*) AS marks_count
+                FROM marks m
+                INNER JOIN teacher_assignments ta ON ta.id = m.teacher_assignment_id
+                WHERE m.student_id = ? AND ta.class_id = ?
+            `, [id, data.class_id]);
+            if (Number(marksCount) > 0) {
+                throw new Error("Mkondo au masomo hayawezi kubadilishwa baada ya alama kuingizwa kwa mwanafunzi huyu katika darasa hili.");
+            }
+        }
+
         const [result] = await connection.execute(`
             UPDATE students
             SET admission_number = ?, first_name = ?, middle_name = ?, last_name = ?,
-                gender = ?, date_of_birth = ?, class_id = ?, admission_date = ?, status = ?
+                gender = ?, date_of_birth = ?, class_id = ?, academic_stream = ?,
+                islamic_studies = ?, admission_date = ?, status = ?
             WHERE id = ?
         `, [data.admission_number, data.first_name, data.middle_name || null, data.last_name,
-            data.gender, data.date_of_birth || null, data.class_id, data.admission_date || null,
+            data.gender, data.date_of_birth || null, data.class_id, data.academic_stream,
+            data.islamic_studies ? 1 : 0, data.admission_date || null,
             data.status, id]);
+        await connection.execute(
+            "DELETE FROM student_subjects WHERE student_id = ? AND class_id = ?",
+            [id, data.class_id]
+        );
+        for (const subjectId of data.subject_ids) {
+            await connection.execute(`
+                INSERT INTO student_subjects (student_id, class_id, subject_id)
+                VALUES (?, ?, ?)
+            `, [id, data.class_id, subjectId]);
+        }
         await connection.commit();
         return result.affectedRows;
     } catch (error) {
@@ -287,22 +401,32 @@ async function updateStudentStatus(id, status) {
     }
 }
 
-async function getClassOptions() {
-    const sql = `
+async function getClassOptions(academicYear, formNumber) {
+    let sql = `
         SELECT
             c.id,
             c.class_name,
             c.status,
+            CAST(REPLACE(REPLACE(UPPER(f.form_name), 'FORM', ''), ' ', '') AS UNSIGNED) AS form_number,
             f.form_name,
             ay.year_label AS academic_year
         FROM classes c
         INNER JOIN forms f ON f.id = c.form_id
         INNER JOIN academic_years ay ON ay.id = c.academic_year_id
         WHERE c.status = 'ACTIVE'
-        ORDER BY ay.id DESC, f.form_name ASC, c.class_name ASC
     `;
+    const params = [];
+    if (academicYear) {
+        sql += " AND ay.year_label = ?";
+        params.push(String(academicYear).trim());
+    }
+    if (formNumber) {
+        sql += " AND CAST(REPLACE(REPLACE(UPPER(f.form_name), 'FORM', ''), ' ', '') AS UNSIGNED) = ?";
+        params.push(Number(formNumber));
+    }
+    sql += " ORDER BY ay.id DESC, f.form_name ASC, c.class_name ASC";
 
-    const [rows] = await pool.execute(sql);
+    const [rows] = await pool.execute(sql, params);
     return rows;
 }
 
@@ -315,5 +439,8 @@ module.exports = {
     createStudent,
     updateStudent,
     updateStudentStatus,
-    getClassOptions
+    getClassOptions,
+    getClassSubjectProfile,
+    getStudentSubjectIds,
+    getStudentScienceSubjects
 };

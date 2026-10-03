@@ -520,6 +520,14 @@ CREATE TABLE students (
 
     class_id BIGINT UNSIGNED NOT NULL,
 
+    academic_stream ENUM(
+        'GENERAL',
+        'ARTS',
+        'SCIENCE'
+    ) NOT NULL DEFAULT 'GENERAL',
+
+    islamic_studies BOOLEAN NOT NULL DEFAULT FALSE,
+
     admission_date DATE NULL,
 
     status ENUM(
@@ -537,6 +545,32 @@ CREATE TABLE students (
     CONSTRAINT fk_students_class
         FOREIGN KEY (class_id)
         REFERENCES classes(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE TABLE student_subjects (
+    student_id BIGINT UNSIGNED NOT NULL,
+    class_id BIGINT UNSIGNED NOT NULL,
+    subject_id BIGINT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (student_id, class_id, subject_id),
+
+    CONSTRAINT fk_student_subjects_student
+        FOREIGN KEY (student_id)
+        REFERENCES students(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_student_subjects_class
+        FOREIGN KEY (class_id)
+        REFERENCES classes(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_student_subjects_subject
+        FOREIGN KEY (subject_id)
+        REFERENCES subjects(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );

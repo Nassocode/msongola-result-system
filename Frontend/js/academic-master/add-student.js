@@ -2,7 +2,8 @@
     "use strict";
 
     const state = {
-        classOptions: []
+        classOptions: [],
+        subjectPreviewSequence: 0
     };
 
     const sidebar = document.getElementById("sidebar");
@@ -20,6 +21,15 @@
     const academicYear = document.getElementById("academicYear");
     const studentForm = document.getElementById("studentForm");
     const studentClass = document.getElementById("studentClass");
+    const academicStream = document.getElementById("academicStream");
+    const academicStreamGroup = document.getElementById("academicStreamGroup");
+    const islamicStudies = document.getElementById("islamicStudies");
+    const islamicStudiesGroup = document.getElementById("islamicStudiesGroup");
+    const scienceSubjectsGroup = document.getElementById("scienceSubjectsGroup");
+    const physicsSubject = document.getElementById("physicsSubject");
+    const chemistrySubject = document.getElementById("chemistrySubject");
+    const eligibleSubjectsGroup = document.getElementById("eligibleSubjectsGroup");
+    const eligibleSubjectsPreview = document.getElementById("eligibleSubjectsPreview");
     const admissionDate = document.getElementById("admissionDate");
     const studentStatus = document.getElementById("studentStatus");
     const editStudentId = new URLSearchParams(window.location.search).get("edit");
@@ -106,6 +116,22 @@
             return false;
         }
 
+        const selectedClassRecord = state.classOptions.find((item) => String(item.id) === String(selectedClass));
+        if ([1, 2, 3, 4].includes(Number(selectedClassRecord?.form_number)) && !academicStream.value) {
+            showMessage(`Chagua mkondo wa Arts au Science kwa mwanafunzi wa Form ${selectedClassRecord.form_number}.`);
+            academicStream.focus();
+            return false;
+        }
+
+        if ([3, 4].includes(Number(selectedClassRecord?.form_number)) &&
+            academicStream.value === "SCIENCE" &&
+            !physicsSubject.checked &&
+            !chemistrySubject.checked) {
+            showMessage("Chagua angalau somo moja la sayansi: Physics au Chemistry.");
+            physicsSubject.focus();
+            return false;
+        }
+
         if (!selectedStatus) {
             showMessage("Tafadhali chagua hali ya mwanafunzi.");
             studentStatus?.focus();
@@ -128,9 +154,77 @@
             academic_year: academicYear.value,
             class_id: Number.isInteger(parsedClassId) && parsedClassId > 0 ? parsedClassId : null,
             class_name: Number.isInteger(parsedClassId) && parsedClassId > 0 ? "" : rawClassValue,
+            academic_stream: academicStream.value || "GENERAL",
+            islamic_studies: islamicStudies.checked,
+            science_subjects: [physicsSubject, chemistrySubject]
+                .filter((subject) => subject.checked)
+                .map((subject) => subject.value),
             admission_date: admissionDate.value || null,
             status: studentStatus.value || "ACTIVE"
         };
+    }
+
+    function renderSubjectPreview(subjects) {
+        eligibleSubjectsGroup.hidden = false;
+        eligibleSubjectsPreview.textContent = subjects.length
+            ? subjects.map((subject) => subject.subject_name).join(", ")
+            : "Hakuna somo lililopatikana.";
+    }
+
+    async function refreshSubjectPreview() {
+        const sequence = ++state.subjectPreviewSequence;
+        const classId = studentClass.value;
+        const classRecord = state.classOptions.find((item) => String(item.id) === String(classId));
+        const formNumber = Number(classRecord?.form_number);
+        const isStreamedForm = [1, 2, 3, 4].includes(formNumber);
+        const hasOptionalIslamicStudy = [3, 4].includes(formNumber);
+        const hasScienceChoices = hasOptionalIslamicStudy && academicStream.value === "SCIENCE";
+
+        academicStreamGroup.hidden = !isStreamedForm;
+        academicStream.required = isStreamedForm;
+        islamicStudiesGroup.hidden = !hasOptionalIslamicStudy;
+        islamicStudies.disabled = !hasOptionalIslamicStudy;
+        scienceSubjectsGroup.hidden = !hasScienceChoices;
+        physicsSubject.disabled = !hasScienceChoices;
+        chemistrySubject.disabled = !hasScienceChoices;
+        if (!hasOptionalIslamicStudy) islamicStudies.checked = false;
+        if (!isStreamedForm) academicStream.value = "GENERAL";
+        if (!classId) {
+            eligibleSubjectsGroup.hidden = true;
+            return;
+        }
+        if (isStreamedForm && !academicStream.value) {
+            eligibleSubjectsGroup.hidden = false;
+            eligibleSubjectsPreview.textContent = "Chagua mkondo ili kuona masomo.";
+            return;
+        }
+        if (hasScienceChoices && !physicsSubject.checked && !chemistrySubject.checked) {
+            eligibleSubjectsGroup.hidden = false;
+            eligibleSubjectsPreview.textContent = "Chagua Physics, Chemistry, au masomo yote mawili ili kuona masomo.";
+            return;
+        }
+
+        eligibleSubjectsGroup.hidden = false;
+        eligibleSubjectsPreview.textContent = "Inapakia masomo...";
+        const query = new URLSearchParams({
+            academic_stream: academicStream.value || "GENERAL",
+            islamic_studies: String(islamicStudies.checked),
+            science_subjects: [physicsSubject, chemistrySubject]
+                .filter((subject) => subject.checked)
+                .map((subject) => subject.value)
+        });
+
+        try {
+            const response = await MsongolaAPI.get(
+                `/students/classes/${encodeURIComponent(classId)}/subjects?${query}`
+            );
+            if (!response?.success) throw new Error(response?.message || "Imeshindikana kupata masomo ya mwanafunzi.");
+            if (sequence !== state.subjectPreviewSequence) return;
+            renderSubjectPreview(response.data?.subjects || []);
+        } catch (error) {
+            if (sequence !== state.subjectPreviewSequence) return;
+            eligibleSubjectsPreview.textContent = error.message || "Imeshindikana kupata masomo.";
+        }
     }
 
     function renderClassOptions(items, emptyLabel = "Hakuna madarasa yaliyopatikana") {
@@ -154,8 +248,18 @@
     }
 
     async function loadClassOptions() {
+        const previousClassId = studentClass.value;
+        studentClass.disabled = true;
+        studentClass.innerHTML = '<option value="">Inapakia madarasa...</option>';
         try {
-            const response = await MsongolaAPI.get("/students/classes");
+            const query = new URLSearchParams();
+            if (academicYear.value) query.set("academic_year", academicYear.value);
+            const selectedFormNumber = Number(String(studentForm.value || "").replace(/\D/g, ""));
+            if (selectedFormNumber) query.set("form_number", String(selectedFormNumber));
+            const endpoint = query.size
+                ? `/students/classes?${query.toString()}`
+                : "/students/classes";
+            const response = await MsongolaAPI.get(endpoint);
 
             if (!response || !response.success) {
                 throw new Error(response?.message || "Class options unavailable");
@@ -166,9 +270,15 @@
                 : response.data?.classes || response.classes || [];
 
             renderClassOptions(state.classOptions);
+            studentClass.value = state.classOptions.some((item) => String(item.id) === previousClassId)
+                ? previousClassId
+                : "";
         } catch (error) {
             console.error("Load class options error:", error);
             renderClassOptions([], "Imeshindikana kupakia madarasa. Bonyeza refresh.");
+            showMessage(error.message || "Imeshindikana kupakia madarasa.");
+        } finally {
+            studentClass.disabled = false;
         }
     }
 
@@ -178,14 +288,21 @@
             const response = await MsongolaAPI.get(`/students/${encodeURIComponent(editStudentId)}`);
             if (!response?.success || !response.data) throw new Error(response?.message || "Taarifa za mwanafunzi hazikupatikana.");
             const student = response.data;
+            document.getElementById("academicYear").value = student.academic_year || "";
+            studentForm.value = student.form_number ? `FORM_${student.form_number}` : "";
+            await loadClassOptions();
             document.getElementById("admissionNumber").value = student.admission_number || "";
             document.getElementById("firstName").value = student.first_name || "";
             document.getElementById("middleName").value = student.middle_name || "";
             document.getElementById("lastName").value = student.last_name || "";
             document.getElementById("gender").value = student.gender || "";
             document.getElementById("dateOfBirth").value = student.date_of_birth ? String(student.date_of_birth).slice(0, 10) : "";
-            document.getElementById("academicYear").value = student.academic_year || "";
             document.getElementById("studentClass").value = student.class_id || "";
+            academicStream.value = student.academic_stream === "GENERAL" ? "" : (student.academic_stream || "");
+            islamicStudies.checked = Boolean(student.islamic_studies);
+            physicsSubject.checked = student.science_subjects?.includes("PHYSICS") || false;
+            chemistrySubject.checked = student.science_subjects?.includes("CHEMISTRY") || false;
+            await refreshSubjectPreview();
             document.getElementById("admissionDate").value = student.admission_date ? String(student.admission_date).slice(0, 10) : "";
             document.getElementById("studentStatus").value = student.status || "ACTIVE";
             document.title = "Hariri Mwanafunzi | Msongola Result System";
@@ -229,9 +346,32 @@
         const currentUser = MsongolaAuth.getUser();
         renderCurrentUser(currentUser);
         setDefaultDateValues();
-        await loadClassOptions();
-        await loadStudentForEdit();
+        if (editStudentId) {
+            await loadStudentForEdit();
+        } else {
+            await loadClassOptions();
+        }
     }
+
+    academicYear?.addEventListener("change", async () => {
+        studentClass.value = "";
+        await loadClassOptions();
+        await refreshSubjectPreview();
+    });
+    studentForm?.addEventListener("change", async () => {
+        studentClass.value = "";
+        await loadClassOptions();
+        await refreshSubjectPreview();
+    });
+    studentClass?.addEventListener("change", () => {
+        const classRecord = state.classOptions.find((item) => String(item.id) === String(studentClass.value));
+        academicStream.value = [1, 2, 3, 4].includes(Number(classRecord?.form_number)) ? "" : "GENERAL";
+        refreshSubjectPreview();
+    });
+    academicStream?.addEventListener("change", refreshSubjectPreview);
+    islamicStudies?.addEventListener("change", refreshSubjectPreview);
+    physicsSubject?.addEventListener("change", refreshSubjectPreview);
+    chemistrySubject?.addEventListener("change", refreshSubjectPreview);
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initialize, { once: true });
@@ -295,6 +435,11 @@
             setTimeout(() => {
                 clearMessage();
                 setDefaultDateValues();
+                academicStream.value = "";
+                islamicStudies.checked = false;
+                physicsSubject.checked = false;
+                chemistrySubject.checked = false;
+                refreshSubjectPreview();
             }, 0);
         });
     }

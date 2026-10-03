@@ -169,7 +169,7 @@ async function getSubmissions() {
          FROM students st
          INNER JOIN classes c ON c.id = st.class_id
          WHERE st.status = 'ACTIVE'
-         ORDER BY st.last_name, st.first_name, st.middle_name
+         ORDER BY st.id ASC
     `);
 
     const subjectsByClass = new Map();

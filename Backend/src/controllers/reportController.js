@@ -43,7 +43,7 @@ async function getReportStudents(req, res) {
 
 async function getReportDetails(req, res) {
     try {
-        const data = await reportService.generateReport(req.query);
+        const data = await reportService.generateReport(req.query, req.user?.username);
 
         return res.status(200).json({
             success: true,
@@ -62,7 +62,7 @@ async function getReportDetails(req, res) {
 
 async function exportReport(req, res, format) {
     try {
-        const report = await reportService.generateReport(req.body || {});
+        const report = await reportService.generateReport(req.body || {}, req.user?.username);
         const buffer = format === "excel"
             ? await reportExportService.createExcelBuffer(report)
             : await reportExportService.createPdfBuffer(report);

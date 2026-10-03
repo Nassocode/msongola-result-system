@@ -36,11 +36,17 @@ async function getEntryContext(userId, assignmentId, examinationId) {
 
 		if (selectedExamId) {
 			const [studentRows] = await connection.execute(`
-				SELECT id, admission_number, first_name, middle_name, last_name
-				FROM students
-				WHERE class_id = ? AND status = 'ACTIVE'
-				ORDER BY last_name, first_name
-			`, [assignment.class_id]);
+				SELECT s.id, s.admission_number, s.first_name, s.middle_name, s.last_name,
+					   EXISTS (
+						   SELECT 1 FROM student_subjects ss
+						   WHERE ss.student_id = s.id
+							 AND ss.class_id = s.class_id
+							 AND ss.subject_id = ?
+					   ) AS subject_eligible
+				FROM students s
+				WHERE s.class_id = ? AND s.status = 'ACTIVE'
+				ORDER BY s.id ASC
+			`, [assignment.subject_id, assignment.class_id]);
 			students = studentRows;
 
 			const [markRows] = await connection.execute(`
@@ -102,10 +108,18 @@ async function saveDraftMarks(userId, assignmentId, examinationId, entries) {
 		}
 		const placeholders = studentIds.map(() => "?").join(",");
 		const [validStudents] = await connection.execute(
-			`SELECT id FROM students WHERE class_id = ? AND status = 'ACTIVE' AND id IN (${placeholders})`,
-			[assignment.class_id, ...studentIds]
+			`SELECT s.id
+			 FROM students s
+			 INNER JOIN student_subjects ss
+			   ON ss.student_id = s.id
+			  AND ss.class_id = s.class_id
+			  AND ss.subject_id = ?
+			 WHERE s.class_id = ? AND s.status = 'ACTIVE' AND s.id IN (${placeholders})`,
+			[assignment.subject_id, assignment.class_id, ...studentIds]
 		);
-		if (validStudents.length !== studentIds.length) throw new Error("Mwanafunzi mmoja au zaidi hayupo kwenye darasa hili.");
+		if (validStudents.length !== studentIds.length) {
+			throw new Error("Mwanafunzi mmoja au zaidi hayupo kwenye darasa hili au hasomi somo hili.");
+		}
 
 		for (const entry of entries) {
 			const score = Number(entry.marks);
@@ -157,26 +171,44 @@ async function submitMarks(userId, assignmentId, examinationId) {
 		`, [assignmentId, examinationId]);
 		if (["SUBMITTED", "APPROVED"].includes(submissionRows[0]?.status)) throw new Error("Alama hizi tayari zimetumwa.");
 
-		const [[{ total_students: totalStudents }]] = await connection.execute(
-			"SELECT COUNT(*) AS total_students FROM students WHERE class_id = ? AND status = 'ACTIVE'",
-			[assignment.class_id]
-		);
+		const [[{ total_students: totalStudents }]] = await connection.execute(`
+			SELECT COUNT(*) AS total_students
+			FROM students s
+			INNER JOIN student_subjects ss
+			  ON ss.student_id = s.id
+			 AND ss.class_id = s.class_id
+			 AND ss.subject_id = ?
+			WHERE s.class_id = ? AND s.status = 'ACTIVE'
+		`, [assignment.subject_id, assignment.class_id]);
+		if (Number(totalStudents) === 0) {
+			throw new Error("Hakuna mwanafunzi aliyesajiliwa kusoma somo hili katika darasa hili.");
+		}
 		const [[{ marked_students: markedStudents }]] = await connection.execute(`
 			SELECT COUNT(*) AS marked_students
 			FROM marks m
 			INNER JOIN students s ON s.id = m.student_id
+			INNER JOIN student_subjects ss
+			  ON ss.student_id = s.id
+			 AND ss.class_id = s.class_id
+			 AND ss.subject_id = m.subject_id
 			WHERE m.teacher_assignment_id = ? AND m.examination_id = ?
 			  AND s.class_id = ? AND s.status = 'ACTIVE'
+			  AND m.subject_id = ?
 			  AND m.status IN ('DRAFT', 'RETURNED')
-		`, [assignmentId, examinationId, assignment.class_id]);
+		`, [assignmentId, examinationId, assignment.class_id, assignment.subject_id]);
 		if (Number(markedStudents) !== Number(totalStudents)) {
 			throw new Error(`Kamilisha alama za wanafunzi wote kabla ya kutuma (${markedStudents}/${totalStudents}).`);
 		}
 
 		await connection.execute(`
-			UPDATE marks SET status = 'SUBMITTED'
-			WHERE teacher_assignment_id = ? AND examination_id = ?
-		`, [assignmentId, examinationId]);
+			UPDATE marks m
+			INNER JOIN student_subjects ss
+			  ON ss.student_id = m.student_id
+			 AND ss.class_id = ?
+			 AND ss.subject_id = m.subject_id
+			SET m.status = 'SUBMITTED'
+			WHERE m.teacher_assignment_id = ? AND m.examination_id = ?
+		`, [assignment.class_id, assignmentId, examinationId]);
 		await connection.execute(`
 			INSERT INTO mark_submissions (teacher_assignment_id, examination_id, submitted_by, submitted_at, status)
 			VALUES (?, ?, ?, NOW(), 'SUBMITTED')

@@ -78,13 +78,14 @@ async function getReportOptions() {
         "ORDER BY ay.year_label DESC, " +
         "f.form_name ASC, c.class_name ASC";
 
-    const formSubjectsQuery =
+    const studentSubjectsQuery =
         "SELECT c.id AS class_id, c.form_id, c.academic_year_id, " +
         "s.id AS subject_id, s.subject_code, s.subject_name, " +
-        "fs.is_compulsory, 0 AS subject_order " +
+        "TRUE AS is_compulsory, 0 AS subject_order " +
         "FROM classes c " +
-        "INNER JOIN form_subjects fs ON fs.form_id = c.form_id AND fs.status = 'ACTIVE' " +
-        "INNER JOIN subjects s ON s.id = fs.subject_id AND s.status = 'ACTIVE' " +
+        "INNER JOIN student_subjects ss ON ss.class_id = c.id " +
+        "INNER JOIN students st ON st.id = ss.student_id AND st.class_id = c.id AND st.status = 'ACTIVE' " +
+        "INNER JOIN subjects s ON s.id = ss.subject_id AND s.status = 'ACTIVE' " +
         "WHERE c.status = 'ACTIVE' " +
         "ORDER BY c.id, s.subject_name";
 
@@ -102,7 +103,7 @@ async function getReportOptions() {
     const [examinationsResult] = await db.query(examinationsQuery);
     const [formsResult] = await db.query(formsQuery);
     const [classesResult] = await db.query(classesQuery);
-    const [formSubjectsResult] = await db.query(formSubjectsQuery);
+    const [studentSubjectsResult] = await db.query(studentSubjectsQuery);
     const [legacySubjectsResult] = await db.query(legacySubjectsQuery);
 
     return {
@@ -110,7 +111,7 @@ async function getReportOptions() {
         examinations: examinationsResult,
         forms: formsResult,
         classes: classesResult,
-        subjects: resolveClassSubjectCatalog(formSubjectsResult, legacySubjectsResult)
+        subjects: resolveClassSubjectCatalog(studentSubjectsResult, legacySubjectsResult)
     };
 }
 
@@ -136,24 +137,24 @@ async function getStudentsForClass(filters = {}) {
         SELECT id, admission_number, first_name, middle_name, last_name, gender, class_id
         FROM students
         WHERE class_id = ? AND status = 'ACTIVE'
-        ORDER BY last_name, first_name, middle_name, id
+        ORDER BY id ASC
     `, [classId]);
     return rows;
 }
 
-async function getSchoolInformation() {
+async function getSchoolInformation(reportingAcademicMaster = "") {
     const query =
         "SELECT ss.id, ss.school_name, ss.po_box, " +
         "ss.motto, ss.head_of_school, " +
         "ss.academic_master_user_id, ss.phone, " +
         "ss.email, ss.logo_path, " +
-        "u.username AS academic_master_username " +
+        "COALESCE(NULLIF(u.username, ''), NULLIF(?, ''), 'Not configured') AS academic_master_username " +
         "FROM school_settings ss " +
         "LEFT JOIN users u ON u.id = ss.academic_master_user_id " +
         "WHERE ss.status = 'ACTIVE' " +
         "ORDER BY ss.id DESC LIMIT 1";
 
-    const [rows] = await db.query(query);
+    const [rows] = await db.query(query, [String(reportingAcademicMaster || "").trim()]);
 
     if (!rows.length) {
         return {
@@ -161,7 +162,7 @@ async function getSchoolInformation() {
             po_box: "P.O BOX 104727",
             motto: "EDUCATION IS LIGHT",
             head_of_school: "Not configured",
-            academic_master: "Not configured",
+            academic_master: String(reportingAcademicMaster || "").trim() || "Not configured",
             phone: "",
             email: "",
             logo_path: ""
@@ -294,6 +295,10 @@ async function getApprovedMarks(filters, classInfo = null) {
         "m.status = 'APPROVED'",
         "s.status = 'ACTIVE'",
         "m.examination_id = ?",
+        "EXISTS (SELECT 1 FROM student_subjects eligible_subject " +
+            "WHERE eligible_subject.student_id = m.student_id " +
+            "AND eligible_subject.class_id = s.class_id " +
+            "AND eligible_subject.subject_id = m.subject_id)",
         "m.id = (SELECT MAX(latest_mark.id) FROM marks latest_mark " +
             "WHERE latest_mark.teacher_assignment_id = m.teacher_assignment_id " +
             "AND latest_mark.student_id = m.student_id " +
@@ -349,69 +354,48 @@ async function getApprovedMarks(filters, classInfo = null) {
 }
 
 async function getClassRequiredSubjects(classInfo) {
-    const [formSubjects] = await db.query(`
-        SELECT fs.subject_id, s.subject_code, s.subject_name, fs.is_compulsory
-        FROM form_subjects fs
-        INNER JOIN subjects s ON s.id = fs.subject_id
-        WHERE fs.form_id = ?
-          AND fs.status = 'ACTIVE'
+    const [subjects] = await db.query(`
+        SELECT DISTINCT ss.subject_id, s.subject_code, s.subject_name, TRUE AS is_compulsory
+        FROM student_subjects ss
+        INNER JOIN students st ON st.id = ss.student_id AND st.class_id = ss.class_id
+        INNER JOIN subjects s ON s.id = ss.subject_id
+        WHERE ss.class_id = ?
+          AND st.status = 'ACTIVE'
           AND s.status = 'ACTIVE'
         ORDER BY s.subject_name ASC
-    `, [classInfo.form_id]);
+    `, [classInfo.id]);
 
-    if (formSubjects.length) {
-        return formSubjects;
-    }
-
-    const [assignmentSubjects] = await db.query(`
-        SELECT DISTINCT ta.subject_id, s.subject_code, s.subject_name, TRUE AS is_compulsory
-        FROM teacher_assignments ta
-        INNER JOIN subjects s ON s.id = ta.subject_id
-        WHERE ta.class_id = ?
-          AND ta.academic_year_id = ?
-          AND ta.status = 'ACTIVE'
-          AND s.status = 'ACTIVE'
-        ORDER BY s.subject_name ASC
-    `, [classInfo.id, classInfo.academic_year_id]);
-
-    return assignmentSubjects;
+    return subjects;
 }
 
 async function validateClassReportReadiness(classInfo, examinationId, studentId = null) {
+    const [unenrolledStudents] = await db.query(`
+        SELECT CONCAT_WS(' ', first_name, middle_name, last_name) AS student_name
+        FROM students st
+        WHERE st.class_id = ?
+          AND st.status = 'ACTIVE'
+          AND (? IS NULL OR st.id = ?)
+          AND NOT EXISTS (
+              SELECT 1
+              FROM student_subjects ss
+              WHERE ss.student_id = st.id AND ss.class_id = st.class_id
+          )
+        ORDER BY st.id ASC
+        LIMIT 10
+    `, [classInfo.id, studentId, studentId]);
+    if (unenrolledStudents.length) {
+        const names = unenrolledStudents.map((student) => student.student_name).join(", ");
+        throw new Error(`Sajili mkondo na masomo ya wanafunzi hawa kabla ya kutoa ripoti: ${names}.`);
+    }
+
     const requiredSubjects = await getClassRequiredSubjects(classInfo);
 
     if (!requiredSubjects.length) {
-        throw new Error("Darasa hili halina masomo yaliyotangazwa kwa form yake.");
+        throw new Error("Wanafunzi wa darasa hili hawajasajiliwa masomo yao.");
     }
 
     const subjectIds = requiredSubjects.map((subject) => Number(subject.subject_id));
     const placeholders = subjectIds.map(() => "?").join(", ");
-
-    if (!studentId) {
-        const [approvedSubjects] = await db.query(`
-            SELECT DISTINCT ta.subject_id, s.subject_name
-            FROM teacher_assignments ta
-            INNER JOIN subjects s ON s.id = ta.subject_id
-            INNER JOIN marks m ON m.teacher_assignment_id = ta.id
-            WHERE ta.class_id = ?
-              AND ta.academic_year_id = ?
-              AND ta.status = 'ACTIVE'
-              AND m.examination_id = ?
-              AND m.status = 'APPROVED'
-              AND ta.subject_id IN (${placeholders})
-            ORDER BY s.subject_name ASC
-        `, [classInfo.id, classInfo.academic_year_id, examinationId, ...subjectIds]);
-
-        const approvedSet = new Set(approvedSubjects.map((subject) => Number(subject.subject_id)));
-        const missingApprovedSubjects = requiredSubjects.filter((subject) => !approvedSet.has(Number(subject.subject_id)));
-
-        if (missingApprovedSubjects.length) {
-            const pendingSubjects = missingApprovedSubjects
-                .map((subject) => subject.subject_name)
-                .join(", ");
-            throw new Error(`Ripoti ya darasa itapatikana baada ya alama zote kuidhinishwa. Bado: ${pendingSubjects}.`);
-        }
-    }
 
     const studentCondition = studentId ? "AND st.id = ?" : "";
     const missingMarksParams = [classInfo.id, ...subjectIds];
@@ -422,7 +406,10 @@ async function validateClassReportReadiness(classInfo, examinationId, studentId 
                CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
                subject.subject_name
         FROM students st
-        CROSS JOIN subjects subject
+        INNER JOIN student_subjects enrollment
+            ON enrollment.student_id = st.id
+           AND enrollment.class_id = st.class_id
+        INNER JOIN subjects subject ON subject.id = enrollment.subject_id
         WHERE st.class_id = ?
           AND st.status = 'ACTIVE'
           AND subject.status = 'ACTIVE'
@@ -448,7 +435,7 @@ async function validateClassReportReadiness(classInfo, examinationId, studentId 
                 AND ta.status = 'ACTIVE'
                 AND ta.subject_id = subject.id
           )
-        ORDER BY st.last_name, st.first_name, subject.subject_name
+        ORDER BY st.id ASC, subject.subject_name
         LIMIT 10
     `, missingMarksParams);
 
@@ -602,7 +589,7 @@ function calculatePositions(students) {
     return sorted;
 }
 
-async function generateReport(filters = {}) {
+async function generateReport(filters = {}, reportingAcademicMaster = "") {
     filters = normalizeReportFilters(filters);
     const examination = await getExamination(filters.examination_id);
     if (!examination) {
@@ -661,7 +648,7 @@ async function generateReport(filters = {}) {
         );
     }
 
-    const school = await getSchoolInformation();
+    const school = await getSchoolInformation(reportingAcademicMaster);
     const classTeacher = await getClassTeacher(classInfo.id, classInfo.academic_year_id);
     const students = calculatePositions(buildStudentResults(marks));
 
