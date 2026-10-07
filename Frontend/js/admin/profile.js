@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!response?.success || !response.data) {
             throw new Error(response?.message || "Taarifa za wasifu hazikupatikana.");
         }
-        user = response.data;
+        user = { ...user, ...response.data };
     } catch (error) {
         const message = document.getElementById("profileMessage");
         message.textContent = error.message || "Imeshindikana kupakia wasifu kutoka kwenye mfumo.";
@@ -143,6 +143,90 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         );
     }
+
+    const usernameModal =
+        document.getElementById("usernameModal");
+    const usernameForm =
+        document.getElementById("changeUsernameForm");
+    const usernameMessage =
+        document.getElementById("usernameMessage");
+
+    function showUsernameMessage(message, type) {
+        usernameMessage.textContent = message;
+        usernameMessage.className = `password-message ${type}`;
+    }
+
+    function closeUsernameModal() {
+        usernameModal.hidden = true;
+        usernameForm.reset();
+        usernameMessage.textContent = "";
+        usernameMessage.className = "password-message";
+    }
+
+    document.getElementById("changeUsernameBtn")?.addEventListener("click", () => {
+        document.getElementById("newUsername").value = user.username || "";
+        usernameModal.hidden = false;
+        document.getElementById("newUsername").focus();
+    });
+    document.getElementById("closeUsernameModal")?.addEventListener("click", closeUsernameModal);
+    document.getElementById("cancelUsernameBtn")?.addEventListener("click", closeUsernameModal);
+    usernameModal?.addEventListener("click", (event) => {
+        if (event.target === usernameModal) closeUsernameModal();
+    });
+
+    usernameForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        usernameMessage.textContent = "";
+        usernameMessage.className = "password-message";
+
+        const form = event.currentTarget;
+        const submitButton = form.querySelector('[type="submit"]');
+        const newUsername = document.getElementById("newUsername").value.trim();
+        const currentPassword = document.getElementById("usernameCurrentPassword").value;
+
+        if (newUsername.length < 3 || newUsername.length > 50) {
+            showUsernameMessage("Username lazima iwe na herufi 3 hadi 50.", "error");
+            return;
+        }
+        if (!currentPassword) {
+            showUsernameMessage("Weka password yako ya sasa kuthibitisha.", "error");
+            return;
+        }
+
+        submitButton.disabled = true;
+        try {
+            const response = await MsongolaAPI.patch("/users/me/username", {
+                username: newUsername,
+                current_password: currentPassword
+            });
+            if (!response?.success || !response.data) {
+                throw new Error(response?.message || "Imeshindikana kubadilisha username.");
+            }
+
+            user = { ...user, ...response.data };
+            sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+            const sidebarUsername = document.getElementById("sidebarUsername");
+            if (sidebarUsername) sidebarUsername.textContent = user.username;
+            const topbarUsername = document.getElementById("topbarUsername");
+            if (topbarUsername) topbarUsername.textContent = user.username;
+            const profileUsername = document.getElementById("profileUsername");
+            if (profileUsername) profileUsername.textContent = user.username;
+            const accountUsername = document.getElementById("accountUsername");
+            if (accountUsername) accountUsername.textContent = user.username;
+            const accountUpdated = document.getElementById("accountUpdated");
+            if (accountUpdated) {
+                accountUpdated.textContent =
+                    user.updated_at ? formatDate(user.updated_at) : "Haijapatikana";
+            }
+            showUsernameMessage(response.message || "Username imebadilishwa kwa mafanikio.", "success");
+            usernameForm.reset();
+            document.getElementById("newUsername").value = user.username;
+        } catch (error) {
+            showUsernameMessage(error.message || "Imeshindikana kubadilisha username.", "error");
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
 
 
     /* ===============================

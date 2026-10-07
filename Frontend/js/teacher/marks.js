@@ -39,9 +39,14 @@
     }
 
     function setBusy(busy) {
-        const eligibleCount = context?.students?.filter((student) => Boolean(Number(student.subject_eligible))).length || 0;
-        elements.save.disabled = busy || !eligibleCount || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
-        elements.submit.disabled = busy || !eligibleCount || ["SUBMITTED", "APPROVED"].includes(context?.submission?.status);
+        const saved = new Map((context?.marks || []).map((mark) => [Number(mark.student_id), mark]));
+        const pendingCount = context?.students?.filter((student) => {
+            if (!Boolean(Number(student.subject_eligible))) return false;
+            const mark = saved.get(Number(student.id));
+            return !mark || !["SUBMITTED", "APPROVED"].includes(mark.status);
+        }).length || 0;
+        elements.save.disabled = busy || !pendingCount;
+        elements.submit.disabled = busy || !pendingCount;
         elements.assignment.disabled = busy;
         elements.examination.disabled = busy || !elements.examination.options.length;
         elements.refresh.disabled = busy || !elements.assignment.value || !elements.examination.value;
@@ -56,28 +61,36 @@
 
     function renderRoster(data) {
         const saved = new Map((data.marks || []).map((mark) => [Number(mark.student_id), mark]));
-        const locked = ["SUBMITTED", "APPROVED"].includes(data.submission?.status);
-        elements.rows.innerHTML = data.students.map((student, index) => {
+        const visibleStudents = data.students.filter((student) => {
+            const eligible = Boolean(Number(student.subject_eligible));
+            if (!eligible) return false;
+            const mark = saved.get(Number(student.id));
+            return !mark || !["SUBMITTED", "APPROVED"].includes(mark.status);
+        });
+
+        elements.rows.innerHTML = visibleStudents.map((student, index) => {
             const mark = saved.get(Number(student.id));
             const name = [student.first_name, student.middle_name, student.last_name].filter(Boolean).join(" ");
             const eligible = Boolean(Number(student.subject_eligible));
+            const isReadOnly = Boolean(mark && ["SUBMITTED", "APPROVED"].includes(mark.status));
             const markField = eligible
-                ? `<input class="mark-input" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-student-id="${student.id}" value="${mark ? escapeHTML(mark.marks) : ""}" ${locked ? "disabled" : ""} aria-label="Alama za ${escapeHTML(name)}">`
+                ? `<input class="mark-input" type="number" min="0" max="100" step="0.01" inputmode="decimal" data-student-id="${student.id}" value="${mark ? escapeHTML(mark.marks) : ""}" ${isReadOnly ? "disabled" : ""} aria-label="Alama za ${escapeHTML(name)}">`
                 : '<span>Hasomi somo hili</span>';
             return `<tr><td>${index + 1}</td><td>${escapeHTML(student.admission_number)}</td><td><strong>${escapeHTML(name)}</strong></td><td>${markField}</td><td>${eligible ? escapeHTML(mark?.status || "Haijaingizwa") : "Hastahili"}</td></tr>`;
         }).join("");
-        elements.table.hidden = data.students.length === 0;
-        elements.empty.hidden = data.students.length > 0;
+        elements.table.hidden = visibleStudents.length === 0;
+        elements.empty.hidden = visibleStudents.length > 0;
         elements.loading.hidden = true;
         const classLabel = data.assignment.form_name
             ? `${data.assignment.form_name} - ${data.assignment.class_name}`
             : data.assignment.class_name;
         const eligibleCount = data.students.filter((student) => Boolean(Number(student.subject_eligible))).length;
-        elements.summary.textContent = `${data.students.length} wanafunzi katika ${classLabel}; ${eligibleCount} wanasoma ${data.assignment.subject_name}`;
+        const pendingCount = visibleStudents.length;
+        elements.summary.textContent = `${eligibleCount} wanafunzi wanasoma ${data.assignment.subject_name} katika ${classLabel}; ${pendingCount} bado wana alama ya kuingizwa`;
         elements.info.textContent = `${data.assignment.subject_name} · ${data.assignment.academic_year}`;
         elements.status.textContent = data.submission ? `Hali: ${data.submission.status}` : "Hali: Draft";
-        elements.save.disabled = locked || eligibleCount === 0;
-        elements.submit.disabled = locked || eligibleCount === 0;
+        elements.save.disabled = pendingCount === 0;
+        elements.submit.disabled = pendingCount === 0;
         elements.refresh.disabled = false;
     }
 
@@ -214,17 +227,27 @@
         if (!context) return;
         if (!window.confirm("Una uhakika unataka kutuma alama hizi kwa mapitio? Baada ya kutuma hutaweza kuzibadilisha.")) return;
         try {
-            const marks = collectMarks();
+            const existingMarks = new Map((context.marks || []).map((mark) => [Number(mark.student_id), mark]));
             const eligibleStudents = context.students.filter((student) => Boolean(Number(student.subject_eligible)));
-            const missing = eligibleStudents.length - marks.length;
-            if (missing > 0) throw new Error(`Jaza alama za wanafunzi wote. Bado ${missing} hazijaingizwa.`);
-            setBusy(true);
-            const saveResponse = await MsongolaAPI.put("/teacher/marks/draft", {
-                assignment_id: context.assignment.id,
-                examination_id: context.examination_id,
-                marks
+            const requiredStudents = eligibleStudents.filter((student) => {
+                const existing = existingMarks.get(Number(student.id));
+                return !existing || ["DRAFT", "RETURNED"].includes(existing.status);
             });
-            if (!saveResponse?.success) throw new Error(saveResponse?.message || "Imeshindikana kuhifadhi alama.");
+            const marks = collectMarks();
+            const providedIds = new Set(marks.map((mark) => Number(mark.student_id)));
+            const missingStudents = requiredStudents.filter((student) => !providedIds.has(Number(student.id)));
+            if (missingStudents.length > 0) {
+                throw new Error(`Jaza alama za wanafunzi wote. Bado ${missingStudents.length} hazijaingizwa.`);
+            }
+            setBusy(true);
+            if (marks.length) {
+                const saveResponse = await MsongolaAPI.put("/teacher/marks/draft", {
+                    assignment_id: context.assignment.id,
+                    examination_id: context.examination_id,
+                    marks
+                });
+                if (!saveResponse?.success) throw new Error(saveResponse?.message || "Imeshindikana kuhifadhi alama.");
+            }
             const response = await MsongolaAPI.post("/teacher/marks/submit", {
                 assignment_id: context.assignment.id,
                 examination_id: context.examination_id

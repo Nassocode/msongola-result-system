@@ -11,22 +11,30 @@ const CORE_SUBJECTS = [
 ];
 const ISLAMIC_SUBJECT_NAMES = [
     "ISLAMICKNOWLEDGE",
+    "ELIMUYADINIYAKIISLAMU",
     "ELIMUYADINIYAKIISLAMUEDK"
 ];
 const JUNIOR_ARTS_SUBJECTS = [
-    "MATHEMATICS",
-    "GEOGRAPHY",
     "HISTORY",
-    "BIOLOGY",
+    "GEOGRAPHY",
     "KISWAHILI",
     "ENGLISH",
+    "BIOLOGY",
+    "BUSINESS STUDIES",
     "HISTORIA YA TANZANIA NA MAADILI",
-    "BUSINESS STUDIES"
+    "MATHEMATICS"
 ];
 const JUNIOR_SCIENCE_SUBJECTS = [
-    ...JUNIOR_ARTS_SUBJECTS,
+    "HISTORY",
+    "GEOGRAPHY",
+    "KISWAHILI",
+    "ENGLISH",
     "PHYSICS",
-    "CHEMISTRY"
+    "CHEMISTRY",
+    "BIOLOGY",
+    "BUSINESS STUDIES",
+    "HISTORIA YA TANZANIA NA MAADILI",
+    "MATHEMATICS"
 ];
 
 function normalizeSubjectName(value) {
@@ -70,12 +78,16 @@ function normalizeEnrollmentOptions(formNumber, streamValue, islamicValue, scien
 async function resolveStudentSubjectPlan(classId, streamValue, islamicValue, scienceSubjectsValue) {
     const profile = await studentModel.getClassSubjectProfile(classId);
     const options = normalizeEnrollmentOptions(profile.form_number, streamValue, islamicValue, scienceSubjectsValue);
-    const byName = new Map(profile.subjects.map((subject) => [
-        normalizeSubjectName(subject.subject_name),
-        subject
-    ]));
+    const byName = new Map();
+    for (const subject of profile.subjects) {
+        byName.set(normalizeSubjectName(subject.subject_name), subject);
+        if (String(subject.subject_code || "").trim().toUpperCase() === "HTM") {
+            byName.set(normalizeSubjectName("Historia ya Tanzania na Maadili"), subject);
+        }
+    }
     const isIslamicSubject = (subject) =>
-        ISLAMIC_SUBJECT_NAMES.includes(normalizeSubjectName(subject.subject_name));
+        String(subject.subject_code || "").trim().toUpperCase() === "EDK"
+        || ISLAMIC_SUBJECT_NAMES.includes(normalizeSubjectName(subject.subject_name));
     const islamicKey = normalizeSubjectName("Islamic Knowledge");
     const formNumber = Number(profile.form_number);
     const classCode = String(profile.class_name || "").toUpperCase().replace(/\s+/g, "");
@@ -116,6 +128,14 @@ async function resolveStudentSubjectPlan(classId, streamValue, islamicValue, sci
         }
         selectedSubjects.push(islamicSubject);
     }
+
+    const subjectOrder = new Map(profile.subjects.map((subject, index) => [
+        Number(subject.id),
+        index
+    ]));
+    selectedSubjects.sort((left, right) =>
+        subjectOrder.get(Number(left.id)) - subjectOrder.get(Number(right.id))
+    );
 
     return {
         academic_stream: options.stream,

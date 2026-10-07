@@ -30,6 +30,13 @@ function reportTitle(report) {
     })[report.report_type] || "SCHOOL ACADEMIC REPORT";
 }
 
+function schoolContactDetails(school = {}) {
+    return [
+        school?.phone ? `Phone: ${school.phone}` : "",
+        school?.email ? `Email: ${school.email}` : ""
+    ].filter(Boolean);
+}
+
 function reportMetadata(report) {
     const student = report.students?.[0] || {};
     return [
@@ -126,10 +133,16 @@ async function createExcelBuffer(report) {
     sheet.getCell("C2").font = { italic: true, color: { argb: `FF${COLORS.ink}` } };
     sheet.getRow(2).height = 22;
     sheet.mergeCells(`C3:${lastColumn}3`);
-    sheet.getCell("C3").value = reportTitle(report);
-    sheet.getCell("C3").font = { bold: true, size: 13, color: { argb: `FF${COLORS.teal}` } };
-    sheet.getCell("C3").alignment = { horizontal: "center", vertical: "middle" };
-    sheet.getRow(3).height = 22;
+    const schoolContacts = schoolContactDetails(report.school).join(" | ");
+    sheet.getCell("C3").value = schoolContacts;
+    sheet.getCell("C3").font = { color: { argb: `FF${COLORS.ink}` }, size: 10 };
+    sheet.getCell("C3").alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    sheet.getRow(3).height = Math.max(22, Math.ceil(schoolContacts.length / 32) * 14);
+    sheet.mergeCells(`C4:${lastColumn}4`);
+    sheet.getCell("C4").value = reportTitle(report);
+    sheet.getCell("C4").font = { bold: true, size: 13, color: { argb: `FF${COLORS.teal}` } };
+    sheet.getCell("C4").alignment = { horizontal: "center", vertical: "middle" };
+    sheet.getRow(4).height = 22;
     const logoPath = getLogoPath(report);
     if (logoPath) {
         const imageId = workbook.addImage({ buffer: fs.readFileSync(logoPath), extension: "png" });
@@ -144,6 +157,8 @@ async function createExcelBuffer(report) {
     detailsSheet.getCell("A1").alignment = { horizontal: "center" };
     detailsSheet.addRow(["P.O BOX", report.school?.po_box || ""]);
     detailsSheet.addRow(["Motto", report.school?.motto || ""]);
+    detailsSheet.addRow(["Phone", report.school?.phone || ""]);
+    detailsSheet.addRow(["Email", report.school?.email || ""]);
     detailsSheet.addRow(["Report", reportTitle(report)]);
     reportMetadata(report).forEach((values) => detailsSheet.addRow(values));
     detailsSheet.columns = [{ width: 24 }, { width: 48 }];
@@ -343,9 +358,18 @@ async function createPdfBuffer(report) {
     doc.font("Helvetica-Bold").fontSize(16).fillColor(PDF_COLORS.ink).text(school.school_name || "MSONGOLA SECONDARY SCHOOL", 190, 40, { width: 363, align: "left", ellipsis: true });
     doc.font("Helvetica").fontSize(9).fillColor(PDF_COLORS.ink).text(school.po_box || "", 190, 68, { width: 363 });
     doc.font("Helvetica-Bold").fontSize(9).fillColor(PDF_COLORS.teal).text(school.motto || "", 190, 84, { width: 363 });
-    doc.moveTo(42, 152).lineTo(553, 152).lineWidth(1.4).stroke(PDF_COLORS.teal);
-    doc.font("Helvetica-Bold").fontSize(12).fillColor(PDF_COLORS.ink).text(reportTitle(report), 42, 164, { width: 511, align: "center" });
-    doc.y = 183;
+    const contactDetails = schoolContactDetails(school);
+    let contactY = 101;
+    contactDetails.forEach((contact, index) => {
+        doc.font("Helvetica").fontSize(8).fillColor(PDF_COLORS.ink);
+        const contactHeight = doc.heightOfString(contact, { width: 363 });
+        doc.text(contact, 190, contactY, { width: 363 });
+        contactY += contactHeight + (index < contactDetails.length - 1 ? 2 : 0);
+    });
+    const dividerY = Math.max(152, contactY + 8);
+    doc.moveTo(42, dividerY).lineTo(553, dividerY).lineWidth(1.4).stroke(PDF_COLORS.teal);
+    doc.font("Helvetica-Bold").fontSize(12).fillColor(PDF_COLORS.ink).text(reportTitle(report), 42, dividerY + 12, { width: 511, align: "center" });
+    doc.y = dividerY + 31;
     doc.moveDown(0.8);
 
     const metadata = reportMetadata(report);

@@ -411,6 +411,54 @@
         all 0.2s ease;
 }
 
+.input-with-icon select {
+    width: 100%;
+    min-height: 49px;
+    padding: 0 15px 0 44px;
+    border: 1px solid #dce3eb;
+    border-radius: 11px;
+    background: #fbfcfe;
+    color: #172033;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.input-with-icon select:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.input-with-icon select:focus {
+    border-color: #123c69;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(18, 60, 105, 0.08);
+}
+
+.input-with-icon select {
+    width: 100%;
+    min-height: 49px;
+    padding: 0 15px 0 44px;
+    border: 1px solid #dce3eb;
+    border-radius: 11px;
+    background: #fbfcfe;
+    color: #172033;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.input-with-icon select:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.input-with-icon select:focus {
+    border-color: #123c69;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(18, 60, 105, 0.08);
+}
+
 .input-with-icon input:hover {
     border-color:
         #cbd5e1;

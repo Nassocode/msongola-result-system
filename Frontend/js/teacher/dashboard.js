@@ -69,6 +69,26 @@
         elements.error.classList.remove("show");
     }
 
+    function setSidebarOpen(open) {
+        elements.sidebar?.classList.toggle("open", open);
+        elements.sidebarOverlay?.classList.toggle("active", open);
+        elements.sidebarToggle?.setAttribute("aria-expanded", String(open));
+    }
+
+    function initializeSidebar() {
+        elements.sidebarToggle?.addEventListener("click", () => {
+            setSidebarOpen(!elements.sidebar?.classList.contains("open"));
+        });
+        elements.sidebarClose?.addEventListener("click", () => setSidebarOpen(false));
+        elements.sidebarOverlay?.addEventListener("click", () => setSidebarOpen(false));
+        elements.sidebar?.querySelectorAll(".sidebar-nav-item").forEach((link) => {
+            link.addEventListener("click", () => setSidebarOpen(false));
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") setSidebarOpen(false);
+        });
+    }
+
     function renderAssignments(assignments) {
         const items = Array.isArray(assignments) ? assignments : [];
         elements.body.innerHTML = items.map((assignment) => `
@@ -159,20 +179,9 @@
     }
 
     async function initialize() {
+        initializeSidebar();
         const allowed = await MsongolaAuth.protectPage({ roles: ["SUBJECT_TEACHER"] });
         if (!allowed) return;
-
-        const setSidebarOpen = (open) => {
-            elements.sidebar?.classList.toggle("open", open);
-            elements.sidebarOverlay?.classList.toggle("active", open);
-            elements.sidebarToggle?.setAttribute("aria-expanded", String(open));
-        };
-
-        elements.sidebarToggle?.addEventListener("click", () => {
-            setSidebarOpen(!elements.sidebar?.classList.contains("open"));
-        });
-        elements.sidebarClose?.addEventListener("click", () => setSidebarOpen(false));
-        elements.sidebarOverlay?.addEventListener("click", () => setSidebarOpen(false));
 
         elements.refresh?.addEventListener("click", loadDashboard);
         elements.logout?.addEventListener("click", () => MsongolaAuth.logout());

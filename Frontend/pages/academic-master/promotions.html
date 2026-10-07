@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Hamisha Wanafunzi | Academic Master</title>
+    <link rel="stylesheet" href="../../css/admin-catalog.css?v=20260928-6">
+    <link rel="stylesheet" href="../../css/academic-master-promotions.css?v=20261006-1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/designer-credit.css">
+</head>
+<body class="catalog-page" data-role="ACADEMIC_MASTER">
+    <main class="promotion-shell">
+        <header class="promotion-header">
+            <div>
+                <h1><i class="fa-solid fa-arrow-up-right-dots"></i> Hamisha Wanafunzi Mwaka Mpya</h1>
+                <p>Hamisha wanafunzi waliopo kwenda madarasa ya mwaka mpya bila kutengeneza student records mpya.</p>
+            </div>
+        </header>
+
+        <section class="promotion-panel">
+            <h2 class="promotion-section-title">Andaa academic year mpya</h2>
+            <p class="promotion-section-description">Kama mwaka mpya haupo kwenye orodha, uongeze hapa. Baada ya hapo tengeneza madarasa yake kwenye menyu ya Madarasa.</p>
+            <form class="promotion-year-form" id="academicYearForm">
+                <label>
+                    <span>Jina la mwaka</span>
+                    <input id="newYearLabel" name="year_label" maxlength="20" required placeholder="Mfano: 2027">
+                </label>
+                <label>
+                    <span>Tarehe ya kuanza (si lazima)</span>
+                    <input id="newYearStart" name="start_date" type="date">
+                </label>
+                <label>
+                    <span>Tarehe ya kumaliza (si lazima)</span>
+                    <input id="newYearEnd" name="end_date" type="date">
+                </label>
+                <button class="catalog-button primary" type="submit"><i class="fa-solid fa-plus"></i> Ongeza mwaka</button>
+            </form>
+        </section>
+
+        <section class="promotion-panel">
+            <div class="promotion-notice">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <p>Promotion inahifadhi admission number na historia ya matokeo. Hamisha madarasa yote na funga mitihani ya mwaka wa sasa kabla ya kuweka mwaka mpya kuwa unaoendelea. Masomo yataandaliwa kulingana na form na mkondo wa mwanafunzi.</p>
+            </div>
+            <div class="promotion-fields">
+                <label>
+                    <span>Mwaka wa sasa</span>
+                    <select id="sourceYear" required><option value="">Inapakia...</option></select>
+                </label>
+                <label>
+                    <span>Mwaka mpya</span>
+                    <select id="targetYear" required><option value="">Chagua mwaka mpya</option></select>
+                </label>
+                <label>
+                    <span>Darasa la sasa</span>
+                    <select id="sourceClass" required disabled><option value="">Chagua mwaka kwanza</option></select>
+                </label>
+                <label>
+                    <span>Darasa la mwaka mpya</span>
+                    <select id="targetClass" required disabled><option value="">Chagua mwaka mpya kwanza</option></select>
+                </label>
+            </div>
+            <div id="promotionMessage" class="promotion-message" role="status" hidden></div>
+            <div class="promotion-actions">
+                <button class="catalog-button secondary" id="activateYear" type="button" disabled>
+                    <i class="fa-solid fa-calendar-check"></i> Weka mwaka kuwa unaoendelea
+                </button>
+                <button class="catalog-button secondary" id="previewPromotion" type="button" disabled>
+                    <i class="fa-solid fa-eye"></i> Hakiki wanafunzi
+                </button>
+                <button class="catalog-button primary" id="runPromotion" type="button" disabled>
+                    <i class="fa-solid fa-arrow-right"></i> Hamisha darasa
+                </button>
+            </div>
+        </section>
+
+        <section class="promotion-panel" id="previewPanel" hidden>
+            <div class="promotion-preview-heading">
+                <div>
+                    <h2 id="previewTitle">Hakiki promotion</h2>
+                    <p id="previewSummary"></p>
+                </div>
+                <strong id="previewCount"></strong>
+            </div>
+            <div class="promotion-table-wrap">
+                <table class="catalog-table">
+                    <thead><tr><th>#</th><th>Admission Number</th><th>Jina la mwanafunzi</th></tr></thead>
+                    <tbody id="previewStudents"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/academic-master/promotions.js?v=20261006-1"></script>
+    <footer class="designer-credit" aria-label="Designer contact">
+        <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
+        <a href="tel:+255616957125">Phone Number: +255 616 957 125</a>
+        <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
+    </footer>
+</body>
+</html>

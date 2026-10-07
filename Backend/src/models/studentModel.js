@@ -136,19 +136,23 @@ async function getClassSubjectProfile(classId) {
     if (!classes[0]) throw new Error("Darasa halijapatikana.");
 
     const [formSubjects] = await pool.execute(`
-        SELECT s.id, s.subject_name
+        SELECT s.id, s.subject_code, s.subject_name, fs.subject_order
         FROM form_subjects fs
         INNER JOIN subjects s ON s.id = fs.subject_id
         WHERE fs.form_id = ? AND fs.status = 'ACTIVE' AND s.status = 'ACTIVE'
-        ORDER BY s.subject_name
+        ORDER BY fs.subject_order ASC, s.id ASC
     `, [classes[0].form_id]);
     const [islamicSubjects] = await pool.execute(`
-        SELECT id, subject_name
+        SELECT id, subject_code, subject_name
         FROM subjects
         WHERE status = 'ACTIVE'
-          AND UPPER(TRIM(subject_name)) IN (
-              'ISLAMIC KNOWLEDGE',
-              'ELIMU YA DINI YA KIISLAMU (E.D.K)'
+          AND (
+              UPPER(TRIM(subject_code)) = 'EDK'
+              OR UPPER(TRIM(subject_name)) IN (
+                  'ISLAMIC KNOWLEDGE',
+                  'ELIMU YA DINI YA KIISLAMU',
+                  'ELIMU YA DINI YA KIISLAMU (E.D.K)'
+              )
           )
     `);
 
@@ -156,6 +160,7 @@ async function getClassSubjectProfile(classId) {
     for (const subject of [...formSubjects, ...islamicSubjects]) {
         subjects.set(Number(subject.id), {
             id: Number(subject.id),
+            subject_code: subject.subject_code,
             subject_name: subject.subject_name
         });
     }
@@ -300,6 +305,21 @@ async function createStudent(data) {
                 continue;
             }
 
+            const [classRows] = await connection.execute(
+                "SELECT academic_year_id FROM classes WHERE id = ?",
+                [data.class_id]
+            );
+            await connection.execute(`
+                INSERT INTO student_class_enrollments
+                    (student_id, class_id, academic_year_id, status)
+                VALUES (?, ?, ?, ?)
+            `, [
+                result.insertId,
+                data.class_id,
+                classRows[0].academic_year_id,
+                data.status === "ACTIVE" || !data.status ? "ACTIVE" : "INACTIVE"
+            ]);
+
             for (const subjectId of data.subject_ids) {
                 await connection.execute(`
                     INSERT INTO student_subjects (student_id, class_id, subject_id)
@@ -325,6 +345,17 @@ async function updateStudent(id, data) {
     try {
         await connection.beginTransaction();
         await ensureClassHasCapacity(connection, data.class_id, data.status, id);
+        const [currentRows] = await connection.execute(
+            "SELECT class_id FROM students WHERE id = ? FOR UPDATE",
+            [id]
+        );
+        if (!currentRows.length) throw new Error("Mwanafunzi hakupatikana.");
+        const currentClassId = Number(currentRows[0].class_id);
+        const [targetClasses] = await connection.execute(
+            "SELECT academic_year_id FROM classes WHERE id = ?",
+            [data.class_id]
+        );
+        if (!targetClasses.length) throw new Error("Darasa lililochaguliwa halipatikani.");
         const [existingSubjects] = await connection.execute(`
             SELECT subject_id
             FROM student_subjects
@@ -357,6 +388,34 @@ async function updateStudent(id, data) {
             data.gender, data.date_of_birth || null, data.class_id, data.academic_stream,
             data.islamic_studies ? 1 : 0, data.admission_date || null,
             data.status, id]);
+        if (currentClassId !== Number(data.class_id)) {
+            const [existingYearEnrollment] = await connection.execute(`
+                SELECT id
+                FROM student_class_enrollments
+                WHERE student_id = ? AND academic_year_id = ?
+                  AND class_id <> ?
+                LIMIT 1
+                FOR UPDATE
+            `, [id, targetClasses[0].academic_year_id, data.class_id]);
+            if (existingYearEnrollment.length) {
+                throw new Error("Mwanafunzi tayari ana enrollment nyingine kwenye academic year hii.");
+            }
+            await connection.execute(`
+                UPDATE student_class_enrollments
+                SET status = 'COMPLETED', completed_at = NOW()
+                WHERE student_id = ? AND class_id = ? AND status = 'ACTIVE'
+            `, [id, currentClassId]);
+        }
+        await connection.execute(`
+            INSERT INTO student_class_enrollments (student_id, class_id, academic_year_id, status)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE status = VALUES(status), completed_at = NULL
+        `, [
+            id,
+            data.class_id,
+            targetClasses[0].academic_year_id,
+            data.status === "ACTIVE" ? "ACTIVE" : "INACTIVE"
+        ]);
         await connection.execute(
             "DELETE FROM student_subjects WHERE student_id = ? AND class_id = ?",
             [id, data.class_id]
@@ -391,6 +450,14 @@ async function updateStudentStatus(id, status) {
             "UPDATE students SET status = ? WHERE id = ?",
             [status, id]
         );
+        const enrollmentStatus = ["ACTIVE", "INACTIVE", "TRANSFERRED", "GRADUATED"].includes(status)
+            ? status
+            : "INACTIVE";
+        await connection.execute(`
+            UPDATE student_class_enrollments
+            SET status = ?, completed_at = CASE WHEN ? = 'ACTIVE' THEN NULL ELSE NOW() END
+            WHERE student_id = ? AND class_id = ?
+        `, [enrollmentStatus, enrollmentStatus, id, students[0].class_id]);
         await connection.commit();
         return result.affectedRows;
     } catch (error) {

@@ -24,14 +24,18 @@ async function loginUser(username, password) {
         throw new Error("Username au password sio sahihi");
     }
 
-    const token = generateToken(user);
+    const normalizedUser = {
+        ...user,
+        role: user.role === "TEACHER" ? "SUBJECT_TEACHER" : user.role
+    };
+    const token = generateToken(normalizedUser);
 
     return {
         token,
         user: {
-            id: user.id,
-            username: user.username,
-            role: user.role
+            id: normalizedUser.id,
+            username: normalizedUser.username,
+            role: normalizedUser.role
         }
     };
 }

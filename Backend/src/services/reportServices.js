@@ -68,8 +68,8 @@ async function getReportOptions() {
         "SELECT c.id, c.form_id, c.academic_year_id, " +
         "c.class_name, c.capacity, c.status, " +
         "f.form_name, ay.year_label, " +
-        "(SELECT COUNT(*) FROM students active_student " +
-        "WHERE active_student.class_id = c.id AND active_student.status = 'ACTIVE') AS student_count " +
+        "(SELECT COUNT(*) FROM student_class_enrollments enrollment " +
+        "WHERE enrollment.class_id = c.id) AS student_count " +
         "FROM classes c " +
         "INNER JOIN forms f ON f.id = c.form_id " +
         "INNER JOIN academic_years ay " +
@@ -81,23 +81,26 @@ async function getReportOptions() {
     const studentSubjectsQuery =
         "SELECT c.id AS class_id, c.form_id, c.academic_year_id, " +
         "s.id AS subject_id, s.subject_code, s.subject_name, " +
-        "TRUE AS is_compulsory, 0 AS subject_order " +
+        "TRUE AS is_compulsory, COALESCE(fs.subject_order, s.id) AS subject_order " +
         "FROM classes c " +
         "INNER JOIN student_subjects ss ON ss.class_id = c.id " +
-        "INNER JOIN students st ON st.id = ss.student_id AND st.class_id = c.id AND st.status = 'ACTIVE' " +
+        "INNER JOIN student_class_enrollments enrollment " +
+        "ON enrollment.student_id = ss.student_id AND enrollment.class_id = c.id " +
         "INNER JOIN subjects s ON s.id = ss.subject_id AND s.status = 'ACTIVE' " +
+        "LEFT JOIN form_subjects fs ON fs.form_id = c.form_id AND fs.subject_id = s.id AND fs.status = 'ACTIVE' " +
         "WHERE c.status = 'ACTIVE' " +
-        "ORDER BY c.id, s.subject_name";
+        "ORDER BY c.id, subject_order, s.subject_name";
 
     const legacySubjectsQuery =
         "SELECT DISTINCT c.id AS class_id, c.form_id, c.academic_year_id, " +
         "ta.subject_id AS subject_id, s.subject_code, s.subject_name, " +
-        "TRUE AS is_compulsory, 0 AS subject_order " +
+        "TRUE AS is_compulsory, COALESCE(fs.subject_order, s.id) AS subject_order " +
         "FROM teacher_assignments ta " +
         "INNER JOIN classes c ON c.id = ta.class_id " +
         "INNER JOIN subjects s ON s.id = ta.subject_id " +
+        "LEFT JOIN form_subjects fs ON fs.form_id = c.form_id AND fs.subject_id = s.id AND fs.status = 'ACTIVE' " +
         "WHERE ta.status = 'ACTIVE' AND c.status = 'ACTIVE' AND s.status = 'ACTIVE' " +
-        "ORDER BY c.id, s.subject_name";
+        "ORDER BY c.id, subject_order, s.subject_name";
 
     const [academicYearsResult] = await db.query(academicYearsQuery);
     const [examinationsResult] = await db.query(examinationsQuery);
@@ -134,10 +137,11 @@ async function getStudentsForClass(filters = {}) {
     if (Number(classInfo.form_id) !== formId) throw new Error("Darasa halilingani na Form uliyochagua.");
 
     const [rows] = await db.query(`
-        SELECT id, admission_number, first_name, middle_name, last_name, gender, class_id
-        FROM students
-        WHERE class_id = ? AND status = 'ACTIVE'
-        ORDER BY id ASC
+        SELECT s.id, s.admission_number, s.first_name, s.middle_name, s.last_name, s.gender, e.class_id
+        FROM student_class_enrollments e
+        INNER JOIN students s ON s.id = e.student_id
+        WHERE e.class_id = ?
+        ORDER BY s.id ASC
     `, [classId]);
     return rows;
 }
@@ -234,18 +238,19 @@ function normalizeReportFilters(input = {}) {
     return filters;
 }
 
-async function getStudentInformation(studentId) {
+async function getStudentInformation(studentId, classId) {
     const query =
         "SELECT s.id, s.admission_number, s.first_name, s.middle_name, s.last_name, s.gender, " +
-        "s.class_id, s.status, c.class_name, c.form_id, c.academic_year_id, " +
+        "e.class_id, s.status, c.class_name, c.form_id, c.academic_year_id, " +
         "f.form_name, ay.year_label " +
         "FROM students s " +
-        "INNER JOIN classes c ON c.id = s.class_id " +
+        "INNER JOIN student_class_enrollments e ON e.student_id = s.id AND e.class_id = ? " +
+        "INNER JOIN classes c ON c.id = e.class_id " +
         "INNER JOIN forms f ON f.id = c.form_id " +
         "INNER JOIN academic_years ay ON ay.id = c.academic_year_id " +
         "WHERE s.id = ? LIMIT 1";
 
-    const [rows] = await db.query(query, [studentId]);
+    const [rows] = await db.query(query, [classId, studentId]);
     return rows.length ? rows[0] : null;
 }
 
@@ -293,12 +298,13 @@ async function getApprovedMarks(filters, classInfo = null) {
     const allowedSubjectIds = classSubjects.map((subject) => Number(subject.subject_id));
     const conditions = [
         "m.status = 'APPROVED'",
-        "s.status = 'ACTIVE'",
         "m.examination_id = ?",
         "EXISTS (SELECT 1 FROM student_subjects eligible_subject " +
             "WHERE eligible_subject.student_id = m.student_id " +
-            "AND eligible_subject.class_id = s.class_id " +
+            "AND eligible_subject.class_id = ta.class_id " +
             "AND eligible_subject.subject_id = m.subject_id)",
+        "EXISTS (SELECT 1 FROM student_class_enrollments enrollment " +
+            "WHERE enrollment.student_id = s.id AND enrollment.class_id = ta.class_id)",
         "m.id = (SELECT MAX(latest_mark.id) FROM marks latest_mark " +
             "WHERE latest_mark.teacher_assignment_id = m.teacher_assignment_id " +
             "AND latest_mark.student_id = m.student_id " +
@@ -313,7 +319,7 @@ async function getApprovedMarks(filters, classInfo = null) {
         conditions.push("s.id = ?");
         params.push(filters.student_id);
     } else {
-        conditions.push("s.class_id = ?");
+        conditions.push("ta.class_id = ?");
         params.push(filters.class_id);
     }
 
@@ -335,19 +341,22 @@ async function getApprovedMarks(filters, classInfo = null) {
     const query =
         "SELECT m.id AS mark_id, " +
         "m.student_id, m.subject_id, m.examination_id, m.teacher_assignment_id, " +
-        "m.mark, m.grade, m.points, m.status, " +
+        "m.marks AS mark, m.grade, m.points, m.status, " +
         "s.admission_number, s.first_name, s.middle_name, s.last_name, s.gender, " +
         "c.id AS class_id, c.class_name, c.form_id, c.academic_year_id, " +
         "f.form_name, ay.year_label, " +
         "sub.subject_code, sub.subject_name " +
         "FROM marks m " +
         "INNER JOIN students s ON s.id = m.student_id " +
-        "INNER JOIN classes c ON c.id = s.class_id " +
+        "INNER JOIN teacher_assignments ta ON ta.id = m.teacher_assignment_id " +
+        "INNER JOIN classes c ON c.id = ta.class_id " +
         "INNER JOIN forms f ON f.id = c.form_id " +
         "INNER JOIN academic_years ay ON ay.id = c.academic_year_id " +
         "INNER JOIN subjects sub ON sub.id = m.subject_id " +
+        "LEFT JOIN form_subjects fs ON fs.form_id = c.form_id AND fs.subject_id = sub.id AND fs.status = 'ACTIVE' " +
         "WHERE " + conditions.join(" AND ") +
-        " ORDER BY s.first_name ASC, s.middle_name ASC, s.last_name ASC, sub.subject_name ASC";
+        " ORDER BY s.first_name ASC, s.middle_name ASC, s.last_name ASC, " +
+        "COALESCE(fs.subject_order, sub.id) ASC, sub.subject_name ASC";
 
     const [rows] = await db.query(query, params);
     return rows;
@@ -355,14 +364,17 @@ async function getApprovedMarks(filters, classInfo = null) {
 
 async function getClassRequiredSubjects(classInfo) {
     const [subjects] = await db.query(`
-        SELECT DISTINCT ss.subject_id, s.subject_code, s.subject_name, TRUE AS is_compulsory
+        SELECT DISTINCT ss.subject_id, s.subject_code, s.subject_name,
+               TRUE AS is_compulsory, COALESCE(fs.subject_order, s.id) AS subject_order
         FROM student_subjects ss
-        INNER JOIN students st ON st.id = ss.student_id AND st.class_id = ss.class_id
+        INNER JOIN student_class_enrollments enrollment
+            ON enrollment.student_id = ss.student_id AND enrollment.class_id = ss.class_id
+        INNER JOIN classes c ON c.id = enrollment.class_id
         INNER JOIN subjects s ON s.id = ss.subject_id
+        LEFT JOIN form_subjects fs ON fs.form_id = c.form_id AND fs.subject_id = s.id AND fs.status = 'ACTIVE'
         WHERE ss.class_id = ?
-          AND st.status = 'ACTIVE'
           AND s.status = 'ACTIVE'
-        ORDER BY s.subject_name ASC
+        ORDER BY subject_order ASC, s.subject_name ASC
     `, [classInfo.id]);
 
     return subjects;
@@ -371,14 +383,14 @@ async function getClassRequiredSubjects(classInfo) {
 async function validateClassReportReadiness(classInfo, examinationId, studentId = null) {
     const [unenrolledStudents] = await db.query(`
         SELECT CONCAT_WS(' ', first_name, middle_name, last_name) AS student_name
-        FROM students st
-        WHERE st.class_id = ?
-          AND st.status = 'ACTIVE'
+        FROM student_class_enrollments enrollment
+        INNER JOIN students st ON st.id = enrollment.student_id
+        WHERE enrollment.class_id = ?
           AND (? IS NULL OR st.id = ?)
           AND NOT EXISTS (
               SELECT 1
               FROM student_subjects ss
-              WHERE ss.student_id = st.id AND ss.class_id = st.class_id
+              WHERE ss.student_id = st.id AND ss.class_id = enrollment.class_id
           )
         ORDER BY st.id ASC
         LIMIT 10
@@ -406,12 +418,13 @@ async function validateClassReportReadiness(classInfo, examinationId, studentId 
                CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
                subject.subject_name
         FROM students st
-        INNER JOIN student_subjects enrollment
+        INNER JOIN student_class_enrollments enrollment
             ON enrollment.student_id = st.id
-           AND enrollment.class_id = st.class_id
-        INNER JOIN subjects subject ON subject.id = enrollment.subject_id
-        WHERE st.class_id = ?
-          AND st.status = 'ACTIVE'
+        INNER JOIN student_subjects class_subject
+            ON class_subject.student_id = st.id
+           AND class_subject.class_id = enrollment.class_id
+        INNER JOIN subjects subject ON subject.id = class_subject.subject_id
+        WHERE enrollment.class_id = ?
           AND subject.status = 'ACTIVE'
           AND subject.id IN (${placeholders})
           ${studentCondition}
@@ -430,7 +443,7 @@ async function validateClassReportReadiness(classInfo, examinationId, studentId 
                       AND candidate_mark.student_id = approved_mark.student_id
                       AND candidate_mark.examination_id = approved_mark.examination_id
                 )
-              WHERE ta.class_id = st.class_id
+              WHERE ta.class_id = enrollment.class_id
                 AND ta.academic_year_id = ?
                 AND ta.status = 'ACTIVE'
                 AND ta.subject_id = subject.id
@@ -613,8 +626,8 @@ async function generateReport(filters = {}, reportingAcademicMaster = "") {
 
     let studentInfo = null;
     if (filters.student_id) {
-        studentInfo = await getStudentInformation(filters.student_id);
-        if (!studentInfo || studentInfo.status !== "ACTIVE") {
+        studentInfo = await getStudentInformation(filters.student_id, classInfo.id);
+        if (!studentInfo) {
             throw new Error("Mwanafunzi haijapatikana.");
         }
         if (Number(studentInfo.class_id) !== Number(classInfo.id)) {
@@ -674,7 +687,7 @@ async function generateReport(filters = {}, reportingAcademicMaster = "") {
         }
         if (classRank && students[0]) {
             const [[roster]] = await db.query(
-                "SELECT COUNT(*) AS student_count FROM students WHERE class_id = ? AND status = 'ACTIVE'",
+                "SELECT COUNT(*) AS student_count FROM student_class_enrollments WHERE class_id = ?",
                 [classInfo.id]
             );
             const classIsComplete = Number(roster.student_count) === classStudents.length;
@@ -723,7 +736,7 @@ async function generateReport(filters = {}, reportingAcademicMaster = "") {
     }
 
     const [[roster]] = await db.query(
-        "SELECT COUNT(*) AS total_students FROM students WHERE class_id = ? AND status = 'ACTIVE'",
+        "SELECT COUNT(*) AS total_students FROM student_class_enrollments WHERE class_id = ?",
         [classInfo.id]
     );
     const totalMarks = students.reduce((total, student) => total + Number(student.total_marks), 0);

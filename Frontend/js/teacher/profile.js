@@ -87,8 +87,8 @@
         document.getElementById("accountTeacherNumber")?.replaceChildren(document.createTextNode(teacher.teacher_number || "-"));
         document.getElementById("accountStatus")?.replaceChildren(document.createTextNode(status));
         document.getElementById("accountTeacherId")?.replaceChildren(document.createTextNode(teacher.id ? String(teacher.id) : "-"));
-        document.getElementById("accountCreated")?.replaceChildren(document.createTextNode(formatDate(user.created_at || teacher.created_at)));
-        document.getElementById("accountUpdated")?.replaceChildren(document.createTextNode(formatDate(user.updated_at || teacher.updated_at)));
+        document.getElementById("accountCreated")?.replaceChildren(document.createTextNode(formatDate(teacher.account_created_at || user.created_at || teacher.created_at)));
+        document.getElementById("accountUpdated")?.replaceChildren(document.createTextNode(formatDate(teacher.account_updated_at || user.updated_at || teacher.updated_at)));
         document.getElementById("profileStatusLabel")?.replaceChildren(document.createTextNode(`Akaunti ${status.toLowerCase()}`));
     }
 

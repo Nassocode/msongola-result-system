@@ -3,7 +3,9 @@
 -- Database: MySQL 8+
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS msongola_result_system
+DROP DATABASE IF EXISTS msongola_result_system;
+
+CREATE DATABASE msongola_result_system
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
@@ -22,6 +24,7 @@ CREATE TABLE users (
     role ENUM(
         'ADMIN',
         'ACADEMIC_MASTER',
+        'SUBJECT_TEACHER',
         'TEACHER'
     ) NOT NULL,
 
@@ -236,6 +239,8 @@ CREATE TABLE form_subjects (
     subject_id BIGINT UNSIGNED NOT NULL,
 
     is_compulsory BOOLEAN NOT NULL DEFAULT TRUE,
+
+    subject_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
 
     status ENUM(
         'ACTIVE',
@@ -573,6 +578,37 @@ CREATE TABLE student_subjects (
         REFERENCES subjects(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
+);
+
+CREATE TABLE student_class_enrollments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    student_id BIGINT UNSIGNED NOT NULL,
+    class_id BIGINT UNSIGNED NOT NULL,
+    academic_year_id BIGINT UNSIGNED NOT NULL,
+    status ENUM(
+        'ACTIVE',
+        'COMPLETED',
+        'INACTIVE',
+        'TRANSFERRED',
+        'GRADUATED'
+    ) NOT NULL DEFAULT 'ACTIVE',
+    enrolled_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uq_student_academic_year_enrollment UNIQUE (student_id, academic_year_id),
+    CONSTRAINT fk_student_enrollment_student
+        FOREIGN KEY (student_id) REFERENCES students(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_student_enrollment_class
+        FOREIGN KEY (class_id) REFERENCES classes(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_student_enrollment_year
+        FOREIGN KEY (academic_year_id) REFERENCES academic_years(id)
+        ON UPDATE CASCADE ON DELETE RESTRICT,
+    INDEX idx_student_enrollment_class_year (class_id, academic_year_id, status),
+    INDEX idx_student_enrollment_student_year (student_id, academic_year_id)
 );
 
 
@@ -971,6 +1007,25 @@ CREATE INDEX idx_audit_logs_module
 
 
 -- ============================================================
+-- DEFAULT SYSTEM ACCOUNTS
+-- ============================================================
+
+INSERT INTO users (username, password_hash, role, status)
+VALUES
+(
+    'admin',
+    '$2b$12$9VFNe/tATaG9bfPOyy9/zuFxHhhtmB7MUp33QrhIu8oGTbBL2AhaW',
+    'ADMIN',
+    'ACTIVE'
+);
+
+-- NOTE:
+-- Login credentials for the default admin account:
+-- Username: admin
+-- Password: Admin@12345
+-- You can create additional users (Academic Master, Teachers) later from the app dashboard.
+
+-- ============================================================
 -- SEED DATA
 -- ============================================================
 
@@ -1000,9 +1055,7 @@ VALUES
 );
 
 
--- SAMPLE SUBJECTS
--- These are placeholders until the official school subject list
--- is provided.
+-- SUBJECTS
 
 INSERT INTO subjects
 (
@@ -1010,30 +1063,63 @@ INSERT INTO subjects
     subject_name
 )
 VALUES
-('MAT', 'Mathematics'),
-('ENG', 'English'),
-('KIS', 'Kiswahili'),
-('BIO', 'Biology'),
-('CHE', 'Chemistry'),
-('PHY', 'Physics'),
+('HIS', 'History'),
 ('GEO', 'Geography'),
-('HIS', 'History');
+('EDK', 'Elimu ya Dini ya Kiislamu'),
+('KIS', 'Kiswahili'),
+('ENG', 'English'),
+('PHY', 'Physics'),
+('CHE', 'Chemistry'),
+('BIO', 'Biology'),
+('BUS', 'Business Studies'),
+('HTM', 'Historia ya Tanzania na Maadili (H.T.M)'),
+('MAT', 'Mathematics'),
+('CIV', 'Civics'),
+('BMA', 'Basic Mathematics'),
+('LIE', 'Literature in English');
 
 
 -- FORM SUBJECTS
--- Temporary example mapping.
--- Replace/update according to the official school curriculum.
 
 INSERT INTO form_subjects
 (
     form_id,
     subject_id,
-    is_compulsory
+    is_compulsory,
+    subject_order
 )
-SELECT f.id, s.id, TRUE
+SELECT f.id, s.id, TRUE, FIELD(
+    s.subject_code,
+    'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+    'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+)
 FROM forms f
 CROSS JOIN subjects s
-WHERE f.form_number IN (1, 2);
+WHERE f.form_number IN (1, 2)
+  AND s.subject_code IN (
+      'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+      'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+  );
+
+INSERT INTO form_subjects
+(
+    form_id,
+    subject_id,
+    is_compulsory,
+    subject_order
+)
+SELECT f.id, s.id, TRUE, FIELD(
+    s.subject_code,
+    'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'CIV', 'PHY',
+    'CHE', 'BIO', 'BMA', 'LIE'
+)
+FROM forms f
+CROSS JOIN subjects s
+WHERE f.form_number IN (3, 4)
+  AND s.subject_code IN (
+      'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'CIV', 'PHY',
+      'CHE', 'BIO', 'BMA', 'LIE'
+  );
 
 
 -- GRADING RULES FOR 2026

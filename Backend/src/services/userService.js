@@ -285,6 +285,42 @@ async function changeOwnPassword(userId, data) {
     return true;
 }
 
+async function changeOwnUsername(userId, data) {
+    const username = String(data.username || "").trim();
+    const currentPassword = String(data.current_password || "");
+
+    if (!username || !currentPassword) {
+        throw new Error("Username mpya na password ya sasa vinahitajika.");
+    }
+    if (username.length < 3 || username.length > 50) {
+        throw new Error("Username lazima iwe na herufi 3 hadi 50.");
+    }
+
+    const passwordHash = await userModel.findPasswordHashById(userId);
+    if (!passwordHash || !await bcrypt.compare(currentPassword, passwordHash)) {
+        throw new Error("Password ya sasa si sahihi.");
+    }
+
+    if (await userModel.usernameExists(username, userId)) {
+        throw new Error("Username tayari inatumika.");
+    }
+
+    try {
+        await userModel.updateUsername(userId, username);
+    } catch (error) {
+        if (error.code === "ER_DUP_ENTRY") {
+            throw new Error("Username tayari inatumika.");
+        }
+        throw error;
+    }
+
+    const updatedUser = await userModel.findUserById(userId);
+    if (!updatedUser) {
+        throw new Error("Imeshindikana kupata taarifa za akaunti baada ya kubadili username.");
+    }
+    return updatedUser;
+}
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -292,5 +328,6 @@ module.exports = {
     updateUser,
     changeUserStatus,
     changeUserPassword,
-    changeOwnPassword
+    changeOwnPassword,
+    changeOwnUsername
 };

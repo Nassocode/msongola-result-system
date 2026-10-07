@@ -21,7 +21,9 @@
     const modal = document.getElementById("catalogModal");
     const form = document.getElementById("catalogForm");
     const alertBox = document.getElementById("catalogAlert");
+    const teacherAccountNotice = document.getElementById("teacherAccountNotice");
     let assignmentClassFilter = null;
+    let teacherAccountsAvailable = false;
 
     let records = [];
 
@@ -107,20 +109,27 @@
         if (page !== "teachers") return;
         const select = document.getElementById("teacherUserId");
         if (!select) return;
+        const submitButton = form?.querySelector('[type="submit"]');
 
         try {
             const response = await MsongolaAPI.get("/admin-catalog/teachers/options");
             if (!response?.success) throw new Error(response?.message || "Accounts za Subject Teacher hazikupatikana.");
             const users = Array.isArray(response.data) ? response.data : [];
+            teacherAccountsAvailable = users.length > 0;
             select.innerHTML = users.length
                 ? `<option value="">Chagua account</option>${users.map((user) => `<option value="${user.id}">${escapeHTML(user.username)}</option>`).join("")}`
-                : '<option value="">Hakuna account ambayo haijaunganishwa</option>';
-            if (!users.length && error) {
-                error.textContent = "Hakuna akaunti mpya ya Subject Teacher ya kuunganisha. Accounts zenye taarifa za mwalimu tayari hazionekani hapa.";
-                error.hidden = false;
+                : '<option value="">Hakuna akaunti inayosubiri kuunganishwa</option>';
+            if (teacherAccountNotice) {
+                teacherAccountNotice.innerHTML = users.length
+                    ? ""
+                    : 'Akaunti zote za Subject Teacher zilizopo tayari zimeunganishwa na walimu walio kwenye orodha. Kuongeza mwalimu mpya, nenda <a href="users.html">Watumiaji</a> na tengeneza akaunti ya Subject Teacher.';
+                teacherAccountNotice.hidden = users.length > 0;
             }
+            if (submitButton) submitButton.disabled = !teacherAccountsAvailable;
         } catch (requestError) {
             select.innerHTML = '<option value="">Imeshindikana kupakia accounts</option>';
+            teacherAccountsAvailable = false;
+            if (submitButton) submitButton.disabled = true;
             if (error) {
                 error.textContent = requestError.message || "Imeshindikana kupakia accounts za Subject Teacher.";
                 error.hidden = false;
@@ -283,7 +292,7 @@
             alertBox.hidden = false;
         } finally {
             if (submitButton) {
-                submitButton.disabled = false;
+                submitButton.disabled = page === "teachers" && !teacherAccountsAvailable;
                 submitButton.textContent = submitLabel;
             }
         }

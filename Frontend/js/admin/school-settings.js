@@ -40,6 +40,12 @@
     const headOfSchoolInput =
         document.getElementById("headOfSchoolInput");
 
+    const academicMasterSelect =
+        document.getElementById("academicMasterSelect");
+
+    const academicMasterHelp =
+        document.getElementById("academicMasterHelp");
+
     const schoolPhoneInput =
         document.getElementById("schoolPhoneInput");
 
@@ -88,6 +94,11 @@
             ".preview-head strong"
         );
 
+    const previewAcademicMaster =
+        document.querySelector(
+            ".preview-academic-master strong"
+        );
+
 
     /* Toast */
 
@@ -124,6 +135,8 @@
     let savedSettings = {
         ...DEFAULT_SETTINGS
     };
+
+    let academicMasters = [];
 
     let toastTimer = null;
 
@@ -301,6 +314,11 @@
                     DEFAULT_SETTINGS.head_of_school
                 ),
 
+            academic_master_user_id:
+                settings.academic_master_user_id
+                    ? String(settings.academic_master_user_id)
+                    : "",
+
             phone:
                 normalizeValue(settings.phone),
 
@@ -357,6 +375,14 @@
                 headOfSchoolInput.value.trim() ||
                 DEFAULT_SETTINGS.head_of_school;
         }
+
+        if (previewAcademicMaster) {
+            const selected = academicMasters.find(
+                (user) => String(user.id) === String(academicMasterSelect?.value || "")
+            );
+            previewAcademicMaster.textContent =
+                selected?.username || "Hajachaguliwa";
+        }
     }
 
 
@@ -381,6 +407,11 @@
 
         headOfSchoolInput.value =
             data.head_of_school;
+
+        if (academicMasterSelect) {
+            academicMasterSelect.value =
+                data.academic_master_user_id || "";
+        }
 
         schoolPhoneInput.value = data.phone;
 
@@ -421,7 +452,8 @@
             schoolMottoInput,
             headOfSchoolInput,
             schoolPhoneInput,
-            schoolEmailInput
+            schoolEmailInput,
+            academicMasterSelect
         ].forEach((input) => {
 
             input.classList.remove(
@@ -684,6 +716,70 @@
     }
 
 
+    async function loadAcademicMasters() {
+        if (!academicMasterSelect) {
+            return;
+        }
+
+        academicMasterSelect.disabled = true;
+        academicMasterSelect.replaceChildren(
+            new Option("Inapakia Academic Masters...", "")
+        );
+
+        try {
+            const response = await MsongolaAPI.get("/users");
+            if (!response || response.success === false) {
+                throw new Error(
+                    response?.message || "Imeshindikana kupata orodha ya Academic Masters."
+                );
+            }
+
+            const users = Array.isArray(response.data)
+                ? response.data
+                : Array.isArray(response.data?.users)
+                    ? response.data.users
+                    : [];
+
+            academicMasters = users.filter((user) =>
+                String(user.role || "").trim().toUpperCase() === "ACADEMIC_MASTER"
+                && String(user.status || "").trim().toUpperCase() === "ACTIVE"
+            );
+
+            academicMasterSelect.replaceChildren(
+                new Option("— Hakuna aliyeteuliwa —", ""),
+                ...academicMasters.map((user) =>
+                    new Option(user.username, String(user.id))
+                )
+            );
+            academicMasterSelect.disabled = false;
+
+            if (academicMasterHelp) {
+                academicMasterHelp.textContent = academicMasters.length
+                    ? "Jina la akaunti iliyochaguliwa litaonekana kwenye report za wanafunzi."
+                    : "Hakuna Academic Master aliye ACTIVE. Tengeneza akaunti ya Academic Master kwenye ukurasa wa Watumiaji kwanza.";
+            }
+
+            updatePreview();
+        } catch (error) {
+            academicMasters = [];
+            academicMasterSelect.replaceChildren(
+                new Option("Imeshindikana kupakia orodha", "")
+            );
+            academicMasterSelect.disabled = true;
+            if (academicMasterHelp) {
+                academicMasterHelp.textContent =
+                    "Orodha ya Academic Masters haikupatikana. Jaribu ku-refresh ukurasa.";
+            }
+            console.error("Load academic masters error:", error);
+            showToast(
+                "Imeshindikana kupakia",
+                error.message || "Imeshindikana kupata orodha ya Academic Masters.",
+                "error"
+            );
+        }
+    }
+
+
     /* =====================================================
        SAVE SCHOOL SETTINGS
     ===================================================== */
@@ -718,7 +814,14 @@
                 schoolPhoneInput.value.trim(),
 
             email:
-                schoolEmailInput.value.trim()
+                schoolEmailInput.value.trim(),
+
+            ...(academicMasterSelect && !academicMasterSelect.disabled
+                ? {
+                    academic_master_user_id:
+                        academicMasterSelect.value || null
+                }
+                : {})
         };
 
 
@@ -877,7 +980,8 @@
             schoolMottoInput,
             headOfSchoolInput,
             schoolPhoneInput,
-            schoolEmailInput
+            schoolEmailInput,
+            academicMasterSelect
         ].forEach((input) => {
 
             input.classList.remove(
@@ -990,7 +1094,9 @@
 
             schoolPhoneInput,
 
-            schoolEmailInput
+            schoolEmailInput,
+
+            academicMasterSelect
 
         ];
 
@@ -1003,7 +1109,7 @@
 
 
             input.addEventListener(
-                "input",
+                input === academicMasterSelect ? "change" : "input",
                 () => {
 
                     input.classList.remove(
@@ -1100,6 +1206,7 @@
 
         initializeEvents();
 
+        await loadAcademicMasters();
 
         await loadSchoolSettings();
 

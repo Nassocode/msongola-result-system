@@ -258,6 +258,39 @@ async function changeOwnPassword(req, res) {
     }
 }
 
+async function changeOwnUsername(req, res) {
+    try {
+        const previousUser = await userService.getUserById(req.user.id);
+        const user = await userService.changeOwnUsername(req.user.id, req.body || {});
+
+        try {
+            await auditLogService.createAuditLog({
+                ...getRequestInfo(req),
+                action: "ADMIN_USERNAME_CHANGED",
+                module: "USER_MANAGEMENT",
+                description: `Username ya admin imebadilishwa kutoka ${previousUser.username} kwenda ${user.username}.`,
+                record_id: Number(user.id),
+                old_values: { username: previousUser.username },
+                new_values: { username: user.username }
+            });
+        } catch (auditError) {
+            console.error("Own username change audit failed:", auditError.message);
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Username imebadilishwa kwa mafanikio.",
+            data: user
+        });
+    } catch (error) {
+        console.error("Change own username error:", error.message);
+        return res.status(400).json({
+            success: false,
+            message: error.message || "Imeshindikana kubadilisha username."
+        });
+    }
+}
+
 
 // ============================================================
 // EXPORT
@@ -269,5 +302,6 @@ module.exports = {
     updateUser,
     changeUserStatus,
     changeUserPassword,
-    changeOwnPassword
+    changeOwnPassword,
+    changeOwnUsername
 };

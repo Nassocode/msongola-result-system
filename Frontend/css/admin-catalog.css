@@ -41,6 +41,9 @@ body { margin: 0; font-family: "Segoe UI", sans-serif; background: #f4f7fa; colo
 .catalog-field input, .catalog-field select { width: 100%; padding: 11px; border: 1px solid #d9e2ec; border-radius: 8px; font: inherit; }
 .catalog-alert { margin-bottom: 14px; padding: 10px 12px; border-radius: 8px; background: #fff0f2; color: #c83b4a; }
 .catalog-alert[hidden] { display: none; }
+.catalog-notice { margin-bottom: 14px; padding: 12px 14px; border-radius: 8px; background: #eef6ff; color: #334e68; line-height: 1.5; }
+.catalog-notice a { color: #126b8a; font-weight: 700; }
+.catalog-notice[hidden] { display: none; }
 .catalog-form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
 @media (max-width: 700px) { .catalog-header { align-items: flex-start; flex-direction: column; } .catalog-toolbar { align-items: stretch; flex-direction: column; } .catalog-toolbar input, .catalog-toolbar select { width: 100%; } }
 @media (max-width: 600px) { .admin-page .catalog-modal { padding: 12px; } .admin-page .catalog-form { max-height: calc(100vh - 24px); padding: 18px; } .teacher-form-grid { grid-template-columns: 1fr; } .teacher-form-grid .catalog-field:first-child { grid-column: auto; } .catalog-form-actions { flex-direction: column-reverse; } .catalog-form-actions button { width: 100%; } }

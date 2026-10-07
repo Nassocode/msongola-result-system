@@ -50,7 +50,7 @@ async function getEntryContext(userId, assignmentId, examinationId) {
 			students = studentRows;
 
 			const [markRows] = await connection.execute(`
-				SELECT student_id, mark AS marks, status
+				SELECT student_id, marks, status
 				FROM marks
 				WHERE teacher_assignment_id = ? AND examination_id = ?
 			`, [assignmentId, selectedExamId]);
@@ -94,12 +94,18 @@ async function saveDraftMarks(userId, assignmentId, examinationId, entries) {
 		`, [examinationId, assignmentId]);
 		if (!exams.length) throw new Error("Mtihani haujafunguliwa.");
 
-		const [submissions] = await connection.execute(`
-			SELECT status FROM mark_submissions
-			WHERE teacher_assignment_id = ? AND examination_id = ? FOR UPDATE
+		const [existingMarks] = await connection.execute(`
+			SELECT student_id, status
+			FROM marks
+			WHERE teacher_assignment_id = ? AND examination_id = ?
 		`, [assignmentId, examinationId]);
-		if (["SUBMITTED", "APPROVED"].includes(submissions[0]?.status)) {
-			throw new Error("Alama hizi tayari zimetumwa na haziwezi kuhaririwa.");
+		const existingByStudent = new Map(existingMarks.map((mark) => [Number(mark.student_id), mark]));
+		for (const entry of entries) {
+			const studentId = Number(entry.student_id);
+			const existing = existingByStudent.get(studentId);
+			if (existing && ["SUBMITTED", "APPROVED"].includes(existing.status)) {
+				throw new Error("Mwanafunzi huyu tayari ametuma alama zake na haziwezi kuhaririwa.");
+			}
 		}
 
 		const studentIds = [...new Set(entries.map((entry) => Number(entry.student_id)))];
@@ -127,9 +133,9 @@ async function saveDraftMarks(userId, assignmentId, examinationId, entries) {
 				throw new Error("Alama lazima ziwe kati ya 0 na 100.");
 			}
 			await connection.execute(`
-				INSERT INTO marks (student_id, subject_id, examination_id, teacher_assignment_id, mark, status)
+				INSERT INTO marks (student_id, subject_id, examination_id, teacher_assignment_id, marks, status)
 				VALUES (?, ?, ?, ?, ?, 'DRAFT')
-				ON DUPLICATE KEY UPDATE mark = VALUES(mark), status = 'DRAFT'
+				ON DUPLICATE KEY UPDATE marks = VALUES(marks), status = 'DRAFT'
 			`, [Number(entry.student_id), assignment.subject_id, examinationId, assignmentId, score]);
 		}
 		await connection.commit();
@@ -144,6 +150,7 @@ async function saveDraftMarks(userId, assignmentId, examinationId, entries) {
 
 async function submitMarks(userId, assignmentId, examinationId) {
 	const connection = await pool.getConnection();
+	let markedStudents = 0;
 	try {
 		await connection.beginTransaction();
 		const [owners] = await connection.execute(`
@@ -169,8 +176,6 @@ async function submitMarks(userId, assignmentId, examinationId) {
 			SELECT status FROM mark_submissions
 			WHERE teacher_assignment_id = ? AND examination_id = ? FOR UPDATE
 		`, [assignmentId, examinationId]);
-		if (["SUBMITTED", "APPROVED"].includes(submissionRows[0]?.status)) throw new Error("Alama hizi tayari zimetumwa.");
-
 		const [[{ total_students: totalStudents }]] = await connection.execute(`
 			SELECT COUNT(*) AS total_students
 			FROM students s
@@ -183,21 +188,42 @@ async function submitMarks(userId, assignmentId, examinationId) {
 		if (Number(totalStudents) === 0) {
 			throw new Error("Hakuna mwanafunzi aliyesajiliwa kusoma somo hili katika darasa hili.");
 		}
-		const [[{ marked_students: markedStudents }]] = await connection.execute(`
-			SELECT COUNT(*) AS marked_students
-			FROM marks m
-			INNER JOIN students s ON s.id = m.student_id
+		const [[{ required_students: requiredStudents }]] = await connection.execute(`
+			SELECT COUNT(DISTINCT s.id) AS required_students
+			FROM students s
 			INNER JOIN student_subjects ss
 			  ON ss.student_id = s.id
 			 AND ss.class_id = s.class_id
-			 AND ss.subject_id = m.subject_id
-			WHERE m.teacher_assignment_id = ? AND m.examination_id = ?
-			  AND s.class_id = ? AND s.status = 'ACTIVE'
-			  AND m.subject_id = ?
-			  AND m.status IN ('DRAFT', 'RETURNED')
-		`, [assignmentId, examinationId, assignment.class_id, assignment.subject_id]);
-		if (Number(markedStudents) !== Number(totalStudents)) {
-			throw new Error(`Kamilisha alama za wanafunzi wote kabla ya kutuma (${markedStudents}/${totalStudents}).`);
+			 AND ss.subject_id = ?
+			LEFT JOIN marks m
+			  ON m.student_id = s.id
+			 AND m.teacher_assignment_id = ?
+			 AND m.examination_id = ?
+			WHERE s.class_id = ? AND s.status = 'ACTIVE'
+			  AND (m.student_id IS NULL OR m.status IN ('DRAFT', 'RETURNED'))
+		`, [assignment.subject_id, assignmentId, examinationId, assignment.class_id]);
+		if (["SUBMITTED", "APPROVED"].includes(submissionRows[0]?.status) && Number(requiredStudents) === 0) {
+			throw new Error("Alama hizi tayari zimetumwa kwa wanafunzi wote wa darasa hili.");
+		}
+		if (Number(requiredStudents) > 0) {
+			const [[{ marked_students: markedStudents }]] = await connection.execute(`
+				SELECT COUNT(DISTINCT s.id) AS marked_students
+				FROM students s
+				INNER JOIN student_subjects ss
+				  ON ss.student_id = s.id
+				 AND ss.class_id = s.class_id
+				 AND ss.subject_id = ?
+				LEFT JOIN marks m
+				  ON m.student_id = s.id
+				 AND m.teacher_assignment_id = ?
+				 AND m.examination_id = ?
+				WHERE s.class_id = ? AND s.status = 'ACTIVE'
+				  AND m.student_id IS NOT NULL
+				  AND m.status NOT IN ('SUBMITTED', 'APPROVED')
+			`, [assignment.subject_id, assignmentId, examinationId, assignment.class_id]);
+			if (Number(markedStudents) !== Number(requiredStudents)) {
+				throw new Error(`Kamilisha alama za wanafunzi wote kabla ya kutuma (${markedStudents}/${requiredStudents}).`);
+			}
 		}
 
 		await connection.execute(`

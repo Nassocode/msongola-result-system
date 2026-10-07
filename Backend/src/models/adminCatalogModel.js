@@ -20,7 +20,7 @@ async function getTeachers() {
             u.username
         FROM teachers t
         INNER JOIN users u ON u.id = t.user_id
-        ORDER BY t.created_at DESC
+        ORDER BY t.id ASC
     `);
     return rows;
 }
@@ -88,7 +88,17 @@ async function getSubjects() {
     const [rows] = await pool.execute(`
         SELECT id, subject_code, subject_name, status, created_at, updated_at
         FROM subjects
-        ORDER BY id ASC
+        ORDER BY
+            CASE WHEN FIELD(
+                subject_code,
+                'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+                'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+            ) = 0 THEN 999 ELSE FIELD(
+                subject_code,
+                'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+                'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+            ) END,
+            subject_name ASC
     `);
     return rows;
 }
@@ -262,7 +272,22 @@ async function getAssignmentOptions() {
         WHERE c.status = 'ACTIVE'
         ORDER BY ay.id DESC, f.form_name ASC, c.class_name ASC
     `);
-    const [subjects] = await pool.execute(`SELECT id, subject_code, subject_name FROM subjects WHERE status = 'ACTIVE' ORDER BY id ASC`);
+    const [subjects] = await pool.execute(`
+        SELECT id, subject_code, subject_name
+        FROM subjects
+        WHERE status = 'ACTIVE'
+        ORDER BY
+            CASE WHEN FIELD(
+                subject_code,
+                'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+                'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+            ) = 0 THEN 999 ELSE FIELD(
+                subject_code,
+                'HIS', 'GEO', 'EDK', 'KIS', 'ENG', 'PHY',
+                'CHE', 'BIO', 'BUS', 'HTM', 'MAT'
+            ) END,
+            subject_name ASC
+    `);
     const [years] = await pool.execute(`SELECT id, year_label FROM academic_years WHERE status IN ('ACTIVE', 'INACTIVE') ORDER BY id DESC`);
     return { teachers, classes, subjects, years };
 }

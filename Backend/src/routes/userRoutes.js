@@ -31,6 +31,13 @@ router.patch(
     userController.changeOwnPassword
 );
 
+router.patch(
+    "/me/username",
+    protect,
+    authorize("ADMIN"),
+    userController.changeOwnUsername
+);
+
 router.get(
     "/:id",
     protect,

@@ -8,8 +8,11 @@ async function getTeacherDashboard(userId) {
             t.first_name,
             t.middle_name,
             t.last_name,
-            t.status
+            t.status,
+            u.created_at AS account_created_at,
+            u.updated_at AS account_updated_at
         FROM teachers t
+        INNER JOIN users u ON u.id = t.user_id
         WHERE t.user_id = ?
         LIMIT 1
     `;

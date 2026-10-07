@@ -636,9 +636,9 @@
              */
 
             allUsers =
-                allUsers.map(
-                    normalizeUser
-                );
+                allUsers
+                    .map(normalizeUser)
+                    .filter((user) => user.role !== "ADMIN");
 
 
             filteredUsers =

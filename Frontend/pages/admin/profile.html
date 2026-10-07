@@ -29,7 +29,7 @@
 
     <link
         rel="stylesheet"
-        href="../../css/admin-profile.css?v=2"
+        href="../../css/admin-profile.css?v=3"
     >
 
 <link rel="stylesheet" href="../../css/designer-credit.css">
@@ -214,7 +214,7 @@
                 aria-expanded="false"
                 aria-label="Fungua menu"
             >
-                <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-bars-staggered"></i>
             </button>
 
 
@@ -460,6 +460,35 @@
 
 
                     <div class="security-list">
+
+                        <div class="security-item">
+
+                            <div class="security-item-icon">
+                                <i class="fa-solid fa-user-pen"></i>
+                            </div>
+
+                            <div class="security-item-content">
+
+                                <strong>
+                                    Username
+                                </strong>
+
+                                <span>
+                                    Badili jina la kuingia kwenye akaunti yako.
+                                </span>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="security-btn"
+                                id="changeUsernameBtn"
+                            >
+                                Badilisha
+                            </button>
+
+                        </div>
+
 
                         <div class="security-item">
 
@@ -805,14 +834,122 @@
 </div>
 
 
+<!-- ================= CHANGE USERNAME MODAL ================= -->
+
+<div
+    class="password-modal-overlay"
+    id="usernameModal"
+    hidden
+>
+
+    <div class="password-modal">
+
+        <div class="password-modal-header">
+
+            <div>
+
+                <span>
+                    ACCOUNT
+                </span>
+
+                <h3>
+                    Badilisha Username
+                </h3>
+
+            </div>
+
+            <button
+                type="button"
+                id="closeUsernameModal"
+                aria-label="Funga"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form id="changeUsernameForm">
+
+            <div class="password-field">
+
+                <label for="newUsername">
+                    Username Mpya
+                </label>
+
+                <input
+                    type="text"
+                    id="newUsername"
+                    name="username"
+                    minlength="3"
+                    maxlength="50"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="password-field">
+
+                <label for="usernameCurrentPassword">
+                    Password ya Sasa kuthibitisha
+                </label>
+
+                <input
+                    type="password"
+                    id="usernameCurrentPassword"
+                    name="current_password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                id="usernameMessage"
+                class="password-message"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+
+            <div class="password-actions">
+
+                <button
+                    type="button"
+                    class="cancel-password"
+                    id="cancelUsernameBtn"
+                >
+                    Ghairi
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-password"
+                >
+                    <i class="fa-solid fa-user-pen"></i>
+                    Hifadhi Username
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
 <script src="../../js/api.js"></script>
 <script src="../../js/auth.js"></script>
 <script src="../../js/app.js"></script>
-<script src="../../js/admin/profile.js"></script>
+<script src="../../js/admin/profile.js?v=20261007-1"></script>
 
 <footer class="designer-credit" aria-label="Designer contact">
     <span>Designed by: <strong>Nassoro Amour Shekulamba</strong></span>
-    <a href="tel:+255616975125">Phone Number: +255 616 975 125</a>
+    <a href="tel:+255616957125">Phone Number: +255 616 957 125</a>
     <a href="mailto:nassoroamour63@gmail.com">Email: nassoroamour63@gmail.com</a>
 </footer>
 </body>

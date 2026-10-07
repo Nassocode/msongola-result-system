@@ -23,7 +23,8 @@ async function findAllUsers() {
     const sql =
         "SELECT id, username, role, status, created_at, updated_at " +
         "FROM users " +
-        "ORDER BY id DESC";
+        "WHERE UPPER(TRIM(role)) <> 'ADMIN' " +
+        "ORDER BY id ASC";
 
     const [rows] = await pool.execute(sql);
 
@@ -130,6 +131,15 @@ async function updateUser(id, username, role) {
     return result.affectedRows;
 }
 
+async function updateUsername(id, username) {
+    const [result] = await pool.execute(
+        "UPDATE users SET username = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [username, id]
+    );
+
+    return result.affectedRows;
+}
+
 
 // UPDATE USER STATUS
 async function updateUserStatus(id, status) {
@@ -199,6 +209,7 @@ module.exports = {
     createUser,
     createUserWithTeacher,
     updateUser,
+    updateUsername,
     updateUserStatus,
     updateUserPassword,
     findPasswordHashById,

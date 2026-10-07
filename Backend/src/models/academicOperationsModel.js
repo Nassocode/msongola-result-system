@@ -1,5 +1,6 @@
 const pool = require("../config/database");
 const notificationModel = require("./notificationModel");
+const reportService = require("../services/reportServices");
 
 async function getExaminations() {
     const [rows] = await pool.execute(`
@@ -59,7 +60,7 @@ async function getClassTeachers() {
 }
 
 async function getClassTeacherOptions() {
-    const [teachers] = await pool.execute("SELECT id, teacher_number, CONCAT_WS(' ', first_name, middle_name, last_name) AS teacher_name FROM teachers WHERE status = 'ACTIVE' ORDER BY first_name, last_name");
+    const [teachers] = await pool.execute("SELECT id, teacher_number, CONCAT_WS(' ', first_name, middle_name, last_name) AS teacher_name FROM teachers WHERE status = 'ACTIVE' ORDER BY id ASC");
     const [classes] = await pool.execute(`
         SELECT c.id, c.class_name, c.academic_year_id, f.form_name, ay.year_label AS academic_year
         FROM classes c
@@ -141,7 +142,7 @@ async function getSubmissions() {
         SELECT m.teacher_assignment_id, m.examination_id, m.student_id,
                st.admission_number,
                CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
-               m.mark, m.status AS mark_status
+               m.marks AS mark, m.status AS mark_status
         FROM marks m
         INNER JOIN students st ON st.id = m.student_id
         WHERE m.id = (
@@ -255,87 +256,206 @@ async function reviewSubmission(id, reviewerId, status, comment) {
     }
 }
 
-async function getResults() {
+async function getApprovedResultMarkRows(examinationId = null, classId = null) {
+    const conditions = ["m.status = 'APPROVED'", "ta.status = 'ACTIVE'", "e.status IN ('OPEN', 'CLOSED')"];
+    const params = [];
+    if (examinationId) {
+        conditions.push("e.id = ?");
+        params.push(examinationId);
+    }
+    if (classId) {
+        conditions.push("c.id = ?");
+        params.push(classId);
+    }
+
     const [rows] = await pool.execute(`
-        SELECT r.id, r.total_marks, r.average AS average_marks, r.total_points, r.division, r.position, 'PROCESSED' AS status,
-               st.admission_number, CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
-               c.class_name, e.exam_name, e.term, ay.year_label AS academic_year
-        FROM result_summaries r
-        INNER JOIN students st ON st.id = r.student_id
-        INNER JOIN classes c ON c.id = st.class_id
-        INNER JOIN examinations e ON e.id = r.examination_id
+        SELECT m.student_id, m.subject_id, m.examination_id, m.teacher_assignment_id,
+               m.marks AS mark, m.grade, m.points,
+               st.admission_number, st.first_name, st.middle_name, st.last_name, st.gender,
+               c.id AS class_id, c.class_name, c.form_id, c.academic_year_id,
+               f.form_name, ay.year_label, e.exam_name, e.exam_type, e.term,
+               subject.subject_code, subject.subject_name
+        FROM marks m
+        INNER JOIN teacher_assignments ta ON ta.id = m.teacher_assignment_id
+        INNER JOIN students st ON st.id = m.student_id
+        INNER JOIN examinations e ON e.id = m.examination_id
+        INNER JOIN classes c ON c.id = ta.class_id AND c.academic_year_id = e.academic_year_id
+        INNER JOIN forms f ON f.id = c.form_id
         INNER JOIN academic_years ay ON ay.id = e.academic_year_id
-        ORDER BY ay.id DESC, e.id DESC, c.class_name, r.position
-    `);
+        INNER JOIN subjects subject ON subject.id = m.subject_id
+        INNER JOIN student_class_enrollments enrollment
+            ON enrollment.student_id = st.id
+           AND enrollment.class_id = c.id
+           AND enrollment.academic_year_id = e.academic_year_id
+        INNER JOIN student_subjects eligible
+            ON eligible.student_id = st.id
+           AND eligible.class_id = c.id
+           AND eligible.subject_id = m.subject_id
+        WHERE ${conditions.join(" AND ")}
+          AND m.id = (
+              SELECT MAX(latest_mark.id)
+              FROM marks latest_mark
+              WHERE latest_mark.teacher_assignment_id = m.teacher_assignment_id
+                AND latest_mark.student_id = m.student_id
+                AND latest_mark.examination_id = m.examination_id
+          )
+          AND NOT EXISTS (
+              SELECT 1
+              FROM marks pending
+              INNER JOIN teacher_assignments pending_assignment
+                  ON pending_assignment.id = pending.teacher_assignment_id
+              WHERE pending.student_id = m.student_id
+                AND pending.examination_id = m.examination_id
+                AND pending_assignment.class_id = c.id
+                AND pending.status <> 'APPROVED'
+          )
+          AND (
+              SELECT COUNT(DISTINCT expected.subject_id)
+              FROM teacher_assignments expected
+              INNER JOIN student_subjects expected_enrollment
+                  ON expected_enrollment.student_id = st.id
+                 AND expected_enrollment.class_id = c.id
+                 AND expected_enrollment.subject_id = expected.subject_id
+              WHERE expected.class_id = c.id
+                AND expected.academic_year_id = e.academic_year_id
+                AND expected.status = 'ACTIVE'
+          ) = (
+              SELECT COUNT(DISTINCT approved_assignment.subject_id)
+              FROM marks approved
+              INNER JOIN teacher_assignments approved_assignment
+                  ON approved_assignment.id = approved.teacher_assignment_id
+              WHERE approved.student_id = st.id
+                AND approved.examination_id = e.id
+                AND approved_assignment.class_id = c.id
+                AND approved_assignment.academic_year_id = e.academic_year_id
+                AND approved_assignment.status = 'ACTIVE'
+                AND approved.status = 'APPROVED'
+          )
+        ORDER BY ay.id DESC, e.id DESC, c.class_name,
+                 st.first_name, st.middle_name, st.last_name, subject.subject_name
+    `, params);
     return rows;
+}
+
+function buildApprovedResultRows(markRows) {
+    const groups = new Map();
+    for (const mark of markRows) {
+        const key = `${mark.examination_id}:${mark.class_id}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(mark);
+    }
+
+    const results = [];
+    for (const marks of groups.values()) {
+        const rankedStudents = reportService.calculatePositions(
+            reportService.buildStudentResults(marks)
+        );
+        const firstMark = marks[0];
+        for (const student of rankedStudents) {
+            results.push({
+                ...student,
+                status: "PROCESSED",
+                exam_name: firstMark.exam_name,
+                exam_type: firstMark.exam_type,
+                term: firstMark.term,
+                examination_id: Number(firstMark.examination_id),
+                academic_year_id: Number(firstMark.academic_year_id),
+                academic_year: firstMark.year_label,
+                class_id: Number(firstMark.class_id),
+                class_name: firstMark.class_name,
+                form_id: Number(firstMark.form_id),
+                form_name: firstMark.form_name,
+                student_name: student.full_name,
+                average_marks: student.average_marks
+            });
+        }
+    }
+    return results;
+}
+
+async function getResults() {
+    const results = buildApprovedResultRows(await getApprovedResultMarkRows());
+    return results.sort((left, right) =>
+        right.academic_year_id - left.academic_year_id ||
+        right.examination_id - left.examination_id ||
+        left.class_name.localeCompare(right.class_name) ||
+        left.position - right.position
+    );
 }
 
 async function getReports() {
-    const [rows] = await pool.execute(`
-        SELECT e.id AS examination_id, e.exam_name, e.term, ay.year_label AS academic_year,
-               c.class_name, COUNT(r.id) AS students,
-               ROUND(AVG(r.average), 2) AS class_average,
-               SUM(CASE WHEN r.division = 'I' THEN 1 ELSE 0 END) AS division_i,
-               SUM(CASE WHEN r.division = 'II' THEN 1 ELSE 0 END) AS division_ii,
-               SUM(CASE WHEN r.division = 'III' THEN 1 ELSE 0 END) AS division_iii,
-               SUM(CASE WHEN r.division = 'IV' THEN 1 ELSE 0 END) AS division_iv,
-               SUM(CASE WHEN r.division = '0' THEN 1 ELSE 0 END) AS division_zero
-        FROM result_summaries r
-        INNER JOIN examinations e ON e.id = r.examination_id
-        INNER JOIN academic_years ay ON ay.id = e.academic_year_id
-        INNER JOIN students st ON st.id = r.student_id
-        INNER JOIN classes c ON c.id = st.class_id
-        GROUP BY e.id, e.exam_name, e.term, ay.year_label, c.id, c.class_name
-        ORDER BY ay.id DESC, e.id DESC, c.class_name
-    `);
-    return rows;
+    const results = buildApprovedResultRows(await getApprovedResultMarkRows());
+    const groups = new Map();
+    for (const result of results) {
+        const key = `${result.examination_id}:${result.class_id}`;
+        if (!groups.has(key)) {
+            groups.set(key, {
+                examination_id: result.examination_id,
+                exam_name: result.exam_name,
+                term: result.term,
+                academic_year: result.academic_year,
+                class_name: result.class_name,
+                students: 0,
+                average_total: 0,
+                division_i: 0,
+                division_ii: 0,
+                division_iii: 0,
+                division_iv: 0,
+                division_zero: 0
+            });
+        }
+        const group = groups.get(key);
+        group.students += 1;
+        group.average_total += Number(result.average_marks);
+        const divisionKey = ({
+            I: "division_i",
+            II: "division_ii",
+            III: "division_iii",
+            IV: "division_iv",
+            "0": "division_zero"
+        })[result.division];
+        if (divisionKey) group[divisionKey] += 1;
+    }
+    return [...groups.values()]
+        .map(({ average_total, ...group }) => ({
+            ...group,
+            class_average: Number((average_total / group.students).toFixed(2))
+        }))
+        .sort((left, right) =>
+            right.academic_year.localeCompare(left.academic_year) ||
+            right.examination_id - left.examination_id ||
+            left.class_name.localeCompare(right.class_name)
+        );
 }
 
 async function getReportOptions() {
-    const [examinations] = await pool.execute(`
-        SELECT e.id, e.exam_name, e.exam_type, e.term, e.academic_year_id,
-               ay.year_label AS academic_year
-        FROM examinations e
-        INNER JOIN academic_years ay ON ay.id = e.academic_year_id
-        WHERE EXISTS (
-            SELECT 1
-            FROM result_summaries rs
-            INNER JOIN students st ON st.id = rs.student_id
-            WHERE rs.examination_id = e.id
-              AND EXISTS (
-                  SELECT 1 FROM marks m
-                  WHERE m.student_id = st.id AND m.examination_id = e.id AND m.status = 'APPROVED'
-              )
-              AND NOT EXISTS (
-                  SELECT 1 FROM marks pending
-                  WHERE pending.student_id = st.id AND pending.examination_id = e.id
-                    AND pending.status <> 'APPROVED'
-              )
-        )
-        ORDER BY ay.id DESC, e.id DESC
-    `);
-    const [classes] = await pool.execute(`
-        SELECT c.id, c.class_name, c.academic_year_id, ay.year_label AS academic_year
-        FROM classes c
-        INNER JOIN academic_years ay ON ay.id = c.academic_year_id
-        WHERE c.status = 'ACTIVE' AND EXISTS (
-            SELECT 1
-            FROM result_summaries rs
-            INNER JOIN students st ON st.id = rs.student_id
-            WHERE st.class_id = c.id
-              AND EXISTS (
-                  SELECT 1 FROM marks m
-                  WHERE m.student_id = st.id AND m.examination_id = rs.examination_id AND m.status = 'APPROVED'
-              )
-              AND NOT EXISTS (
-                  SELECT 1 FROM marks pending
-                  WHERE pending.student_id = st.id AND pending.examination_id = rs.examination_id
-                    AND pending.status <> 'APPROVED'
-              )
-        )
-        ORDER BY ay.id DESC, c.class_name ASC
-    `);
-    return { examinations, classes };
+    const results = buildApprovedResultRows(await getApprovedResultMarkRows());
+    const examinations = new Map();
+    const classes = new Map();
+    for (const result of results) {
+        if (!examinations.has(result.examination_id)) {
+            examinations.set(result.examination_id, {
+                id: result.examination_id,
+                exam_name: result.exam_name,
+                exam_type: result.exam_type,
+                term: result.term,
+                academic_year_id: result.academic_year_id,
+                academic_year: result.academic_year
+            });
+        }
+        if (!classes.has(result.class_id)) {
+            classes.set(result.class_id, {
+                id: result.class_id,
+                class_name: result.class_name,
+                academic_year_id: result.academic_year_id,
+                academic_year: result.academic_year
+            });
+        }
+    }
+    return {
+        examinations: [...examinations.values()],
+        classes: [...classes.values()]
+    };
 }
 
 async function getReportDetails(examinationId, classId) {
@@ -381,93 +501,29 @@ async function getReportDetails(examinationId, classId) {
         ORDER BY ct.id DESC LIMIT 1
     `, [classId, selectedClass.academic_year_id]);
 
-    const [students] = await pool.execute(`
-        SELECT st.id, st.admission_number,
-               CONCAT_WS(' ', st.first_name, st.middle_name, st.last_name) AS student_name,
-               st.gender, st.class_id,
-               rs.total_marks, rs.average, rs.total_points,
-               CASE
-                   WHEN rs.total_points BETWEEN 7 AND 17 THEN 'DIVISION I'
-                   WHEN rs.total_points BETWEEN 18 AND 21 THEN 'DIVISION II'
-                   WHEN rs.total_points BETWEEN 22 AND 25 THEN 'DIVISION III'
-                   WHEN rs.total_points BETWEEN 26 AND 32 THEN 'DIVISION IV'
-                   ELSE 'DIVISION 0'
-               END AS division,
-               ROW_NUMBER() OVER (
-                   ORDER BY
-                       CASE
-                           WHEN rs.total_points BETWEEN 7 AND 17 THEN 1
-                           WHEN rs.total_points BETWEEN 18 AND 21 THEN 2
-                           WHEN rs.total_points BETWEEN 22 AND 25 THEN 3
-                           WHEN rs.total_points BETWEEN 26 AND 32 THEN 4
-                           ELSE 5
-                       END,
-                       rs.total_points ASC,
-                       st.last_name ASC,
-                       st.first_name ASC
-               ) AS class_position
-        FROM students st
-        INNER JOIN result_summaries rs
-            ON rs.student_id = st.id AND rs.examination_id = ?
-        WHERE st.class_id = ? AND st.status = 'ACTIVE'
-          AND EXISTS (
-              SELECT 1 FROM marks approved
-              WHERE approved.student_id = st.id AND approved.examination_id = ? AND approved.status = 'APPROVED'
-          )
-          AND NOT EXISTS (
-              SELECT 1 FROM marks pending
-              WHERE pending.student_id = st.id AND pending.examination_id = ? AND pending.status <> 'APPROVED'
-          )
-        ORDER BY class_position
-    `, [examinationId, classId, examinationId, examinationId]);
-
-    if (!students.length) throw new Error("Hakuna matokeo yaliyoidhinishwa kwa darasa na mtihani uliochaguliwa.");
-
-    const [subjectRows] = await pool.execute(`
-        SELECT m.student_id, s.id AS subject_id, s.subject_name,
-               m.mark,
-               COALESCE(m.grade, CASE
-                   WHEN m.mark >= 75 THEN 'A'
-                   WHEN m.mark >= 65 THEN 'B'
-                   WHEN m.mark >= 45 THEN 'C'
-                   WHEN m.mark >= 30 THEN 'D'
-                   ELSE 'F'
-               END) AS grade,
-               COALESCE(m.points, CASE
-                   WHEN m.mark >= 75 THEN 1
-                   WHEN m.mark >= 65 THEN 2
-                   WHEN m.mark >= 45 THEN 3
-                   WHEN m.mark >= 30 THEN 4
-                   ELSE 5
-               END) AS points
-        FROM marks m
-        INNER JOIN students st ON st.id = m.student_id
-        INNER JOIN subjects s ON s.id = m.subject_id
-        WHERE m.examination_id = ? AND st.class_id = ?
-          AND st.status = 'ACTIVE' AND m.status = 'APPROVED'
-        ORDER BY m.student_id ASC, s.id ASC
-    `, [examinationId, classId]);
-
-    const subjectsByStudent = new Map();
-    for (const subject of subjectRows) {
-        const subjectList = subjectsByStudent.get(Number(subject.student_id)) || [];
-        subjectList.push({
-            subject_id: Number(subject.subject_id),
+    const marks = await getApprovedResultMarkRows(examinationId, classId);
+    const rankedStudents = buildApprovedResultRows(marks);
+    const students = rankedStudents.map((student) => ({
+        id: student.student_id,
+        student_id: student.student_id,
+        admission_number: student.admission_number,
+        student_name: student.full_name,
+        gender: student.gender,
+        class_id: student.class_id,
+        total_marks: student.total_marks,
+        average: student.average_marks,
+        total_points: student.total_points,
+        division: student.division === "N/A" ? "N/A" : `DIVISION ${student.division}`,
+        class_position: student.position,
+        subjects: student.subjects.map((subject) => ({
+            subject_id: subject.subject_id,
             subject_name: subject.subject_name,
-            marks: Number(subject.mark),
+            marks: subject.marks,
             grade: subject.grade,
-            points: Number(subject.points)
-        });
-        subjectsByStudent.set(Number(subject.student_id), subjectList);
-    }
-
-    for (const student of students) {
-        student.class_position = Number(student.class_position);
-        student.total_marks = Number(student.total_marks);
-        student.average = Number(student.average);
-        student.total_points = Number(student.total_points);
-        student.subjects = subjectsByStudent.get(Number(student.id)) || [];
-    }
+            points: subject.points
+        }))
+    }));
+    if (!students.length) throw new Error("Hakuna matokeo yaliyoidhinishwa na kukamilika kwa darasa na mtihani uliochaguliwa.");
 
     return {
         school,
@@ -490,7 +546,7 @@ async function getAcademicMasterProfile(userId) {
             FROM users WHERE id = ? AND role = 'ACADEMIC_MASTER' LIMIT 1
         `, [userId]),
         pool.execute(`
-            SELECT school_name, po_box, phone, email
+            SELECT school_name, po_box, head_of_school, phone, email
             FROM school_settings WHERE status = 'ACTIVE'
             ORDER BY id DESC LIMIT 1
         `)

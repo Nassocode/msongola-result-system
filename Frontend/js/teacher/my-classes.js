@@ -6,6 +6,10 @@
     const emptyState = document.getElementById("emptyState");
     const assignmentCount = document.getElementById("assignmentCount");
     const logoutButton = document.getElementById("logoutButton");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebarClose = document.getElementById("sidebarClose");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
 
     function escapeHTML(value) {
         const div = document.createElement("div");
@@ -23,6 +27,26 @@
         if (!errorBox) return;
         errorBox.textContent = "";
         errorBox.classList.remove("show");
+    }
+
+    function setSidebarOpen(open) {
+        sidebar?.classList.toggle("open", open);
+        sidebarOverlay?.classList.toggle("active", open);
+        sidebarToggle?.setAttribute("aria-expanded", String(open));
+    }
+
+    function initializeSidebar() {
+        sidebarToggle?.addEventListener("click", () => {
+            setSidebarOpen(!sidebar?.classList.contains("open"));
+        });
+        sidebarClose?.addEventListener("click", () => setSidebarOpen(false));
+        sidebarOverlay?.addEventListener("click", () => setSidebarOpen(false));
+        sidebar?.querySelectorAll(".sidebar-nav-item").forEach((link) => {
+            link.addEventListener("click", () => setSidebarOpen(false));
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") setSidebarOpen(false);
+        });
     }
 
     async function loadAssignments() {
@@ -55,6 +79,7 @@
     }
 
     async function initialize() {
+        initializeSidebar();
         if (!window.MsongolaAuth || !window.MsongolaAPI) return;
         const allowed = await MsongolaAuth.protectPage({ roles: ["SUBJECT_TEACHER"] });
         if (!allowed) return;
